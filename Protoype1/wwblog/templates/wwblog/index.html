@@ -1,0 +1,20 @@
+{% extends 'wwblog/base.html'%}
+{% block title %}
+   Home
+{% endblock %}
+
+
+{% block content %}
+    <h3>Latest articles</h3>
+    {% if latest_articles_list %}
+    <ul title="Latest articles">
+        {% for article in latest_articles_list %}
+            <li>
+                <a href="/post/{{ article.article_id }}/view">{{ article.article_title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>There are no articles.</p>
+{% endif %}
+{% endblock %}
