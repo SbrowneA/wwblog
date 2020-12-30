@@ -18,7 +18,7 @@ class Article(models.Model):
     creation_date = models.DateTimeField('creation date')
     author = models.ForeignKey(User, on_delete=models.PROTECT)
     visits = models.IntegerField(default=0)
-    published = models.BooleanField(default=False);
+    published = models.BooleanField(default=False)
 
     def __str__(self):
         output = f"\n - ID: {self.article_id}"\
@@ -26,7 +26,6 @@ class Article(models.Model):
                  f"\n - Author: {self.author}"\
                  f"\n - Creation Date: {self.pub_date}"
         return output
-
 
 
 class ArticleEditor(models.Model):
