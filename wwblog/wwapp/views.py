@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from .models import Article, User\
     # , ArticleEditor
 from wwapp import models
+from .forms import Login
+
 
 def index(request):
     latest_articles = models.get_latest_articles(count=5)
@@ -42,4 +44,18 @@ def user_details(request, user_id):
 
 
 def login(request):
-    pass
+    if request.method == "POST":
+        form = Login(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            return HttpResponseRedirect("/")
+    else:
+        form = Login()
+        # form.username = "dasdasdasdsaasd"
+        # form.password = ""
+        # return HttpResponseRedirect("/login/")
+    values = {
+        'form': form,
+    }
+    return render(request, 'wwapp/login.html', values)
