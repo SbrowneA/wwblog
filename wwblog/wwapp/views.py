@@ -2,14 +2,14 @@ from django.shortcuts import render
 from django.http import Http404, HttpResponse
 from .models import Article, User\
     # , ArticleEditor
-from wwblog import models
+from wwapp import models
 
 def index(request):
     latest_articles = models.get_latest_articles(count=5)
     values = {
         'latest_articles_list': latest_articles,
     }
-    return render(request, "wwblog/index.html", values)
+    return render(request, "wwapp/index.html", values)
 
 
 def open_article(request, article_id):
@@ -18,7 +18,7 @@ def open_article(request, article_id):
         'article': article,
         'article_text': article.__str__(),
     }
-    return render(request, "wwblog/open_article.html", values)
+    return render(request, "wwapp/open_article.html", values)
 
 
 def edit_article(request, article_id):
@@ -31,7 +31,7 @@ def edit_article(request, article_id):
             'editors': editors,
             'editors_count': len(editors)
         }
-        return render(request, "wwblog/edit_article.html", values)
+        return render(request, "wwapp/edit_article.html", values)
     except Article.DoesNotExist:
         raise Http404("This post is private or does not exist :/")
 

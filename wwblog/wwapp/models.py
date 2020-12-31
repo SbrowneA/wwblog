@@ -8,7 +8,8 @@ def get_latest_articles(count):
     return latest_articles
 
 
-# def get_article_editors(article_id):
+def get_article_editors(article_id):
+    return []
 #     editors = []
 #     try:
 #         editors = ArticleEditor.objects.filter(article_id=article_id)
