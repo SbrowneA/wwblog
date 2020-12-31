@@ -22,6 +22,11 @@ class User(models.Model):
     user_id = models.AutoField(primary_key=True, null=False)
     username = models.CharField(max_length=14, null=False)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['username'])
+        ]
+
     def __str__(self):
         output = f"User ID: {self.user_id}" \
                  f"Username: {self.username}"
@@ -39,6 +44,12 @@ class Article(models.Model):
     author = models.ForeignKey(User, on_delete=models.PROTECT)
     visits = models.IntegerField(default=0)
     published = models.BooleanField(default=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['article_title']),
+            models.Index(fields=['author']),
+        ]
 
     def __str__(self):
         output = f"\n - ID: {self.article_id}" \
