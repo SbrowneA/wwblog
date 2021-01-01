@@ -42,6 +42,7 @@ class Article(models.Model):
     # can be used instead auto_now_add = True,
     creation_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.PROTECT)
+    # category = models.ForeignKey(Category, default=None, on_delete=models.SET_DEFAULT())
     visits = models.IntegerField(default=0)
     published = models.BooleanField(default=False)
 
@@ -54,8 +55,8 @@ class Article(models.Model):
     def __str__(self):
         output = f"\n - ID: {self.article_id}" \
                  f"\n - Title: {self.article_title}" \
-                 f"\n - Author: {self.author.username}" \
-                 f"\n - Creation Date: {self.pub_date}"
+                 f"\n - By: {self.author.username}"
+                 # f"\n - Creation Date: {self.pub_date}"
         return output
 
 
@@ -72,7 +73,9 @@ class ArticleEditor(models.Model):
     )
 
     class Meta:
-        models.UniqueConstraint(fields=['article', 'editor'], name="article_editor_unique", )
+        constraints = [
+            models.UniqueConstraint(fields=['article', 'editor'], name="article_editor_unique", )
+        ]
         # DEPRECATED
         # unique_together = (('article_id', 'editor_id'),)
 
@@ -83,3 +86,18 @@ class ArticleEditor(models.Model):
         output = f"Article\n{article.__str__()}" \
                  f"Editor\n{editor.__str__()}"
         return output
+
+
+class Category(models.Model):
+    # test = models.CharField(max_length=20)
+    category_id = models.AutoField(primary_key=True, null=False, blank=False)
+    category_name = models.CharField(unique=True, max_length=45)
+    category_parent = models.ForeignKey("Category", on_delete=models.CASCADE, null=True, blank=True)
+    category_creator = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        output = f"Category:{self.category_name} " \
+                 f"\n- Parent{self.category_parent} " \
+                 f"\n- By: {self.category_creator.username}"
+        return output
+

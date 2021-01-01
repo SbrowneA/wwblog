@@ -59,3 +59,20 @@ def login(request):
         'form': form,
     }
     return render(request, 'wwapp/login.html', values)
+
+
+def category_all(request):
+    pass
+
+    # values = {
+    #     'root_cats':
+    # }
+
+    return render(request)
+
+def category_open():
+    pass
+
+
+def category_edit():
+    pass

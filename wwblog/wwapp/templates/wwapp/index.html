@@ -10,7 +10,7 @@
     <ul title="Latest articles">
         {% for article in latest_articles_list %}
             <li>
-                <a href="/post/{{ article.article_id }}/view">{{ article.article_title }}</a>
+                <a href="/post/{{ article.article_id }}/view/">{{ article.article_title }}</a>
             </li>
         {% endfor %}
     </ul>
