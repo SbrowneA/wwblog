@@ -1,0 +1,25 @@
+{% extends "wwapp/base.html" %}
+
+{% block title %}
+    {{ category.category_name }}
+{% endblock %}
+
+{% block content %}
+    <h2>{{ category.category_name }}</h2>
+    <form method="post" action="#">
+        {% if child_categories != -1 %}
+            {% for c in child_categories %}
+                <a href="category"></a>
+            {% endfor %}
+        {% else %}
+
+    {#        <p><i>No sub-categories here, why not add one?</i></p>#}
+        {% endif %}
+        <button type="submit" name="addCategory" value="addCategory" >Add Category</button>
+        <input type="text" name="newCategory">
+        <button type="submit" name="save" value="save" >Save</button>
+
+    </form>
+
+
+{% endblock %}

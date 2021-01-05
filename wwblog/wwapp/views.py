@@ -1,16 +1,26 @@
 from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from .models import Article, User\
-    # , ArticleEditor
+from .models import Article, User, Category
+    # ArticleEditor
 from wwapp import models
 from .forms import Login
 
 
 def index(request):
-    latest_articles = models.get_latest_articles(count=5)
+    latest_articles = Article.get_latest_articles(count=5)
+    projects = Category.get_root_categories()
+    # for p in projects:
+    #     sub =
+
+    # sub_cats = Category.objects.filter(category_parent=category.category_id)
     values = {
-        'latest_articles_list': latest_articles,
+        "latest_articles_list": latest_articles,
+        "categories": projects
     }
+
+    # projects = Category.objects.filter(category)
+    # if len(sub_cats) == 0:
+    #     sub_cats = -1
     return render(request, "wwapp/index.html", values)
 
 
@@ -25,7 +35,7 @@ def open_article(request, article_id):
 
 def edit_article(request, article_id):
     try:
-        editors = models.get_article_editors(article_id)
+        editors = Article.get_article_editors(article_id)
         article = Article.objects.get(article_id=article_id)
         values = {
             'article': article,
@@ -61,18 +71,35 @@ def login(request):
     return render(request, 'wwapp/login.html', values)
 
 
-def category_all(request):
+# def category_all(request, name):
+#     pass
+#
+#     # values = {
+#     #     'root_cats':
+#     # }
+#
+#     return render(request)
+
+def open_category(request):
+    items = Category.get_items()
+    values = {
+
+
+    }
     pass
 
-    # values = {
-    #     'root_cats':
-    # }
 
-    return render(request)
+def edit_category(request, name):
+    category = Category.objects.get(category_name=name)
+    # category = Category.objects.get(category_id=cat_id)
+    sub_cats = Category.objects.filter(category_parent=category.category_id)
 
-def category_open():
-    pass
+    if len(sub_cats) == 0:
+        sub_cats = -1
 
+    values = {
+        "category": category,
+        "child_categories": sub_cats,
+    }
 
-def category_edit():
-    pass
+    return render(request, 'wwapp/edit_category.html', values)

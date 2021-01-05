@@ -8,6 +8,6 @@ urlpatterns = [
     path('user/<int:user_id>/details/', views.user_details, name='user_details'),
     path('login/', views.login, name='login'),
     # path('category/all', views.category_all, name='category_all'),
-    # path('category/<str:category_name>/edit', views.category_edit, name='category_edit'),
+    # path('category/<str:category_name>/edit', views.edit_category, name='edit_category'),
     # path('category/<str:category_name>/view', views.category_open, name='category_open'),
 ]
