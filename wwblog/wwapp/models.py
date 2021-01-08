@@ -43,8 +43,8 @@ class Category(models.Model):
 
     def get_parent_category(self):
         try:
-            i = CategoryItem.objects.filter(category_id=self.category_id)
-            a = CategoryItemAssignation.objects.filter(item_id=i.item_id)
+            i = CategoryItem.objects.get(item_category_id=self.category_id)
+            a = CategoryItemAssignation.objects.get(item_id=i.item_id)
             return Category.objects.get(category_id=a.parent_category_id)
         except exceptions.ObjectDoesNotExist:
             raise exceptions.ObjectDoesNotExist
@@ -105,17 +105,25 @@ class Category(models.Model):
     def get_root_categories():
         return Category.objects.filter(category_type=Category.CategoryType.PROJECT)
 
-    def __str__(self):
-        # parent_cat = self.get_parent_category()
-        # TODO parent_cat_name = self.get_parent_category_name()
-        parent_cat_name = ""
-        # if parent_cat != -1:
-        #     parent_cat_name = parent_cat.category_name
-        # else:
-        #     parent_cat_name = ""
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # create new category item and save
+        # TODO validate selected parent_category is valid (must be PROJECT or TOPIC )
+        #  THEN create Category with correct CategoryType (TOPIC or SUBTOPIC)
+        #  THEN create CategoryItem
+        #  THEN create CategoryItemAssignation
+        if self.category_type is self.CategoryType.TOPIC or self.CategoryType.SUBTOPIC:
+            i = CategoryItem(item_category=self)
+            i.save()
+            print(f"Category Item saved{i.__str__()}")
 
-        output = f"Category:{self.category_name} " \
-                 f"\n- Parent{parent_cat_name} " \
+    def __str__(self):
+        parent_cat_name = self.get_parent_category_name()
+        if parent_cat_name == "":
+            parent_cat_name = "Null"
+
+        output = f" - Category Name:{self.category_name} " \
+                 f"\n- Parent: {parent_cat_name} " \
                  f"\n- By: {self.category_creator.username}"
         return output
 
@@ -155,6 +163,12 @@ class Article(models.Model):
     #     models.UniqueConstraint(fields=['article_id', 'version'], name='article_id_version_unique')
     # ]
     """
+
+    def save(self, *args, **kwargs):
+        # create new category item and save
+        i = CategoryItem(item_article=self)
+        super().save(*args, **kwargs)
+        i.save()
 
     def get_editors(self):
         try:
@@ -241,15 +255,23 @@ class CategoryItem(models.Model):
     def __str__(self):
         if self.item_article_id is not None:
             a = Article.objects.get(article_id=self.item_article.article_id)
-            return f"Article: {a.__str__()}"
+            return f"Article {a.__str__()}"
         else:
             c = Category.objects.get(category_id=self.item_category.category_id)
             return f"Category {c.__str__()}"
 
+    def save(self, *args, **kwargs):
+        if (self.item_article_id is None and self.item_category_id is not None) or\
+                (self.item_category_id is None and self.item_article_id is not None):
+            super().save()
+        else:
+            # print("an article or category must be selected")
+            raise ValueError("an article or category must be selected")
+
 
 class CategoryItemAssignation(models.Model):
     item_assignation_id = models.AutoField(primary_key=True)
-    parent_category = models.ForeignKey(Category, on_delete=models.CASCADE, null=False, blank=False)
+    parent_category = models.ForeignKey(Category, on_delete=models.CASCADE)
     item = models.OneToOneField(CategoryItem, on_delete=models.CASCADE, null=False, blank=False, unique=True)
     position = models.IntegerField(null=False, blank=False)
 
@@ -257,3 +279,8 @@ class CategoryItemAssignation(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['parent_category', 'position'], name="parent_category_position_unique", )
         ]
+
+    def __str__(self):
+        return f"- Position: {self.position} " \
+               f"- Parent Category: {self.parent_category.category_name} || " \
+               f"- Item: {self.item.__str__()}"
