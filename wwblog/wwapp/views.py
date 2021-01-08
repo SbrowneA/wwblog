@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from .models import Article, User, Category
-    # ArticleEditor
-from wwapp import models
+from .models import *
 from .forms import Login
 
 
@@ -24,8 +22,21 @@ def index(request):
     return render(request, "wwapp/index.html", values)
 
 
+def browse_articles(request):
+    return HttpResponse(f"articles")
+
+
+def browse_users(request):
+    return HttpResponse(f"users")
+
+
+def browse_categories(request):
+    return HttpResponse(f"articles")
+
+
 def open_article(request, article_id):
-    article = Article.objects.get(article_id=article_id)
+    article = get_object_or_404(Article, article_id=article_id)
+    # article = Article.objects.get(article_id=article_id)
     values = {
         'article': article,
         'article_text': article.__str__(),
@@ -35,8 +46,9 @@ def open_article(request, article_id):
 
 def edit_article(request, article_id):
     try:
-        editors = Article.get_article_editors(article_id)
         article = Article.objects.get(article_id=article_id)
+        # article = get_object_or_404(Article, article_id=article_id)
+        editors = article.get_editors()
         values = {
             'article': article,
             'article_text': article.__str__,
@@ -49,7 +61,8 @@ def edit_article(request, article_id):
 
 
 def user_details(request, user_id):
-    user = User.objects.get(user_id=user_id)
+    user = get_object_or_404(User, user_id=user_id)
+    # user = User.objects.get(user_id=user_id)
     return HttpResponse(f"User Details\n{user.__str__()}")
 
 
@@ -71,35 +84,47 @@ def login(request):
     return render(request, 'wwapp/login.html', values)
 
 
-# def category_all(request, name):
-#     pass
-#
-#     # values = {
-#     #     'root_cats':
-#     # }
-#
-#     return render(request)
+def open_category(request, category_id):
+    category = Category.objects.get(category_id=category_id)
+    creator = category.category_creator
+    sub_cats = category.get_child_categories()
+    sub_cats_count = len(sub_cats)
+    articles = category.get_child_articles()
+    articles_count = len(articles)
+    editors = category.get_category_editors()
+    editors_count = len(editors)
 
-def open_category(request):
-    items = Category.get_items()
     values = {
-
-
+        'category': category,
+        'category_creator': creator,
+        'child_categories': sub_cats,
+        'child_categories_count': sub_cats_count,
+        'child_articles': articles,
+        'child_articles_count': articles_count,
+        'editors': editors,
+        'editors_count': editors_count,
     }
-    pass
+
+    return render(request, 'wwapp/open_category.html', values)
 
 
-def edit_category(request, name):
-    category = Category.objects.get(category_name=name)
-    # category = Category.objects.get(category_id=cat_id)
-    sub_cats = Category.objects.filter(category_parent=category.category_id)
-
-    if len(sub_cats) == 0:
-        sub_cats = -1
+def edit_category(request, cat_id):
+    category = Category.objects.get(category_id=cat_id)
+    sub_cats = category.get_child_categories()
+    sub_cats_count = len(sub_cats)
+    articles = category.get_child_articles()
+    articles_count = len(articles)
+    editors = category.get_category_editors()
+    editors_count = len(editors)
 
     values = {
-        "category": category,
-        "child_categories": sub_cats,
+        'category': category,
+        'child_categories': sub_cats,
+        'child_categories_count': sub_cats_count,
+        'child_articles': articles,
+        'child_articles_count': articles_count,
+        'editors': editors,
+        'editors_count': editors_count,
     }
 
     return render(request, 'wwapp/edit_category.html', values)

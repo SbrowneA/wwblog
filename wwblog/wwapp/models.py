@@ -1,4 +1,5 @@
 from django.core import exceptions
+from django.shortcuts import get_object_or_404
 # from django.core import exceptions as djangoex
 # from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -44,7 +45,7 @@ class Category(models.Model):
         try:
             i = CategoryItem.objects.filter(category_id=self.category_id)
             a = CategoryItemAssignation.objects.filter(item_id=i.item_id)
-            return Category.objects.get(category_id=a.parent_category)
+            return Category.objects.get(category_id=a.parent_category_id)
         except exceptions.ObjectDoesNotExist:
             raise exceptions.ObjectDoesNotExist
 
@@ -69,9 +70,36 @@ class Category(models.Model):
                 item = CategoryItem.objects.get(item_id=a.item_id)
                 items.append(item)
             return items
-        except exceptions.EmptyResultSet:
-            return -1
+        except exceptions.ObjectDoesNotExist:
+            return []
 
+    def get_child_categories(self):
+        items = self.get_items()
+        sub_cats = []
+        for i in items:
+            if i.item_category_id is not None:
+                sub_cat = Category.objects.get(category_id=i.item_category_id)
+                sub_cats.append(sub_cat)
+        return sub_cats
+
+    def get_child_articles(self):
+        items = self.get_items()
+        articles = []
+        for i in items:
+            if i.item_article_id is not None:
+                a = Article.objects.get(article_id=i.item_article_id)
+                articles.append(a)
+        return articles
+
+    def get_category_editors(self):
+        try:
+            # TODO make sure working correctly
+            editors = CategoryEditor.objects.filter(category_id=self.category_id)
+            if len(editors) != 0:
+                return editors
+            return []
+        except exceptions.ObjectDoesNotExist:
+            return []
 
     @staticmethod
     def get_root_categories():
@@ -98,10 +126,10 @@ class Article(models.Model):
     # article_no = models.IntegerField(default=0)
     # TODO make new table called ArticleVersion(articleID, Version, previousArticleID)
     #  --where id is unique and previous version is unique
-    article_title = models.CharField(max_length=45, default=None, blank=True)
-    pub_date = models.DateTimeField(default=None)
+    article_title = models.CharField(max_length=45)
+    pub_date = models.DateTimeField(blank=True, null=True)
     author = models.ForeignKey(User, on_delete=models.PROTECT)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
+    # category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
     published = models.BooleanField(default=False)
     creation_date = models.DateTimeField(auto_now_add=True)
     # creation_date = models.DateTimeField(default=timezone.now)
@@ -128,15 +156,15 @@ class Article(models.Model):
     # ]
     """
 
-    def get_article_editors(self):
-        editors = -1
+    def get_editors(self):
         try:
+            # TODO make sure working correctly
             editors = ArticleEditor.objects.filter(article_id=self.article_id)
-            if len(editors) == 0:
-                editors = -1
-            return editors
+            if len(editors) != 0:
+                return editors
+            return []
         except exceptions.ObjectDoesNotExist:
-            return editors
+            return []
 
     @staticmethod
     def get_latest_articles(count):
@@ -147,7 +175,7 @@ class Article(models.Model):
         output = f"\n - ID: {self.article_id}" \
                  f"\n - Title: {self.article_title}" \
                  f"\n - By: {self.author.username}"
-                # f"\n - Creation Date: {self.pub_date}"
+        # f"\n - Creation Date: {self.pub_date}"
         return output
 
 
@@ -206,9 +234,17 @@ class CategoryEditor(models.Model):
 
 class CategoryItem(models.Model):
     item_id = models.AutoField(primary_key=True)
-    item_article_id = models.OneToOneField(Article, on_delete=models.CASCADE, null=True, blank=True)
-    item_category_id = models.OneToOneField(Category, on_delete=models.CASCADE, null=True, blank=True)
+    item_article = models.OneToOneField(Article, on_delete=models.CASCADE, null=True, blank=True)
+    item_category = models.OneToOneField(Category, on_delete=models.CASCADE, null=True, blank=True)
     # TODO make one of 2 fields required - article or category
+
+    def __str__(self):
+        if self.item_article_id is not None:
+            a = Article.objects.get(article_id=self.item_article.article_id)
+            return f"Article: {a.__str__()}"
+        else:
+            c = Category.objects.get(category_id=self.item_category.category_id)
+            return f"Category {c.__str__()}"
 
 
 class CategoryItemAssignation(models.Model):

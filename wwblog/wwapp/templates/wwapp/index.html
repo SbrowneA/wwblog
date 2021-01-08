@@ -10,7 +10,7 @@
         <ul title="Latest articles">
             {% for article in latest_articles_list %}
                 <li>
-                    <a href="/post/{{ article.article_id }}/view/">{{ article.article_title }}</a>
+                    <a href="{% url 'open_article' article.article_id %}">{{ article.article_title }}</a>
                 </li>
             {% endfor %}
         </ul>
@@ -21,7 +21,7 @@
     {% if categories != -1%}
         {% for cat in categories %}
             <li>
-                <a href="/post/{{ cat.category_name }}/view/">{{ article.article_title }}</a>
+                <a href="{%  url 'open_category' cat.category_id %}">{{ cat.category_name }}</a>
             </li>
         {% endfor %}
     {% else %}

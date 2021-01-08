@@ -2,17 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    {#  TODO  <link rel="stylesheet" href="wwapp/styles.css">#}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style type="text/css">
+        .banner {
+            background: #5E5694;
+            padding-bottom: 5em;
+            padding-left: 8em;
+        {#width: 99%;#}
+        {#    z-index: 0;#}
+        {#overflow: hidden;#}
+        {#  no scroll-bar in div #}
+        {#    margin-left: auto;#}
+        {#    margin-right: auto;#}
+        }
+
+        .banner__title {
+        {#width: 100%;#}
+        }
+
+        .banner__nav {
+        {#height: 2vw;#}{#width: 100%;#}
+        }
+
+        #login-btn {
+            background: #6DDCBD;
+        }
+
+        body {
+            background: #222222;
+            color: white;
+        {#height: 100%;#}
+        }
+
+        footer {
+            background: #333333;
+            color: #888888;
+        }
+    </style>
     <title>{% block title %}W&WBLog{% endblock %}</title>
+
 </head>
+
+
 <body>
 <div class="banner" id="banner">
-    <h1 onclick="location.href = '/'">W&W blog Banner</h1>
-    <button onclick="location.href = '/login/'">Login</button>
+    <div class="banner__title">
+        <h1 onclick="location.href = '/'">W&W blog Banner</h1>
+        <button class="button btn btn-primary" id="login-btn" onclick="location.href = '{% url 'login' %}'">Login</button>
+    </div>
+    <div class="banner__nav">
+        <a href="{% url 'index' %}">Home</a>
+        <a href="{% url 'browse_users' %}">Authors</a>
+        <a href="{% url 'browse_articles' %}">All Posts</a>
+        <a href="{% url 'browse_categories' %}">Projects</a>
+        <div class="input-group- mb3">
+            <div class="input-group-prepend">
+                <input type="text" name="search" placeholder="Search..">
+                <button type="submit" name="search_btn" value="search_text" class="btn btn-dark">Search</button>
+            </div>
+
+        </div>
+    </div>
 </div>
 
-<div class="content" id="content">
-    {% block content %}
-    {% endblock %}
+<div class="content" , id="content" , name="content">
+    {#    <div class="row justify-content-center">#}
+
+
+    {#        <div class="col-8">#}
+    <div class="p-3 mb-2 bg-dark text-whit">
+        {% block content %}
+        {% endblock %}
+    </div>
+    {#    </div>#}
+
 </div>
 
 
@@ -20,5 +87,16 @@
     <i>Footer here</i>
 </footer>
 
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 </body>
 </html>

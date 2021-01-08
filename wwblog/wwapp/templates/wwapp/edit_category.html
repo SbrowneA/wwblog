@@ -7,9 +7,9 @@
 {% block content %}
     <h2>{{ category.category_name }}</h2>
     <form method="post" action="#">
-        {% if child_categories != -1 %}
+        {% if child_categories_count == 0 %}
             {% for c in child_categories %}
-                <a href="category"></a>
+                <a href="{% url 'open_category' c.category_id %}">c.category_name</a>
             {% endfor %}
         {% else %}
 
