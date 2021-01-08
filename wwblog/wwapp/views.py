@@ -35,8 +35,8 @@ def browse_categories(request):
 
 
 def open_article(request, article_id):
-    article = get_object_or_404(Article, article_id=article_id)
-    # article = Article.objects.get(article_id=article_id)
+    # article = get_object_or_404(Article, article_id=article_id)
+    article = Article.objects.get(article_id=article_id)
     values = {
         'article': article,
         'article_text': article.__str__(),

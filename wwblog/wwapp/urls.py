@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = 'wwapp'
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('post/<int:article_id>/view', views.open_article, name='open_article'),

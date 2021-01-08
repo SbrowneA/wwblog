@@ -9,7 +9,7 @@
     <h3>Sub-Categories:</h3>
     {% if child_categories == 0 %}
         {% for c in child_categories %}
-            <a href="{% url 'open_category' c.category_id  %}">c.category_name</a>
+            <a href="{% url 'wwapp:open_category' c.category_id  %}">c.category_name</a>
         {% endfor %}
     {% else %}
         <p><i>No Articles</i></p>
@@ -20,7 +20,7 @@
         <ul>
             {% for a in child_articles %}
                 <li>
-                    <a href="{% url 'open_article' a.article_id %}">{{ a.article_title }}</a>
+                    <a href="{% url 'wwapp:open_article' a.article_id %}">{{ a.article_title }}</a>
                 </li>
             {% endfor %}
         </ul>
@@ -30,10 +30,10 @@
 
 
     <h3>Editors:</h3>
-    <a href="{% url 'user_details' category_creator.user_id %}">{{ category_creator.username }} - Creator of category</a>
+    <a href="{% url 'wwapp:user_details' category_creator.user_id %}">{{ category_creator.username }} - Creator of category</a>
     {% if editors %}
         {% for u in editors %}
-            <a href="{% url 'user_details' u.user_id %}">{{ u.username }}</a>
+            <a href="{% url 'wwapp:user_details' u.user_id %}">{{ u.username }}</a>
         {% endfor %}
     {% else %}
         <p><i>No Other Editors</i></p>

@@ -9,7 +9,7 @@
     <form method="post" action="#">
         {% if child_categories_count == 0 %}
             {% for c in child_categories %}
-                <a href="{% url 'open_category' c.category_id %}">c.category_name</a>
+                <a href="{% url 'wwapp:open_category' c.category_id %}">c.category_name</a>
             {% endfor %}
         {% else %}
 

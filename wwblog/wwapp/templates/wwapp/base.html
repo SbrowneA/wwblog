@@ -51,14 +51,14 @@
 <body>
 <div class="banner" id="banner">
     <div class="banner__title">
-        <h1 onclick="location.href = '/'">W&W blog Banner</h1>
-        <button class="button btn btn-primary" id="login-btn" onclick="location.href = '{% url 'login' %}'">Login</button>
+        <h1 onclick="location.href = '{% url 'wwapp:index' %}'">W&W blog Banner</h1>
+        <button class="button btn btn-primary" id="login-btn" onclick="location.href = '{% url 'wwapp:login' %}'">Login</button>
     </div>
     <div class="banner__nav">
-        <a href="{% url 'index' %}">Home</a>
-        <a href="{% url 'browse_users' %}">Authors</a>
-        <a href="{% url 'browse_articles' %}">All Posts</a>
-        <a href="{% url 'browse_categories' %}">Projects</a>
+        <a href="{% url 'wwapp:index' %}">Home</a>
+        <a href="{% url 'wwapp:browse_users' %}">Authors</a>
+        <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>
+        <a href="{% url 'wwapp:browse_categories' %}">Projects</a>
         <div class="input-group- mb3">
             <div class="input-group-prepend">
                 <input type="text" name="search" placeholder="Search..">
