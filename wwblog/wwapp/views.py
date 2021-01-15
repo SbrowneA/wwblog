@@ -2,15 +2,13 @@ from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from .models import *
 from .forms import Login
+from .handlers import *
 
 
 def index(request):
-    latest_articles = Article.get_latest_articles(count=5)
+    latest_articles = ArticleHandler.get_latest_articles(count=5)
     projects = Category.get_root_categories()
-    # for p in projects:
-    #     sub =
 
-    # sub_cats = Category.objects.filter(category_parent=category.category_id)
     values = {
         "latest_articles_list": latest_articles,
         "categories": projects
@@ -75,7 +73,7 @@ def login(request):
             return HttpResponseRedirect("/")
     else:
         form = Login()
-        # form.username = "dasdasdasdsaasd"
+        # form.username = "ads"
         # form.password = ""
         # return HttpResponseRedirect("/login/")
     values = {
@@ -128,4 +126,3 @@ def edit_category(request, cat_id):
     }
 
     return render(request, 'wwapp/edit_category.html', values)
-
