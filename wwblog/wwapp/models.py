@@ -21,145 +21,6 @@ class User(models.Model):
         return output
 
 
-class CategoryHandler:
-    def __init__(self, parent):
-        self.parent = parent
-
-    def get_parent_category(self):
-        try:
-            i = CategoryItem.objects.get(item_category_id=self.parent.category_id)
-            a = CategoryItemAssignation.objects.get(item_id=i.item_id)
-            return Category.objects.get(category_id=a.parent_category_id)
-        except exceptions.ObjectDoesNotExist:
-            raise exceptions.ObjectDoesNotExist
-
-    def get_parent_category_name(self):
-        try:
-            return self.get_parent_category().category_name
-        except exceptions.ObjectDoesNotExist:
-            return ""
-
-    def get_item_assignations(self):
-        try:
-            return CategoryItemAssignation.objects.filter(parent_category_id=self.parent.category_id)
-        except exceptions.EmptyResultSet:
-            raise exceptions.EmptyResultSet
-
-    def get_items(self):
-        try:
-            assignations = self.get_item_assignations()
-            items = []
-            for a in assignations:
-                item = CategoryItem.objects.get(item_id=a.item_id)
-                items.append(item)
-            return items
-        except exceptions.ObjectDoesNotExist:
-            return []
-
-    def get_child_categories(self):
-        items = self.get_items()
-        sub_cats = []
-        for i in items:
-            if i.item_category_id is not None:
-                sub_cat = Category.objects.get(category_id=i.item_category_id)
-                sub_cats.append(sub_cat)
-        return sub_cats
-
-    def get_child_articles(self):
-        items = self.get_items()
-        articles = []
-        for i in items:
-            if i.item_article_id is not None:
-                a = Article.objects.get(article_id=i.item_article_id)
-                articles.append(a)
-        return articles
-
-    def get_category_editors(self):
-        try:
-            # TODO make sure working correctly
-            editors = CategoryEditor.objects.filter(category_id=self.parent.category_id)
-            if len(editors) != 0:
-                return editors
-            return []
-        except exceptions.ObjectDoesNotExist:
-            return []
-
-    def get_child_assignations(self):
-        try:
-            a_list = CategoryItemAssignation.objects.filter(parent_category_id=self.parent.category_id)
-        except exceptions.EmptyResultSet:
-            a_list = []
-        return a_list
-
-    def add_child_item(self, child_item):
-        last_pos = len(self.get_child_assignations())
-        try:
-            # get item assignation and assign parent to self
-            a = CategoryItemAssignation.objects.get(item_id=child_item.item_id)
-            if a.parent_category_id == self.parent.category_id:
-                print("This item has already been assigned to the parent category, try moving it instead")
-            else:
-                a.parent_category_id = self.parent.category_id
-                a.position = last_pos
-                a.save()
-        except exceptions.ObjectDoesNotExist:
-            # make new assignation with parent as self
-            a = CategoryItemAssignation(parent_category_id=self.parent.category_id, item=child_item, position=last_pos)
-            a.save()
-
-        # def add_child_article(self):
-        # TODO needed if PROJECT cant contain articles
-
-        def add_child_category(self, child_cat):
-            if self.category_type is not Category.CategoryType.SUBTOPIC:
-                if self.category_type is Category.CategoryType.PROJECT:
-                    child_cat.CategoryType = Category.CategoryType.TOPIC
-                    child_cat.save()
-                elif self.category_type is Category.CategoryType.TOPIC:
-                    child_cat.CategoryType = Category.CategoryType.SUBTOPIC
-                    # child_cat.save()
-                child_cat.save()  # save child_cat to make its category item
-                i = CategoryItem.objects.get(item_category=child_cat)
-                # print(f"{len(i_list)} Items retrieved:\n")
-
-                child_cat.save()
-                self.add_child_item(i)
-
-            else:
-                raise ValueError("This Category is invalid")
-
-    def __set_assignation_position(self, old_pos, new_pos):
-        a = CategoryItemAssignation.objects.get(parent_category_id=self.parent.category_id, position=old_pos)
-        a.position = new_pos
-        a.save()
-
-    def move_child_item(self, child_item, new_pos):
-        try:
-            if new_pos >= 0:
-                raise ValueError("Position new must be greater than 0")
-            assignations = self.get_child_assignations().order_by('position')
-            moving_a = CategoryItemAssignation.objects.get(item=child_item)
-            old_pos = moving_a.position
-            new_pos -= 1
-            # assign temp position for CategoryItemAssignation being moved
-            moving_a.position = assignations.count()
-            moving_a.save()
-            if new_pos > old_pos:
-                for i in range(old_pos, new_pos + 1):
-                    self.__set_assignation_position(i, i - 1)
-            elif new_pos < old_pos:
-                for i in range(old_pos, new_pos - 1, -1):
-                    self.__set_assignation_position(i, i + 1)
-            else:
-                print("Item was not moved")
-
-            moving_a.position = new_pos
-            moving_a()
-        except exceptions.ObjectDoesNotExist:
-            raise exceptions.ObjectDoesNotExist("Category.move_child_item() "
-                                                "-> ObjectDoesNotExist: Unexpected Error occurred")
-
-
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
     category_name = models.CharField(unique=True, max_length=45)
@@ -168,7 +29,7 @@ class Category(models.Model):
     class CategoryType(models.TextChoices):
         PROJECT = 'PROJECT', _('Project')
         TOPIC = 'TOPIC', _('Topic')
-        SUBTOPIC = 'SUBTOPIC', _('Sub-Topic')
+        SUBTOPIC = 'SUBTOPIC', _('SubTopic')
 
     category_type = models.CharField(max_length=45, choices=CategoryType.choices, default=CategoryType.PROJECT)
 
@@ -189,7 +50,7 @@ class Category(models.Model):
         super().save(*args, **kwargs)
         # create new category item and save
         # TODO validate selected parent_category is valid (must be PROJECT or TOPIC )
-        if self.category_type is self.CategoryType.TOPIC or self.CategoryType is self.CategoryType.SUBTOPIC:
+        if (self.category_type is Category.CategoryType.TOPIC) or (self.category_type is Category.CategoryType.SUBTOPIC):
             print(f"cat type: {self.category_type} is TOPIC or SUBTOPIC")
             try:
                 CategoryItem.objects.get(item_category=self)
@@ -210,9 +71,12 @@ class Category(models.Model):
                 pass
 
     def __str__(self):
-        handler = CategoryHandler(self)
-        parent_cat_name = handler.get_parent_category_name()
-        if parent_cat_name == "":
+        try:
+            i = CategoryItem.objects.get(item_category_id=self.category_id)
+            a = CategoryItemAssignation.objects.get(item_id=i.item_id)
+            Category.objects.get(category_id=a.parent_category_id)
+            parent_cat_name = Category.objects.get(category_id=a.parent_category_id).category_name
+        except exceptions.ObjectDoesNotExist:
             parent_cat_name = "Null"
 
         output = f" - Category Name:{self.category_name} " \
@@ -259,9 +123,19 @@ class Article(models.Model):
     """
 
     def save(self, *args, **kwargs):
+        # check has assignation if published
+        if self.published:
+            try:
+                i = CategoryItem.objects.get(item_article_id=self.article_id)
+                a = CategoryItemAssignation.objects.get(item_id=i.item_id)
+                parent = Category.objects.get(category_id=a.parent_category_id)
+                assert isinstance(parent, Category)
+            except exceptions.ObjectDoesNotExist:
+                raise ValueError("The Article cannot be published without belonging to a category")
+
         # check if CategoryItem already exists
         try:
-            CategoryItem.objects.get(item_article_id=self.article_id)
+            i = CategoryItem.objects.get(item_article_id=self.article_id)
             # if exists no changes need to be made to CategoryItem
             super().save(*args, **kwargs)
         except exceptions.ObjectDoesNotExist:
@@ -269,21 +143,6 @@ class Article(models.Model):
             i = CategoryItem(item_article=self)
             super().save(*args, **kwargs)
             i.save()
-
-    def get_editors(self):
-        try:
-            # TODO make sure working correctly
-            editors = ArticleEditor.objects.filter(article_id=self.article_id)
-            if len(editors) != 0:
-                return editors
-            return []
-        except exceptions.ObjectDoesNotExist:
-            return []
-
-    @staticmethod
-    def get_latest_articles(count):
-        latest_articles = Article.objects.order_by('-pub_date')[:int(count)]
-        return latest_articles
 
     def __str__(self):
         output = f"\n - ID: {self.article_id}" \
