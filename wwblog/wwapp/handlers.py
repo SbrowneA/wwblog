@@ -152,7 +152,9 @@ class CategoryHandler:
             a.position = a.position - 1
             a.save()
 
-    def delte_child_category(self, del_cat):
+    def delete_child_category(self, del_cat):
+        # TODO check if sub cats
+        #  delete sub cats & articles
         # check sub items
         child_handler = CategoryHandler(del_cat)
         child_items = child_handler.get_items()
@@ -172,11 +174,6 @@ class CategoryHandler:
         for a in articles:
             a_handler = ArticleHandler(a)
             a_handler.draft_article()
-
-    def delete_child_category(self, del_cat):
-        # TODO check if sub cats
-        #  delete sub cats & articles
-        pass
 
 
 class ArticleHandler:
@@ -219,33 +216,80 @@ class ArticleHandler:
     def add_editor(self, user):
         try:
             if user.user_id == self.article.author_id:
-                raise ValueError("This author is already the creator and editor of the article")
+                raise exceptions.ValidationError("This author is already the creator and editor of the article")
             else:
-                editor = ArticleEditor(user_id=user.user_id)
+                editor = ArticleEditor(editor_id=user.user_id, article=self.article)
                 editor.save()
         except IntegrityError:
-            raise ValueError("This author is already and editor on this article")
+            raise IntegrityError("This author is already and editor on this article")
 
     def remove_editor(self, user):
+        """remove an article editor from a user object"""
         try:
             if user.user_id == self.article.author_id:
-                raise ValueError("The creator of the article cannot be removed")
+                raise exceptions.ValidationError("The creator of the article cannot be removed")
             else:
                 editor = self.get_editor(user)
                 editor.delete()
         except exceptions.ObjectDoesNotExist:
-            raise exceptions.ObjectDoesNotExist("This author is not an editor on this article")
+            raise exceptions.ObjectDoesNotExist("This author is not an editor on this article or they are the creator")
+        except exceptions.ValidationError:
+            raise exceptions.ValidationError("The creator of the article cannot be removed")
 
     def get_editors(self):
-        try:
-            return ArticleEditor.objects.filter(article_id=self.article.article_id)
-        except exceptions.EmptyResultSet:
-            return []
+        # try:
+            editors = ArticleEditor.objects.filter(article_id=self.article.article_id)
+            if len(editors) == 0:
+                raise exceptions.EmptyResultSet("This article has no editors")
+            return editors
+        # except exceptions.EmptyResultSet:
+            # raise exceptions.EmptyResultSet("This article has no editors")
+            # raise exceptions.EmptyResultSet()
 
-    @staticmethod
-    def get_editor(user):
+    def get_parent_article(self):
+        pass
+        return []
+        # TODO
+        # try:
+        #     return Article.objects.get(article_id=self.article.parent_id)
+        # except exceptions.ObjectDoesNotExist:
+        #     raise exceptions.ObjectDoesNotExist
+
+
+    def get_child_article(self):
+        pass
+        return []
+
+    def get_article_group(self):
+        pass
+        articles = [self.article]
+        # get children
         try:
-            return ArticleEditor.objects.get(user_id=user.user_id)
+            a = self.article
+            while True:
+                child = ArticleHandler(a).get_child_article()
+                articles.append(child)
+                a = child
+        except exceptions.ObjectDoesNotExist:
+            pass
+
+        # get parents
+        try:
+            a = self.article
+            while True:
+                parent = ArticleHandler(a).get_parent_article()
+                articles.insert(0, parent)
+                a = parent
+        except exceptions.ObjectDoesNotExist:
+            pass
+
+        if len(articles) == 1:
+            raise exceptions.ObjectDoesNotExist
+        return articles
+
+    def get_editor(self, user):
+        try:
+            return ArticleEditor.objects.get(editor_id=user.user_id, article_id=self.article.article_id)
         except exceptions.ObjectDoesNotExist:
             raise exceptions.ObjectDoesNotExist
 
@@ -253,6 +297,7 @@ class ArticleHandler:
     def get_latest_articles(count):
         latest_articles = Article.objects.order_by('-pub_date')[:int(count)]
         return latest_articles
+
 
 
 class _CategoryItemHandler:

@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.db import models, IntegrityError
 from django.test import TransactionTestCase
 from django.test import SimpleTestCase
 # from django.test import client
@@ -8,6 +9,17 @@ from unittest import skip
 from wwapp.models import *
 from wwapp.handlers import *
 import time
+
+
+# to make dummy users
+def setup_authors():
+    authors = []
+    author_names = ['testAuthor1', 'testAuthor2', 'testAuthor3', 'testAuthor4']
+    for u in author_names:
+        user = User(username=u)
+        user.save()
+        authors.append(user)
+    return authors
 
 
 def get_micro_time():
@@ -20,12 +32,7 @@ class UserModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         # User.objects
-        author_names = ['testAuthor1', 'testAuthor2', 'testAuthor3', 'testAuthor4']
-        cls.authors = []
-        for name in author_names:
-            a = User.objects.create(username=name)
-            a.save()
-            cls.authors.append(a)
+        cls.authors = setup_authors()
 
     def test_create_user(self):
         print(f"TEST START:{self._testMethodName}")
@@ -57,13 +64,7 @@ class CategoryModelTests(TestCase):
         # super().setUpTestData()
         print("Setting up test data")
         # create users
-        author_names = ['testAuthor1', 'testAuthor2', 'testAuthor3', 'testAuthor4']
-        cls.authors = []
-        for u in author_names:
-            user = User(username=u)
-            user.save()
-            cls.authors.append(user)
-
+        cls.authors = setup_authors()
         # create project
         cls.prj_name = f"main_test_proj-{int(time.time() * 10000)}"
         cls.prj = Category(category_creator=cls.authors[0], category_name=cls.prj_name)
@@ -85,7 +86,8 @@ class CategoryModelTests(TestCase):
     def test_category_item_created_when_topic_saved(self):
         print(f"TEST START:{self._testMethodName}")
         topic_name = f"test_topic-{get_micro_time()}"
-        p = Category(category_creator=self.authors[0], category_name=topic_name, category_type=Category.CategoryType.TOPIC)
+        p = Category(category_creator=self.authors[0], category_name=topic_name,
+                     category_type=Category.CategoryType.TOPIC)
         p.save()
         print(str(p))
         # p.save()
@@ -105,88 +107,17 @@ class CategoryModelTests(TestCase):
         i = CategoryItem.objects.get(item_category_id=cat_id)
         self.assertIsInstance(i, CategoryItem)
 
-    def test_assign_project_to_project(self):
-        print(f"TEST START:{self._testMethodName}")
-        topic_name = f"test_topic-{get_micro_time()}"
-        child_prj = Category(category_creator=self.authors[0], category_name=topic_name,
-                             category_type=Category.CategoryType.PROJECT)
-        child_prj.save()
-        handler = CategoryHandler(self.prj)
-        handler.add_child_category(child_prj)
+    def test_delete_category_deletes_category_item(self):
+        print(f"\nTEST START:{self._testMethodName}")
 
-        i = CategoryItem.objects.get(item_category_id=child_prj.category_id)
-        a = CategoryItemAssignation.objects.get(item_id=i.item_id)
-        self.assertEqual(child_prj.category_type, Category.CategoryType.TOPIC)
-        self.assertEqual(a.parent_category_id, self.prj.category_id)
-        self.assertIsInstance(a, CategoryItemAssignation)
+    def test_delete_category_deletes_child_items(self):
+        print(f"\nTEST START:{self._testMethodName}")
 
-    def test_assign_topic_to_project(self):
-        print(f"TEST START:{self._testMethodName}")
-        topic_name = f"test_subtopic-{get_micro_time()}"
-        child_prj = Category(category_creator=self.authors[0], category_name=topic_name,
-                             category_type=Category.CategoryType.SUBTOPIC)
-        child_prj.save()
-        print(child_prj)
-        handler = CategoryHandler(self.prj)
-        handler.add_child_category(child_prj)
-
-        child_prj = Category.objects.get(category_id=child_prj.category_id)
-        i = CategoryItem.objects.get(item_category_id=child_prj.category_id)
-        a = CategoryItemAssignation.objects.get(item_id=i.item_id)
-        self.assertEqual(child_prj.category_type, Category.CategoryType.TOPIC)
-        self.assertEqual(a.parent_category_id, self.prj.category_id)
-        self.assertIsInstance(a, CategoryItemAssignation)
-
-    def test_assign_subtopic_to_project(self):
-        print(f"TEST START:{self._testMethodName}")
-        topic_name = f"test_subtopic-{get_micro_time()}"
-        child_prj = Category(category_creator=self.authors[0], category_name=topic_name,
-                             category_type=Category.CategoryType.SUBTOPIC)
-        child_prj.save()
-        print(child_prj)
-        handler = CategoryHandler(self.prj)
-        handler.add_child_category(child_prj)
-
-        child_prj = Category.objects.get(category_id=child_prj.category_id)
-        i = CategoryItem.objects.get(item_category_id=child_prj.category_id)
-        a = CategoryItemAssignation.objects.get(item_id=i.item_id)
-        self.assertEqual(child_prj.category_type, Category.CategoryType.TOPIC)
-        self.assertEqual(a.parent_category_id, self.prj.category_id)
-        self.assertIsInstance(a, CategoryItemAssignation)
-
-    @skip("test_delete_child_category - not complete")
-    def test_move_child_item(self):
-        # make multiple child items and assign them
-        handler = CategoryHandler(self.prj)
-        num_child = 10
-        for i in range(num_child):
-            topic_name = f"test_subtopic-{get_micro_time()}"
-            child_prj = Category(category_creator=self.authors[0], category_name=topic_name)
-            child_prj.save()
-            handler.add_child_category(child_prj)
-
-        child_items = handler.get_items()
-        move_i = child_items[0]
-        move_a = CategoryItemAssignation.objects.get(item_id=move_i.item_id)
-        old_pos = move_a.position
-
-    @skip("test_delete_child_category - not complete")
-    def test_delete_child_category(self):
-        handler = CategoryHandler(self.prj)
-        num_child = 10
-        for i in range(num_child):
-            topic_name = f"test_subtopic-{get_micro_time()}"
-            child_prj = Category(category_creator=self.authors[0], category_name=topic_name)
-            child_prj.save()
-            handler.add_child_category(child_prj)
-        # TODO remove a category
-        del_cat = handler.get_child_categories()[3]
-        handler.delete_child_category(del_cat)
-        a = handler.get_child_assignations()
-        self.assertEqual(num_child - 1, len(a))
+    def delete_category_a(self):
+        print(f"\nTEST START:{self._testMethodName}")
 
     def test_category_to_string(self):
-        print(f"{self._testMethodName}")
+        print(f"\nTEST START:{self._testMethodName}")
         cat_str = self.prj.__str__()
         self.assertIn(self.prj_name, cat_str)
         self.assertIn(self.prj.category_creator.username, cat_str)
@@ -197,28 +128,47 @@ class CategoryModelTests(TestCase):
 
 
 class ArticleModelTests(TestCase):
-
     @classmethod
     def setUpTestData(cls):
-        super().setUpTestData()
-        cls.authors = ['testAuthor1', 'testAuthor2', 'testAuthor3', 'testAuthor4']
-        for u in cls.authors:
-            user = User(username=u)
-            u.save()
-            cls.authors.append(user)
+        cls.authors = setup_authors()
 
-        # user = User.objects.get(userame="Username0")
-        # editors = [
-        #     User.objects.get(userame="Username1"),
-        #     User.objects.get(userame="Username2"),
-        # ]
-        # cls.article1 = Article(author=user, article_title="TestArticle1")
-        # article2 = Article(author=user, article_title="TestArticle2")
-        # article3 = Article(author=user, article_title="TestArticle3")
-        # cls.article1.save()
-        # article2.save()
-        # article3.save()
+        cls.main_article = Article(author=cls.authors[0],
+                                   article_title="main-article")
+        cls.main_article.save()
+        cls.main_handler = ArticleHandler(cls.main_article)
 
-    def test_add_editor_to_article(self):
-        # self.article1.article_id
+    # model test
+    def test_save_article_creates_category_item(self):
+        a = Article(article_title="title", author=self.authors[1])
+        a.save()
+        i = CategoryItem.objects.get(item_article_id=a.article_id)
+        items = CategoryItem.objects.all()
+        self.assertIsInstance(i, CategoryItem)
+        self.assertEqual(2, len(items))
+
+    def test_save_article_does_not_create_duplicate_category_item(self):
+        i = CategoryItem.objects.get(item_article_id=self.main_article.article_id)
+        items = CategoryItem.objects.all()
+        self.assertIsInstance(i, CategoryItem)
+        self.assertEqual(1, len(items))
+        self.main_article.save()
+
+        i2 = CategoryItem.objects.get(item_article_id=self.main_article.article_id)
+        items = CategoryItem.objects.all()
+        self.assertEqual(i, i2)
+        self.assertIsInstance(i, CategoryItem)
+        self.assertIsInstance(i2, CategoryItem)
+        self.assertEqual(1, len(items))
+
+    def test_save_article_raises_validation_error_if_published_to_no_category(self):
+        self.main_article.published = True
+        self.assertRaises(exceptions.ValidationError, self.main_article.save)
+
+    def test_delete_article_deletes_item(self):
+        id = self.main_article.article_id
+        self.main_article.delete()
+        self.assertRaises(exceptions.ObjectDoesNotExist, CategoryItem.objects.get, item_article_id=id)
+
+    def test_delete_article_deletes_assignation(self):
+        # todo
         pass

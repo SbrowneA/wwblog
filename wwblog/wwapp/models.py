@@ -123,26 +123,25 @@ class Article(models.Model):
     """
 
     def save(self, *args, **kwargs):
-        # check has assignation if published
-        if self.published:
-            try:
-                i = CategoryItem.objects.get(item_article_id=self.article_id)
-                a = CategoryItemAssignation.objects.get(item_id=i.item_id)
-                parent = Category.objects.get(category_id=a.parent_category_id)
-                assert isinstance(parent, Category)
-            except exceptions.ObjectDoesNotExist:
-                raise ValueError("The Article cannot be published without belonging to a category")
-
         # check if CategoryItem already exists
         try:
             i = CategoryItem.objects.get(item_article_id=self.article_id)
-            # if exists no changes need to be made to CategoryItem
-            super().save(*args, **kwargs)
-        except exceptions.ObjectDoesNotExist:
+            if self.published:
+                try:
+                    a = CategoryItemAssignation.objects.get(item_id=i.item_id)
+                    parent = Category.objects.get(category_id=a.parent_category_id)
+                except exceptions.ObjectDoesNotExist:
+                    raise exceptions.ValidationError("The Article cannot be published without a parent Category")
+            # if exists no changes need to be made to CategoryItem, just save Article
+            super().save()
+        except (exceptions.ObjectDoesNotExist, exceptions.ValidationError):
             # create new category item and save
-            i = CategoryItem(item_article=self)
-            super().save(*args, **kwargs)
-            i.save()
+            if not self.published:
+                super().save()
+                i = CategoryItem(item_article_id=self.article_id)
+                i.save()
+            else:
+                raise exceptions.ValidationError("The Article cannot be published without CategoryItem")
 
     def __str__(self):
         output = f"\n - ID: {self.article_id}" \
