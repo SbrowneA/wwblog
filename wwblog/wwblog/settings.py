@@ -120,3 +120,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+# STATIC_URL = 'wwapp/static/'
+# STATIC_ROOT = BASE_DIR / 'wwapp/static'
+#
+# MEDIA_URL = 'wwapp/media/'
+# MEDIA_ROOT = BASE_DIR / 'wwapp/media'

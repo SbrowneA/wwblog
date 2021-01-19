@@ -1,0 +1,14 @@
+asgiref==3.3.1
+certifi==2020.12.5
+chardet==4.0.0
+coverage==5.3.1
+Django==3.1.5
+idna==2.10
+imgurpython==1.1.7
+pip==20.3.3
+setuptools==51.3.3
+python==3.8
+pytz==2020.5
+requests==2.25.1
+sqlparse==0.4.1
+urllib3==1.26.2
