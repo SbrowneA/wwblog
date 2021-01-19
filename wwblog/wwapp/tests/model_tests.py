@@ -172,3 +172,5 @@
 #     def test_delete_article_deletes_assignation(self):
 #         # todo
 #         pass
+#     def test_save_creates_article_version_(self):
+#         pass

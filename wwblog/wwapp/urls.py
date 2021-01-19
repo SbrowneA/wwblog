@@ -1,11 +1,15 @@
 from django.urls import path
 from . import views
 
+from django.conf.urls.static import static
+from django.conf import settings
+
 app_name = 'wwapp'
 
 urlpatterns = [
     path('', views.index, name='index'),
-]
+]\
++ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # path('post/<int:article_id>/view', views.open_article, name='open_article'),
 # path('post/<int:article_id>/edit', views.edit_article, name='edit_article'),

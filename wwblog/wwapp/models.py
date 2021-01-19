@@ -2,6 +2,7 @@ from django.core import exceptions
 from django.shortcuts import get_object_or_404
 # from django.core import exceptions as djangoex
 # from django.utils import timezone
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
@@ -71,13 +72,14 @@ class Category(models.Model):
                 pass
 
     def __str__(self):
-        try:
-            i = CategoryItem.objects.get(item_category_id=self.category_id)
-            a = CategoryItemAssignation.objects.get(item_id=i.item_id)
-            Category.objects.get(category_id=a.parent_category_id)
-            parent_cat_name = Category.objects.get(category_id=a.parent_category_id).category_name
-        except exceptions.ObjectDoesNotExist:
-            parent_cat_name = "Null"
+        parent_cat_name = "Null"
+        # try:
+        #     i = CategoryItem.objects.get(item_category_id=self.category_id)
+        #     a = CategoryItemAssignation.objects.get(item_id=i.item_id)
+        #     Category.objects.get(category_id=a.parent_category_id)
+        #     parent_cat_name = Category.objects.get(category_id=a.parent_category_id).category_name
+        # except exceptions.ObjectDoesNotExist:
+        #     parent_cat_name = "Null"
 
         output = f" - Category Name:{self.category_name} " \
                  f"\n - Type:{self.category_type} " \
@@ -95,12 +97,10 @@ class Article(models.Model):
     article_title = models.CharField(max_length=45)
     pub_date = models.DateTimeField(blank=True, null=True)
     author = models.ForeignKey(User, on_delete=models.PROTECT)
-    # category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
     published = models.BooleanField(default=False)
     creation_date = models.DateTimeField(auto_now_add=True)
     # creation_date = models.DateTimeField(default=timezone.now)
     # article_parent = models.ForeignKey("Article", on_delete=models.SET_DEFAULT, default=None, null=True, blank=True)
-    # version = models.IntegerField(default=0)
 
     # visits = models.IntegerField(default=0) TODO make 1*n table storing ip of each visitor and article id
     """
@@ -115,33 +115,27 @@ class Article(models.Model):
             models.Index(fields=['author']),
         ]
 
-    """
-    # TODO for versions
-    # constraints = [
-    #     models.UniqueConstraint(fields=['article_id', 'version'], name='article_id_version_unique')
-    # ]
-    """
-
-    def save(self, *args, **kwargs):
-        # check if CategoryItem already exists
-        try:
-            i = CategoryItem.objects.get(item_article_id=self.article_id)
-            if self.published:
-                try:
-                    a = CategoryItemAssignation.objects.get(item_id=i.item_id)
-                    parent = Category.objects.get(category_id=a.parent_category_id)
-                except exceptions.ObjectDoesNotExist:
-                    raise exceptions.ValidationError("The Article cannot be published without a parent Category")
-            # if exists no changes need to be made to CategoryItem, just save Article
-            super().save()
-        except (exceptions.ObjectDoesNotExist, exceptions.ValidationError):
-            # create new category item and save
-            if not self.published:
-                super().save()
-                i = CategoryItem(item_article_id=self.article_id)
-                i.save()
-            else:
-                raise exceptions.ValidationError("The Article cannot be published without CategoryItem")
+    # def save(self, *args, **kwargs):
+    #     # check if CategoryItem already exists
+    #     try:
+    #         i = CategoryItem.objects.get(item_article_id=self.article_id)
+    #         if self.published:
+    #             try:
+    #                 a = CategoryItemAssignation.objects.get(item_id=i.item_id)
+    #                 parent = Category.objects.get(category_id=a.parent_category_id)
+    #             except exceptions.ObjectDoesNotExist:
+    #                 raise exceptions.ValidationError("The Article cannot be published without a parent Category")
+    #         # if exists no changes need to be made to CategoryItem, just save Article
+    #         super().save()
+    #     except (exceptions.ObjectDoesNotExist, exceptions.ValidationError):
+    #         # create new category item and save
+    #         if not self.published:
+    #             super().save()
+    #             v = ArticleVersion(article_id=self.)
+    #             i = CategoryItem(item_article_id=self.article_id)
+    #             i.save()
+    #         else:
+    #             raise exceptions.ValidationError("The Article cannot be published without CategoryItem")
 
     def __str__(self):
         output = f"\n - ID: {self.article_id}" \
@@ -204,6 +198,38 @@ class CategoryEditor(models.Model):
         return output
 
 
+class ArticleVersion(models.Model):
+    article_version_id = models.AutoField(primary_key=True)
+    edit_date = models.DateTimeField(default=timezone.now)
+    version = models.IntegerField(default=1, null=False)
+    article = models.ForeignKey(Article, null=False, blank=False, on_delete=models.CASCADE)
+    location = models.FileField(upload_to='posts/')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['article', 'version'], name="article_version_unique", )
+        ]
+
+    def save(self, *args, **kwargs):
+        # ** only new versions should be saved. old versions should not be overridden
+        try:
+            self.file_name = f'{self.article_id}_{self.version}'
+            versions = ArticleVersion.objects.filter(self.article_id).order_by('version')
+            # check if content is different from last version
+            last_ver = versions[-1]
+            # if last_ver != current session
+            self.version = len(versions)+1
+            super().save()
+            # else
+            # do nothing
+        except exceptions.EmptyResultSet:
+            self.version = 1
+            super().save()
+
+
+        pass
+
+
 class CategoryItem(models.Model):
     item_id = models.AutoField(primary_key=True)
     item_article = models.OneToOneField(Article, on_delete=models.CASCADE, null=True, blank=True)
@@ -227,26 +253,20 @@ class CategoryItem(models.Model):
         else:
             # print("an article or category must be selected")
             raise ValueError("an article or category must be selected")
-
-
-class CategoryItemAssignation(models.Model):
-    item_assignation_id = models.AutoField(primary_key=True)
-    parent_category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    item = models.OneToOneField(CategoryItem, on_delete=models.CASCADE, null=False, blank=False, unique=True)
-    position = models.IntegerField(null=False, blank=False)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['parent_category', 'position'], name="parent_category_position_unique", )
-        ]
-
-    def __str__(self):
-        return f"- Position: {self.position} " \
-               f"- Parent Category: {self.parent_category.category_name} || " \
-               f"- Item: {self.item.__str__()}"
-
-# def catTest():
-#     proj = Category.objects.get(category_name="Root")
-#     user = User.objects.get(username="Big Mike")
-#     topic = Category(category_name="project's topic", category_creator=user)
-#     proj.add_child_category(topic)
+#
+#
+# class CategoryItemAssignation(models.Model):
+#     item_assignation_id = models.AutoField(primary_key=True)
+#     parent_category = models.ForeignKey(Category, on_delete=models.CASCADE)
+#     item = models.OneToOneField(CategoryItem, on_delete=models.CASCADE, null=False, blank=False, unique=True)
+#     position = models.IntegerField(null=False, blank=False)
+#
+#     class Meta:
+#         constraints = [
+#             models.UniqueConstraint(fields=['parent_category', 'position'], name="parent_category_position_unique", )
+#         ]
+#
+#     def __str__(self):
+#         return f"- Position: {self.position} " \
+#                f"- Parent Category: {self.parent_category.category_name} || " \
+#                f"- Item: {self.item.__str__()}"
