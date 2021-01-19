@@ -1,0 +1,61 @@
+# # # # MIGRATIONS
+1.
+makemigrations wwapp
+
+2.
+migrate wwapp
+
+
+# # # # TESTING COMMANDS
+# # DJANGO TEST COMMANDS
+# test specified app
+py manage.py test wwapp
+
+# test specified module in app
+py manage.py test wwapp.tests
+
+# test specified class file in app
+py manage.py test wwapp.tests.model_tests
+
+# test specified method in file
+py manage.py test wwapp.tests.model_tests.test_some_method
+^not working??
+
+
+# # COVERAGE FOR TESTING
+pip install coverage
+
+# run coverage tests
+1.
+coverage run --omit='*/Lib/*' manage.py test
+coverage run --omit='*/venv/*' manage.py test
+2.
+coverage report
+3.
+coverage html
+
+# MODEL BAKERY TO GENERATE DUMMY DATA
+pip install model-bakery
+
+from model_bakery import baker
+from pprint import pprint
+
+# setup method
+self.some_model =  baker.make('name_of_instance')
+pprtint(self.some_model.__dict__)
+
+
+## PIP COMMANDS
+
+pip freeze
+
+pip list
+
+pip check
+
+pip install
+
+
+
+
+
