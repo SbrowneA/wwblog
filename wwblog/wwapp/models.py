@@ -51,7 +51,8 @@ class Category(models.Model):
         super().save(*args, **kwargs)
         # create new category item and save
         # TODO validate selected parent_category is valid (must be PROJECT or TOPIC )
-        if (self.category_type is Category.CategoryType.TOPIC) or (self.category_type is Category.CategoryType.SUBTOPIC):
+        if (self.category_type is Category.CategoryType.TOPIC) or (
+                self.category_type is Category.CategoryType.SUBTOPIC):
             print(f"cat type: {self.category_type} is TOPIC or SUBTOPIC")
             try:
                 CategoryItem.objects.get(item_category=self)
@@ -145,6 +146,31 @@ class Article(models.Model):
         return output
 
 
+class CategoryEditor(models.Model):
+    category_editor_id = models.AutoField(primary_key=True)
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+    )
+    editor = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['category', 'editor'], name="category_editor_unique", )
+        ]
+
+    def __str__(self):
+        category = Category.objects.get(category_id=self.category_id)
+        editor = User.objects.get(user_id=self.editor_id)
+
+        output = f"Category\n{category.__str__()}" \
+                 f"Editor\n{editor.__str__()}"
+        return output
+
+
 class ArticleEditor(models.Model):
     # placeholder_id = models.AutoField(primary_key=True)
     article_editor_id = models.AutoField(primary_key=True)
@@ -173,31 +199,6 @@ class ArticleEditor(models.Model):
         return output
 
 
-class CategoryEditor(models.Model):
-    category_editor_id = models.AutoField(primary_key=True)
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-    )
-    editor = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['category', 'editor'], name="category_editor_unique", )
-        ]
-
-    def __str__(self):
-        category = Category.objects.get(category_id=self.category_id)
-        editor = User.objects.get(user_id=self.editor_id)
-
-        output = f"Category\n{category.__str__()}" \
-                 f"Editor\n{editor.__str__()}"
-        return output
-
-
 class ArticleVersion(models.Model):
     article_version_id = models.AutoField(primary_key=True)
     edit_date = models.DateTimeField(default=timezone.now)
@@ -218,14 +219,13 @@ class ArticleVersion(models.Model):
             # check if content is different from last version
             last_ver = versions[-1]
             # if last_ver != current session
-            self.version = len(versions)+1
+            self.version = len(versions) + 1
             super().save()
             # else
             # do nothing
         except exceptions.EmptyResultSet:
             self.version = 1
             super().save()
-
 
         pass
 
@@ -253,6 +253,8 @@ class CategoryItem(models.Model):
         else:
             # print("an article or category must be selected")
             raise ValueError("an article or category must be selected")
+
+
 #
 #
 # class CategoryItemAssignation(models.Model):
@@ -270,3 +272,37 @@ class CategoryItem(models.Model):
 #         return f"- Position: {self.position} " \
 #                f"- Parent Category: {self.parent_category.category_name} || " \
 #                f"- Item: {self.item.__str__()}"
+
+
+class Image(models.Model):
+    """
+    in future maybe add favourite=T/F and public=T/F
+    """
+    image_id = models.AutoField(primary_key=True)
+    image_owner = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    location = models.ImageField(upload_to='images/')
+
+    def __str__(self):
+        return f"Uploaded by {self.image_owner.username}"
+
+
+class ArticleImage(models.Model):
+    article_image_id = models.AutoField(primary_key=True)
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+    )
+    image = models.ForeignKey(
+        Image,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['article', 'image'], name="article_image_unique", )
+        ]
+
+    def __str__(self):
+        output = f" - Image {str(self.article)}" \
+                 f" - Used in article {str(self.article)}"
+        return output

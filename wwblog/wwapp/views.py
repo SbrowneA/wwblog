@@ -6,7 +6,8 @@ from .handlers import *
 
 
 def index(request):
-    latest_articles = ArticleHandler.get_latest_articles(count=5)
+    # latest_articles = ArticleHandler.get_latest_articles(count=5)
+    latest_articles = Article.objects.order_by('-pub_date')[:int(5)]
     projects = Category.get_root_categories()
 
     values = {
@@ -84,23 +85,23 @@ def login(request):
 
 def open_category(request, category_id):
     category = Category.objects.get(category_id=category_id)
-    creator = category.category_creator
-    sub_cats = category.get_child_categories()
-    sub_cats_count = len(sub_cats)
-    articles = category.get_child_articles()
-    articles_count = len(articles)
-    editors = category.get_category_editors()
-    editors_count = len(editors)
+    # creator = category.category_creator
+    # sub_cats = category.get_child_categories()
+    # sub_cats_count = len(sub_cats)
+    # articles = category.get_child_articles()
+    # articles_count = len(articles)
+    # editors = category.get_category_editors()
+    # editors_count = len(editors)
 
     values = {
         'category': category,
-        'category_creator': creator,
-        'child_categories': sub_cats,
-        'child_categories_count': sub_cats_count,
-        'child_articles': articles,
-        'child_articles_count': articles_count,
-        'editors': editors,
-        'editors_count': editors_count,
+        # 'category_creator': creator,
+        # 'child_categories': sub_cats,
+        # 'child_categories_count': sub_cats_count,
+        # 'child_articles': articles,
+        # 'child_articles_count': articles_count,
+        # 'editors': editors,
+        # 'editors_count': editors_count,
     }
 
     return render(request, 'wwapp/open_category.html', values)
@@ -108,21 +109,21 @@ def open_category(request, category_id):
 
 def edit_category(request, cat_id):
     category = Category.objects.get(category_id=cat_id)
-    sub_cats = category.get_child_categories()
-    sub_cats_count = len(sub_cats)
-    articles = category.get_child_articles()
-    articles_count = len(articles)
-    editors = category.get_category_editors()
-    editors_count = len(editors)
+    # sub_cats = category.get_child_categories()
+    # sub_cats_count = len(sub_cats)
+    # articles = category.get_child_articles()
+    # articles_count = len(articles)
+    # editors = category.get_category_editors()
+    # editors_count = len(editors)
 
     values = {
         'category': category,
-        'child_categories': sub_cats,
-        'child_categories_count': sub_cats_count,
-        'child_articles': articles,
-        'child_articles_count': articles_count,
-        'editors': editors,
-        'editors_count': editors_count,
+        # 'child_categories': sub_cats,
+        # 'child_categories_count': sub_cats_count,
+        # 'child_articles': articles,
+        # 'child_articles_count': articles_count,
+        # 'editors': editors,
+        # 'editors_count': editors_count,
     }
 
     return render(request, 'wwapp/edit_category.html', values)

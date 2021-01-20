@@ -5,6 +5,7 @@ coverage==5.3.1
 Django==3.1.5
 idna==2.10
 imgurpython==1.1.7
+Pillow==8.1.0
 pip==20.3.3
 setuptools==51.3.3
 pytz==2020.5
