@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'wwapp.apps.WwappConfig',
+    'tinymce',
 ]
 
 MIDDLEWARE = [
@@ -55,8 +56,7 @@ ROOT_URLCONF = 'wwblog.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -106,6 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+# LANGUAGE_CODE = 'en-au'
 
 TIME_ZONE = 'UTC'
 
@@ -121,7 +122,30 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 # STATIC_URL = 'wwapp/static/'
-# STATIC_ROOT = BASE_DIR / 'wwapp/static'
+# STATIC_ROOT = BASE_DIR.parent '/static'
 #
 # MEDIA_URL = 'wwapp/media/'
-# MEDIA_ROOT = BASE_DIR / 'wwapp/media'
+# MEDIA_ROOT = BASE_DIR.parent '/media'
+
+# TINYMCE_JS_URL = os.path.join(STATIC_URL, "path/to/tiny_mce/tiny_mce.js")
+
+# TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
+
+
+TINYMCE_DEFAULT_CONFIG = {
+    "height": "320px",
+    "width": "960px",
+    "menubar": "file edit view insert format tools table help",
+    "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code "
+    "fullscreen insertdatetime media table paste code help wordcount spellchecker",
+    "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft "
+    "aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor "
+    "backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | "
+    "fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | "
+    "a11ycheck ltr rtl | showcomments addcomment code",
+    "custom_undo_redo_levels": 20,
+    "language": "en_UK",  # To force a specific language instead of the Django current language.
+}
+
+# 'clenaup_on_startup': True,
+# 'theme': 'modern',
