@@ -1,3 +1,4 @@
+import django
 from django.core import exceptions
 from django.shortcuts import get_object_or_404
 # from django.core import exceptions as djangoex
@@ -220,12 +221,12 @@ class ArticleVersion(models.Model):
             last_ver = versions[-1]
             # if last_ver != current session
             self.version = len(versions) + 1
-            super().save()
+            super().save(*args, **kwargs)
             # else
             # do nothing
         except exceptions.EmptyResultSet:
             self.version = 1
-            super().save()
+            super().save(*args, **kwargs)
 
         pass
 
@@ -249,7 +250,7 @@ class CategoryItem(models.Model):
             print(f"saved new CategoryItem:"
                   f"\n - article id:{self.item_article_id}"
                   f"\n - category id:{self.item_category_id}")
-            super().save()
+            super().save(*args, **kwargs)
         else:
             # print("an article or category must be selected")
             raise ValueError("an article or category must be selected")
@@ -274,16 +275,59 @@ class CategoryItem(models.Model):
 #                f"- Item: {self.item.__str__()}"
 
 
+class ImageRemote(models.Model):
+    """
+    stores the details of images that are uploaded to imgur
+    *in future could include embedded images
+    """
+    remote_image_id = models.AutoField(primary_key=True)
+    image_owner = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    location = models.URLField(blank=False, null=False)
+
+    def __str__(self):
+        return f"Uploaded by {self.image_owner.username}"
+
+
+class ImageLocal(models.Model):
+    """
+    This class is used to store images that are accessed frequently
+    like site background and stored on the site to reduce loading time
+    """
+    local_image_id = models.AutoField(primary_key=True)
+    image_owner = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    location = models.ImageField(upload_to='images/local/')
+
+    def __str__(self):
+        return f"Uploaded by {self.image_owner.username}"
+
+
 class Image(models.Model):
     """
     in future maybe add favourite=T/F and public=T/F
     """
     image_id = models.AutoField(primary_key=True)
-    image_owner = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
-    location = models.ImageField(upload_to='images/')
+    local_image = models.ForeignKey(ImageLocal, null=True, blank=True, on_delete=models.CASCADE)
+    remote_image = models.ForeignKey(ImageRemote, null=True, blank=True, on_delete=models.CASCADE)
+    description = models.CharField(max_length=45, null=True, blank=True)
+    upload_date = models.DateTimeField(editable=False, default=django.utils.timezone.now())
 
     def __str__(self):
-        return f"Uploaded by {self.image_owner.username}"
+        output = f"- Image Id:{self.image_id}" \
+                 f"{self.description}" \
+                 f"{str(self.local_image)}"\
+                 f"{str(self.remote_image)}"\
+                 f"Upload date - {str(self.upload_date)}"
+        return output
+
+    def save(self, *args, **kwargs):
+        if (self.local_image is None and self.remote_image is not None)\
+                or (self.local_image is not None and self.remote_image is None):
+            if not self.id:
+                # if the image doesn't have an id it has only just been created
+                self.upload_date = django.utils.timezone.now()
+            super().save(*args, **kwargs)
+        else:
+            raise exceptions.ValidationError("An Image must either have a local_image or a remote_image, but not both")
 
 
 class ArticleImage(models.Model):
