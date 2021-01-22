@@ -53,7 +53,47 @@ pip list
 
 pip check
 
-pip install
+pip install [package name]
+in command promt
+-m pip install --upgrade pip
+
+pip install --upgrade requests
+
+pip install -r requirements.txt
+
+# update all packages (in python)
+import pkg_resources
+from subprocess import call
+
+packages = [dist.project_name for dist in pkg_resources.working_set]
+call("pip install --upgrade " + ' '.join(packages), shell=True)
+
+## VIRTUAL ENV COMMANDS
+
+# make new folder and cd into it
+makedir [new folder name]
+cd !$
+
+# setup venv
+pip install virtualenv
+
+py -m pip install --user virtualenv
+
+# create new virtual env
+py -m virtualenv [env name]
+# or for venv
+py -m venv [env name]
+
+# activate env
+.\[env name]\Scripts\activate
+
+# deactivate env
+deactivate
+
+# install tinymce
+https://django-tinymce.readthedocs.io/en/latest/installation.html
+# add to requirements.txt
+django-tinymce==3.2.0
 
 
 

@@ -8,50 +8,67 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
-
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'wwapp/fonts.css' %}">
     <title>{% block title %}W&WBLog{% endblock %}</title>
-
+    {% block head %}
+    {% endblock %}
 </head>
 
+<body class="container-fluid h-100">
+<div class="row max-width ">
+    <div class="banner col-12" id="banner">
 
-<body>
-<div class="banner" id="banner">
-    <div class="banner__title">
-        <h1 onclick="location.href = '{% url 'wwapp:index' %}'">W&W blog Banner</h1>
-        <button class="button btn btn-primary" id="login-btn" onclick="location.href = '{% url 'wwapp:login' %}'">Login</button>
-    </div>
-    <div class="banner__nav">
-        <a href="{% url 'wwapp:index' %}">Home</a>
-        <a href="{% url 'wwapp:browse_users' %}">Authors</a>
-        <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>
-        <a href="{% url 'wwapp:browse_categories' %}">Projects</a>
-        <div class="input-group- mb3">
-            <div class="input-group-prepend">
-                <input type="text" name="search" placeholder="Search..">
-                <button type="submit" name="search_btn" value="search_text" class="btn btn-dark">Search</button>
+        <div class="banner__title">
+            <h1 onclick="location.href = '{% url 'wwapp:index' %}'">W&W blog Banner</h1>
+            {#            <h1 >{%  %}</h1>#}
+            <button class="button btn btn-primary" id="login-btn" onclick="location.href = '{% url 'wwapp:login' %}'">
+                Login
+            </button>
+        </div>
+
+        <div class="banner__nav">
+            <a href="{% url 'wwapp:index' %}">Home</a>
+            <a href="{% url 'wwapp:browse_users' %}">Authors</a>
+            <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>
+            <a href="{% url 'wwapp:browse_categories' %}">Projects</a>
+            <div class="input-group- mb3">
+                <div class="input-group-prepend">
+                    <input type="text" name="search" placeholder="Search..">
+                    <button type="submit" name="search_btn" value="search_text" class="btn btn-dark">Search</button>
+                </div>
             </div>
+        </div>
 
+    </div>
+</div>
+
+
+<div class="row max-width h-100">
+
+    <div class="nav col-3">
+        <h1>Nav div</h1>
+    </div>
+
+    <div class="content col-6" , id="content" ,>
+        <div class="p-3 mb-2 bg-dark text-whit">
+            {% block content %}
+            {% endblock %}
         </div>
     </div>
-</div>
 
-<div class="content" , id="content" , name="content">
-    {#    <div class="row justify-content-center">#}
-
-
-    {#        <div class="col-8">#}
-    <div class="p-3 mb-2 bg-dark text-whit">
-        {% block content %}
-        {% endblock %}
+    <div class="aside col-3">
+        <h1>Nav div</h1>
     </div>
-    {#    </div>#}
 
 </div>
 
 
-<footer>
-    <i>Footer here</i>
+<footer class="footer row max-width">
+    <div class="container">
+        Footer here<br>
+        <i>For support contact: wwblog.help@gmail.com</i>
+    </div>
 </footer>
 
 
