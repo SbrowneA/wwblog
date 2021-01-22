@@ -2,10 +2,13 @@
 {% block title %}
     edit {{ article.article_title }}
 {% endblock %}
+{% block head %}
+    {{ form.media }}
+{% endblock %}
 
 {% block content %}
-    <script src="https://cdn.tiny.cloud/1/9kc0jaf7jhmllq281dt33c7bosywayiwi04amdwlkm192lzt/tinymce/5/tinymce.min.js"
-            referrerpolicy="origin"></script>
+{#    <script src="https://cdn.tiny.cloud/1/9kc0jaf7jhmllq281dt33c7bosywayiwi04amdwlkm192lzt/tinymce/5/tinymce.min.js"#}
+{#            referrerpolicy="origin"></script>#}
     <h1>Edit Article :</h1>
     <p>Hidden header</p>
 

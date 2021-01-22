@@ -1,0 +1,11 @@
+{% extends 'wwapp/base.html' %}
+{% block title %} test upload {% endblock %}
+
+{% block content %}
+    <h2>upload file </h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="document">
+        <button type="submit">Upload</button>
+    </form>
+{% endblock %}

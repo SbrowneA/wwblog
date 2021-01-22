@@ -1,8 +1,23 @@
+from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from .models import *
+# from .models import *
 from .forms import Login
 from .handlers import *
+
+
+def upload_test(request):
+    values = {}
+    if request.method == "POST":
+        # name of input 'document'
+        new_file = request.FILES['document']
+        fs = FileSystemStorage()
+        file_name = fs.save(new_file.name, new_file)
+        url = fs.url(file_name)
+        values['image_url'] = url
+        print(f"File name: {new_file.name}")
+        print(f"File size: {new_file.size}")
+    return render(request, 'wwapp/upload_test.html', values)
 
 
 def index(request):
@@ -12,7 +27,7 @@ def index(request):
 
     values = {
         "latest_articles_list": latest_articles,
-        "categories": projects
+        "categories": projects,
     }
 
     # projects = Category.objects.filter(category)

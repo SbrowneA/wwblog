@@ -1,0 +1,119 @@
+@charset "utf-8";
+/* NORMAL */
+@font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-Regular.otf') format('opentype');
+  font-weight: normal;
+}
+@font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-Italic.otf') format('opentype');
+  font-style: italic;
+  font-weight: normal;
+}
+/* REGULAR */
+@font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-Medium.otf') format('opentype');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-MediumItalic.otf') format('opentype');
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* BOLD */
+@font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-BoldItalic.otf') format('opentype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* SEMI-BOLD */
+@font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-SemiBoldItalic.otf') format('opentype');
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* LIGHT */
+ @font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-Light.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-LightItalic.otf') format('opentype');
+  font-style: italic;
+  font-weight: 200;
+}
+/* THIN */
+ @font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-Thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/work-sans/WorkSans-ThinItalic.otf') format('opentype');
+  font-style: italic;
+  font-weight: 100;
+}
+/*Alternate font*/
+@font-face {
+  font-family: 'Alta';
+  src: url('fonts/alata/alata-regular.ttf') format('truetype');
+  font-style: italic;
+  font-weight: 100;
+}
+
+h1, h2{
+  font-weight: 600;
+  font-size: 5em;
+}
+
+h3, h4{
+  font-weight: 600;
+  font-size: 1.8em;
+  /* font-size: 2em; */
+}
+
+#normal{
+  font-style: italic;
+  font-weight: 100;
+  color: lightgreen;
+}
+
+ #light{
+   /* font-style: italic; */
+   /* font-weight: 200; */
+   font-weight: 100;
+   font-style: normal;
+  color: lightblue;
+}
+
+#bold{
+  /* font-style: bold; */
+  /* font-style: italic; */
+  font-weight: bold;
+  color: wheat;
+}

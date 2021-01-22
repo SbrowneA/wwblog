@@ -12,8 +12,11 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -39,7 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'wwapp.apps.WwappConfig',
     'tinymce',
+    # 'django.contrib.sites',
 ]
+# SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -56,7 +61,8 @@ ROOT_URLCONF = 'wwblog.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        # 'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,7 +84,8 @@ WSGI_APPLICATION = 'wwblog.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -120,12 +127,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
-# STATIC_URL = 'wwapp/static/'
-# STATIC_ROOT = BASE_DIR.parent '/static'
+# STATIC_URL = '/static/'
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, "static"),
+#     os.path.join(Path(__file__).resolve().parent.parent.parent, 'static', 'wwapp')
+# )
+
+STATIC_URL = 'wwapp/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'wwapp', 'static')
+# STATIC_ROOT = Path(__file__).resolve().parent.parent / 'wwapp/static/'
+# STATIC_ROOT = Path(__file__).resolve().parent.parent.parent / 'static/'
 #
-# MEDIA_URL = 'wwapp/media/'
-# MEDIA_ROOT = BASE_DIR.parent '/media'
+MEDIA_URL = 'wwapp/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'wwapp', 'media')
+# MEDIA_ROOT = Path(__file__).resolve().parent.parent / 'wwapp/media/'
+# MEDIA_ROOT = Path(__file__).resolve().parent.parent.parent / 'media/'
 
 # TINYMCE_JS_URL = os.path.join(STATIC_URL, "path/to/tiny_mce/tiny_mce.js")
 
