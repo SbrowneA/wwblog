@@ -1,8 +1,6 @@
 import django
 from django.core import exceptions
 from django.shortcuts import get_object_or_404
-# from django.core import exceptions as djangoex
-# from django.utils import timezone
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.db import models
@@ -199,13 +197,15 @@ class ArticleEditor(models.Model):
                  f"Editor\n{editor.__str__()}"
         return output
 
-
+from tinymce import models as tinymce_models
 class ArticleVersion(models.Model):
     article_version_id = models.AutoField(primary_key=True)
     edit_date = models.DateTimeField(default=timezone.now)
     version = models.IntegerField(default=1, null=False)
     article = models.ForeignKey(Article, null=False, blank=False, on_delete=models.CASCADE)
-    location = models.FileField(upload_to='posts/')
+    # location = models.FileField(upload_to='posts/')
+    content = tinymce_models.HTMLField(null=True, blank=True)
+    # file_name = models.CharField(max_length=225, null=False, blank=False)
 
     class Meta:
         constraints = [
@@ -256,23 +256,21 @@ class CategoryItem(models.Model):
             raise ValueError("an article or category must be selected")
 
 
-#
-#
-# class CategoryItemAssignation(models.Model):
-#     item_assignation_id = models.AutoField(primary_key=True)
-#     parent_category = models.ForeignKey(Category, on_delete=models.CASCADE)
-#     item = models.OneToOneField(CategoryItem, on_delete=models.CASCADE, null=False, blank=False, unique=True)
-#     position = models.IntegerField(null=False, blank=False)
-#
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(fields=['parent_category', 'position'], name="parent_category_position_unique", )
-#         ]
-#
-#     def __str__(self):
-#         return f"- Position: {self.position} " \
-#                f"- Parent Category: {self.parent_category.category_name} || " \
-#                f"- Item: {self.item.__str__()}"
+class CategoryItemAssignation(models.Model):
+    item_assignation_id = models.AutoField(primary_key=True)
+    parent_category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    item = models.OneToOneField(CategoryItem, on_delete=models.CASCADE, null=False, blank=False, unique=True)
+    position = models.IntegerField(null=False, blank=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['parent_category', 'position'], name="parent_category_position_unique", )
+        ]
+
+    def __str__(self):
+        return f"- Position: {self.position} " \
+               f"- Parent Category: {self.parent_category.category_name} || " \
+               f"- Item: {self.item.__str__()}"
 
 
 class ImageRemote(models.Model):
