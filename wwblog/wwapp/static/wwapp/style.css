@@ -26,10 +26,14 @@
 body {
     background: #222222;
     color: white;
+    font-family: "Times New Roman", serif;
     /*height: 100%;*/
 }
 
 footer {
     background: #333333;
     color: #888888;
+}
+
+.content{
 }

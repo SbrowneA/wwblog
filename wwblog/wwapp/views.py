@@ -45,7 +45,7 @@ def browse_users(request):
 
 
 def browse_categories(request):
-    return HttpResponse(f"articles")
+    return HttpResponse(f"categories")
 
 
 def open_article(request, article_id):
@@ -86,7 +86,7 @@ def login(request):
         if form.is_valid():
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
-            return HttpResponseRedirect("/")
+            # return HttpResponseRedirect("/")
     else:
         form = Login()
         # form.username = "ads"

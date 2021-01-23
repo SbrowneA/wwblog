@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'wwapp.apps.WwappConfig',
     'tinymce',
+    'crispy_forms',
     # 'django.contrib.sites',
 ]
 # SITE_ID = 1
