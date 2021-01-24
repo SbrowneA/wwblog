@@ -16,24 +16,26 @@
 </head>
 
 <body class="container-fluid h-100">
-<div class="row max-width ">
-    <div class="banner col-12" id="banner">
+<div class="row max-width pb-2" id="banner_container">
+    <div class="banner col-12  pb-2" id="banner">
 
-        <div class="banner__title">
-            <h1 onclick="location.href = '{% url 'wwapp:index' %}'">W&W blog Banner</h1>
-            {#            <h1 >{%  %}</h1>#}
-            <button class="button btn btn-primary" id="login-btn" onclick="location.href = '{% url 'wwapp:login' %}'">
+        <div class="row col-12">
+            <div class="banner__title col-11">
+                <h1 class="mx-auto" onclick="location.href = '{% url 'wwapp:index' %}'">W&W blog Banner</h1>
+            </div>
+            <button class="btn btn-primary h-100 mt-2" id="login-btn"
+                    onclick="location.href = '{% url 'wwapp:login' %}'">
                 Login
             </button>
         </div>
 
-        <div class="banner__nav">
+        <div class="banner__nav row">
             <a href="{% url 'wwapp:index' %}">Home</a>
             <a href="{% url 'wwapp:browse_users' %}">Authors</a>
             <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>
             <a href="{% url 'wwapp:browse_categories' %}">Projects</a>
             <div class="input-group- mb3">
-                <div class="input-group-prepend">
+                <div class="input-group-prepend pb-50">
                     <input type="text" name="search" placeholder="Search..">
                     <button type="submit" name="search_btn" value="search_text" class="btn btn-dark">Search</button>
                 </div>
@@ -46,8 +48,8 @@
 
 <div class="row max-width h-100">
 
-    <div class="nav col-3">
-        <h1>Nav div</h1>
+    <div class="nav col-3 ">
+        <h1 class="mx-auto">Nav div</h1>
     </div>
 
     <div class="content col-6" , id="content" ,>
@@ -67,7 +69,7 @@
 <footer class="footer row max-width">
     <div class="container">
         Footer here<br>
-        <i>For support contact: wwblog.help@gmail.com</i>
+        <p><i>For support contact: wwblog.help@gmail.com</i></p>
     </div>
 </footer>
 

@@ -1,5 +1,5 @@
 .banner {
-    /*background: #5E5694;*/
+    background: #5E5694;
     /*padding-bottom: 5em;*/
     /*padding-left: 8em;*/
     /*width: 99%;*/
@@ -27,7 +27,7 @@ body {
     background: #222222;
     color: white;
     /*font-family: "Times New Roman", serif;*/
-    font-family: "WorkSans", serif;
+    /*font-family: Alta, serif;*/
     font-style: normal;
     /*height: 100%;*/
 }
@@ -37,19 +37,53 @@ footer {
     color: #888888;
 }
 
-.content{
+.content {
+    min-height: 100vh;
 }
 
 
-h1, h2, h3, h4{
-    font-family: Alta, serif;
-    /*font-size: 15em;*/
+/*to remove asterisks from required fields on crispy forms */
+.asteriskField {
+    display: none;
 }
 
 
+/*FONT CONFIGURATION*/
+html {
+    /*root font size*/
+    font-size: 100%;
+}
 
+h1, h2, h3, h4 {
+    font-family: WorkSans, serif;
+}
 
+h1 {
+    /*font-family: Alta, serif;*/
+    font-size: 3rem;
+}
 
+h2 {
+    font-size: 2.5rem;
+}
 
+h3 {
+    font-size: 2rem;
+}
 
+h4 {
+    font-size: 1.5rem;
+}
 
+p {
+    font-family: "Segoe UI", serif;
+    font-size: 1em;
+}
+
+h1, h2 {
+    font-weight: 600;
+}
+
+h3, h4 {
+    font-weight: 600;
+}

@@ -9,20 +9,21 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/fonts.css' %}">
+    <link href="/{{ MEDIA_URL }}images/ww_favicon.ico" rel="icon" type="image/x-icon" />
 </head>
 <body class="container fluid h-100 bg-dark text-white">
 <div class="d-flex justify-content-center pt-5">
  <div class="content" id="content">
-     <h1>Login</h1>
+     <h1 style="font-family: Alta, Serif">Login</h1>
      {% load crispy_forms_tags %}
 
-     <form method="post" action="POST">
+     <form method="post" action="POST" style="font-family: WorkSans, Serif">
 
          {% csrf_token %}
 {#         {% crispy form %}#}
 {#         {{ form.as_p }}#}
          {{ form | crispy:"bootstrap4"}}
-         <p>dont have an account? request for one <a href="{% url 'wwapp:index' %}">here</a></p>
+         <p style="font-weight: 400;">dont have an account? request for one <a href="{% url 'wwapp:index' %}">here</a></p>
          <button type="submit" name="save" class="btn btn-primary">Login</button>
      </form>
  </div>

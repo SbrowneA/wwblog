@@ -43,6 +43,7 @@ from pprint import pprint
 # setup method
 self.some_model =  baker.make('name_of_instance')
 pprtint(self.some_model.__dict__)
+print(self.some_model.__dict__)?
 
 
 ## PIP COMMANDS
@@ -60,6 +61,8 @@ in command promt
 pip install --upgrade requests
 
 pip install -r requirements.txt
+OR
+pip install -r /path/to/requirements.txt
 
 # update all packages (in python)
 import pkg_resources
