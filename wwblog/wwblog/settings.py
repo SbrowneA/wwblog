@@ -34,13 +34,19 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # defualt
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # my apps
     'wwapp.apps.WwappConfig',
+    'account.apps.AccountConfig',
+    # 'account',
+
+    # third party
     'tinymce',
     'crispy_forms',
     # 'django.contrib.sites',
@@ -167,3 +173,5 @@ TINYMCE_DEFAULT_CONFIG = {
 
 # 'clenaup_on_startup': True,
 # 'theme': 'modern',
+
+AUTH_USER_MODEL = 'account.User'

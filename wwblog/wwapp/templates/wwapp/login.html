@@ -17,10 +17,9 @@
      <h1 style="font-family: Alta, Serif">Login</h1>
      {% load crispy_forms_tags %}
 
-     <form method="post" action="POST" style="font-family: WorkSans, Serif">
+     <form method="post" action="POST" style="font-family: WorkSans, serif">
 
          {% csrf_token %}
-{#         {% crispy form %}#}
 {#         {{ form.as_p }}#}
          {{ form | crispy:"bootstrap4"}}
          <p style="font-weight: 400;">dont have an account? request for one <a href="{% url 'wwapp:index' %}">here</a></p>

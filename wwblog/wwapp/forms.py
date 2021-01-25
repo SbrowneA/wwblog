@@ -1,7 +1,7 @@
 from django import forms
 from .models import *
 # from django.contrib.flatpages.models import FlatPage
-# from tinymce.widgets import TinyMCE
+from tinymce.widgets import TinyMCE
 
 
 class Login(forms.Form):
@@ -9,6 +9,9 @@ class Login(forms.Form):
     # email = forms.CharField(label="Email", max_length=150)
     password = forms.CharField(label="Password", max_length=45)
     # password_confirm = forms.CharField(label="Confirm-Password", max_length=45)
+# WRONG
+# class Editor(forms.Form):
+#     content = forms.CharField(widget=TinyMCE())
 
 #
 # class Register(forms.Form):

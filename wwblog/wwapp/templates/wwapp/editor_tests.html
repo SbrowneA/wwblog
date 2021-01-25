@@ -7,21 +7,23 @@
 {% endblock %}
 
 {% block content %}
-{#    <script src="https://cdn.tiny.cloud/1/9kc0jaf7jhmllq281dt33c7bosywayiwi04amdwlkm192lzt/tinymce/5/tinymce.min.js"#}
-{#            referrerpolicy="origin"></script>#}
+ <script src="https://cdn.tiny.cloud/1/9kc0jaf7jhmllq281dt33c7bosywayiwi04amdwlkm192lzt/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     <h1>Edit Article :</h1>
     <p>Hidden header</p>
 
     <p>{{ article_text }}</p>
 
     <div id="editorContainer">
-            <button id="btnTinySubmit" onclick="result = previewEditorContent()">Preview</button>
-            <form method="post" class="TinyEditor" id="formTinyM" onsubmit="save">
-            <textarea id="txt_tiny_editor" name="mytextarea" placeholder="Write here..">
-                WOWOWO EW DASRE SDF ESA DW <br>asd
-            </textarea>
-                <!--            name="submitbtn"-->
-            </form>
+{#        <button id="btnTinySubmit" onclick="result = previewEditorContent()">Preview</button>#}
+
+        <form method="post" class="TinyEditor" id="formTinyM">
+            {% csrf_token %}
+            {{ form.as_p }}
+{#            <textarea id="txt_tiny_editor" name="mytextarea" placeholder="Write here..">#}
+{#                asdasdasaasd#}
+{#            </textarea>#}
+            <button type="submit">Save</button>
+        </form>
     </div>
 
 
