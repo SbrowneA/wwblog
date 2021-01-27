@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from account import views as account_views
 
 # from django.conf.urls.static import static
 # from django.conf import settings
@@ -8,7 +9,10 @@ app_name = 'wwapp'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('login', views.login, name='login'),
+    path('login/', account_views.login_user, name='login'),
+    path('logout/', account_views.logout_user, name='logout'),
+    path('register/', account_views.register_user, name='register'),
+    path('register/success', account_views.register_success, name='register_success'),
 
     # path('post/<int:article_id>/view', views.open_article, name='open_article'),
     # path('post/<int:article_id>/edit', views.edit_article, name='edit_article'),

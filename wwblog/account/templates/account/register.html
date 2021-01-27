@@ -2,28 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Register</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/fonts.css' %}">
-    <link href="/{{ MEDIA_URL }}images/ww_favicon.ico" rel="icon" type="image/x-icon" />
+{#    <link href="/{{ MEDIA_URL }}images/ww_favicon.ico" rel="icon" type="image/x-icon" />#}
 </head>
 <body class="container fluid h-100 bg-dark text-white">
 <div class="d-flex justify-content-center pt-5">
  <div class="content" id="content">
-     <h1 style="font-family: Alta, Serif">Login</h1>
+     <h1 style="font-family: Alta, serif">Register Account</h1>
      {% load crispy_forms_tags %}
 
-     <form method="post" action="POST" style="font-family: WorkSans, serif">
+     <form method="post" style="font-family: WorkSans, serif">
 
          {% csrf_token %}
 {#         {{ form.as_p }}#}
          {{ form | crispy:"bootstrap4"}}
-         <p style="font-weight: 400;">dont have an account? request for one <a href="{% url 'wwapp:index' %}">here</a></p>
-         <button type="submit" name="save" class="btn btn-primary">Login</button>
+         <button type="submit" name="save" class="btn btn-primary">Submit</button>
      </form>
  </div>
  </div>

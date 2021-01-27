@@ -3,12 +3,12 @@ from .models import *
 # from django.contrib.flatpages.models import FlatPage
 from tinymce.widgets import TinyMCE
 
-
-class Login(forms.Form):
-    username = forms.CharField(label="Username", max_length=14)
-    # email = forms.CharField(label="Email", max_length=150)
-    password = forms.CharField(label="Password", max_length=45)
-    # password_confirm = forms.CharField(label="Confirm-Password", max_length=45)
+#
+# class Login(forms.Form):
+#     username = forms.CharField(label="Username", max_length=14)
+#     # email = forms.CharField(label="Email", max_length=150)
+#     password = forms.CharField(label="Password", max_length=45)
+#     password_confirm = forms.CharField(label="Confirm-Password", max_length=45)
 # WRONG
 # class Editor(forms.Form):
 #     content = forms.CharField(widget=TinyMCE())

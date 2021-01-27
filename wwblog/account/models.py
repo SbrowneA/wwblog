@@ -1,17 +1,19 @@
 from django.db import models
 from django.utils.timezone import timezone
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, Group
 
 
 class UserManager(BaseUserManager):
-
     def create_user(self, email, username, password, **kwargs):
+        print(f"creating new user {username}")
+        # not required because they are tested within the inherited class
         if not email:
             raise ValueError("You must provide an email address")
         if not password:
             raise ValueError("You must provide a password")
-
+        if not username:
+            raise ValueError("You must provide a username")
         user = self.model(
             email=self.normalize_email(email),
             username=username,
@@ -20,6 +22,7 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.save()
         # user.save(using=self._db)
+        print(f"crated new user {username}")
         return user
 
     def create_superuser(self, email, username, password, **kwargs):
@@ -37,6 +40,28 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, username, password, **kwargs)
 
+    # def create_moderator(self, email, username, password, **kwargs):
+    #     # TODO change to False
+    #     # TODO set group
+    #     kwargs.setdefault('is_staff', True)
+    #     kwargs.setdefault('is_active', True)
+    #     kwargs.setdefault('is_staff', False)
+    #     return self.create_user(email, username, password, **kwargs)
+    #
+    # def create_member(self, email, username, password, **kwargs):
+    #     # TODO set group
+    #     kwargs.setdefault('is_staff', False)
+    #     kwargs.setdefault('is_active', False)
+    #     kwargs.setdefault('is_staff', False)
+    #     return self.create_user(email, username, password, **kwargs)
+    #
+    # def create_general(self, email, username, password, **kwargs):
+    #     # TODO set group
+    #     kwargs.setdefault('is_staff', False)
+    #     kwargs.setdefault('is_active', False)
+    #     kwargs.setdefault('is_staff', False)
+    #     return self.create_user(email, username, password, **kwargs)
+
 
 # class User(AbstractBaseUser, PermissionsMixin):
 class User(AbstractBaseUser, PermissionsMixin):
@@ -52,13 +77,17 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = [
-        # 'username',
         'email',
-        # 'password'
     ]
 
     # register custom object manager
-    object = UserManager()
+    objects = UserManager()
 
     def __str__(self):
         return f"{self.username} {self.email}"
+
+    # def save(self, *args, **kwargs):
+    #     print("User.save()")
+        # super().save(self, *args, **kwargs)
+# class ModeratorGroup:
+#

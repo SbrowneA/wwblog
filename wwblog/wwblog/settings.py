@@ -175,3 +175,9 @@ TINYMCE_DEFAULT_CONFIG = {
 # 'theme': 'modern',
 
 AUTH_USER_MODEL = 'account.User'
+
+LOGIN_URL = "/login"
+
+LOGIN_REDIRECT_URL = "/"
+
+LOGOUT_REDIRECT_URL = "/"

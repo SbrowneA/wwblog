@@ -1,4 +1,6 @@
 from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 # from .models import *
@@ -21,33 +23,17 @@ def index(request):
     return render(request, "wwapp/index.html", values)
 
 
-def login(request):
-    if request.method == "POST":
-        form = forms.Login(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-            # return HttpResponseRedirect("/")
-    else:
-        form = forms.Login()
-        # form.username = "ads"
-        # form.password = ""
-        # return HttpResponseRedirect("/login/")
+@login_required
+def editor_test(request):
+    # form = forms.TinyMCE
     values = {
-        'form': form,
+        # 'form': form
     }
-    return render(request, 'wwapp/login.html', values)
-#
-# def editor_test(request):
-#     form = forms.TinyMCE
-#     values = {
-#         'form': form
-#     }
-#     if request.POST:
-#         pass
-#
-#     return render(request, "wwapp/editor_tests.html", values)
-#
+    if request.POST:
+        pass
+
+    return render(request, "wwapp/editor_tests.html", values)
+
 
 from .handlers import *
 # def upload_test(request):
@@ -62,8 +48,6 @@ from .handlers import *
 #         print(f"File name: {new_file.name}")
 #         print(f"File size: {new_file.size}")
 #     return render(request, 'wwapp/upload_test.html', values)
-#
-#
 #
 #
 # def browse_articles(request):
