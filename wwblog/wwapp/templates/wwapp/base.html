@@ -64,6 +64,9 @@
 
     <div class="aside col-3">
         <h1>Nav div</h1>
+        <h2>{% if request.user.is_authenticated %}
+            Hello, {{ request.user.username }}
+        {% endif %}</h2>
     </div>
 
 </div>

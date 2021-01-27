@@ -14,26 +14,21 @@ class LoginForm(forms.Form):
                                widget=forms.TextInput(attrs={"class": 'form-control'}))
     password = forms.CharField(label="Password",
                                widget=forms.PasswordInput(attrs={"class": 'form-control'}))
-    # def clean(self):
-    #     username = self.cleaned_data.get("username")
-    #     password = self.cleaned_data.get("password")
+    def clean(self):
+        cleaned_data = super().clean()
+        username = self.clean_username()
+        password = self.cleaned_data.get("password")
 
-    # def clean_username(self):
-    #     try:
-    #         username = self.cleaned_data.get("username")
-    #         if "@" in username:
-    #             username = User.objects.get(email="username").username
-    #         qs = User.objects.filter(username=username)
-    #         if not qs.esixts():
-    #             raise forms.ValidationError("Please enter valid correct credentials")
-    #         print(f"cleaned username: {username}")
-    #         return username
-    #     except ValueError():
-    #         pass
-    #         # raise ValueError("")
-    #     except forms.ValidationError(""):
-    #         raise forms.ValidationError("Please enter valid correct credentials")
-    #     #     pass
+    def clean_username(self):
+        try:
+            username = self.cleaned_data.get("username")
+            if username is not None:
+                if "@" in username:
+                    username = User.objects.get(email="username").username
+                User.objects.get(username=username)
+                return username
+        except (forms.ValidationError,  exceptions.ObjectDoesNotExist):
+            raise forms.ValidationError("Email/Username or password are incorrect")
 
 
 class RegisterFrom(forms.Form):
@@ -51,11 +46,10 @@ class RegisterFrom(forms.Form):
 
         try:
             u = User.objects.get(email=email)
-            # raise forms.ValidationError("in use")
-            raise ValueError("in use")
-        # except forms.ValidationError:
-        except ValueError:
-            raise ValueError("Please enter a valid email address")
+            raise forms.ValidationError("in use")
+            # raise ValueError("in use")
+        except forms.ValidationError:
+            raise forms.ValidationError("Please enter a valid email address")
         except exceptions.ObjectDoesNotExist:
             return email
 

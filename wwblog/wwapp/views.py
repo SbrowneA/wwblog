@@ -5,15 +5,17 @@ from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 # from .models import *
 from . import forms
+from account.decorators import *
+from .handlers import *
 
 
 def index(request):
     # latest_articles = ArticleHandler.get_latest_articles(count=5)
-    # latest_articles = Article.objects.order_by('-pub_date')[:int(5)]
+    latest_articles = Article.objects.order_by('-pub_date')[:int(5)]
     # projects = Category.get_root_categories()
 
     values = {
-        # "latest_articles_list": latest_articles,
+        "latest_articles_list": latest_articles,
         # "categories": projects,
     }
 
@@ -35,7 +37,22 @@ def editor_test(request):
     return render(request, "wwapp/editor_tests.html", values)
 
 
-from .handlers import *
+@login_required(login_url="wwapp:login")
+# @allowed_users(allowed_roles=['moderator'])
+def upload_test(request):
+    values = {}
+    if request.method == "POST":
+        # name of input 'document'
+        new_file = request.FILES['document']
+        fs = FileSystemStorage()
+        file_name = fs.save(new_file.name, new_file)
+        url = fs.url(file_name)
+        values['image_url'] = url
+        print(f"File name: {new_file.name}")
+        print(f"File size: {new_file.size}")
+    return render(request, 'wwapp/upload_test.html', values)
+
+
 # def upload_test(request):
 #     values = {}
 #     if request.method == "POST":

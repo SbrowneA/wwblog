@@ -1,0 +1,15 @@
+{% extends 'account/account_base.html' %}
+{% block title %} Unverified {% endblock %}
+
+{% block content %}
+    <div class="content" id="content">
+        <h1 style="font-family: Alta, serif">Aw Shucks</h1><br>
+        <p style="font-weight: 400;">It looks like your account has not yet been verified.
+            <br>A moderator will review your account and you will be notified by email when you are verified.
+            <br>If you think theres been a mistake, contact us for support
+            <a href="mailto:wwblog.help@gmail.com?subject=Account has not been verified">
+                wwblog.help@gmail.com</a>.
+
+            <br><br> Click here to return <a href="{% url 'wwapp:index' %}">home</a></p>
+    </div>
+{% endblock %}
