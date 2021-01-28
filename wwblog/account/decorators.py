@@ -36,12 +36,3 @@ def active_user(view_func):
             # return view_func(request, *args, **kwargs)
     return wrapper_func
 
-
-# def successfully_registered(view_func):
-#     def wrapper_func(request, *args, **kwargs):
-#         if request['successfully_registered']:
-#             return view_func(request, *args, **kwargs)
-#         else:
-#             return redirect('wwapp:index')
-#     return wrapper_func
-# # TODO make in active account

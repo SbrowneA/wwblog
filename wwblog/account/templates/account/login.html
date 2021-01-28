@@ -6,44 +6,21 @@
         <h1 style="font-family: Alta, serif">Login</h1>
         {% load crispy_forms_tags %}
 
-        <form method="post" class="col-12" style="font-family: WorkSans, serif">
+        <form method="post" class="col-12">
 
             {% csrf_token %}
-            {#         {{ form.as_p }}#}
-            {#            {% if form.errors %}#}
-            {#                {% for field in form %}#}
-            {#                    {% for error in field.errors %}#}
-            {#                        <div class="alert alert-danger">#}
-            {#                            <strong>{{ error|escape }}</strong>#}
-            {#                            <strong>{{ error }}</strong>#}
-            {#                        </div>#}
-            {#                    {% endfor %}#}
-            {#                {% endfor %}#}
-            {#                {% for error in form.non_field_errors %}#}
-            {#                    <div class="alert alert-danger">#}
-            {#                        <strong>{{ error }}</strong>#}
-            {#                        <strong>{{ error|escape }}</strong>#}
-            {#                    </div>#}
-            {#                {% endfor %}#}
-            {#            {% endif %}#}
-            <p>
-                {{ form.username.label }}
-                {{ form.username }}
-            </p>
-            <p>
-                {{ form.password.label }}
-                {{ form.password }}
-            </p>
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+            {% endfor %}
             <p style="font-weight: 400;">don't have an account? <a href="{% url 'wwapp:register' %}">register</a></p>
             <button type="submit" name="save" class="btn btn-primary">Login</button>
             <p>
                 {% if form.errors %}
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <div class="alert alert-danger">
-                                <strong>{{ error|escape }}</strong>
-                            </div>
-                        {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
                     {% endfor %}
                 {% endif %}
             </p>

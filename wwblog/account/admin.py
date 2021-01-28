@@ -9,7 +9,7 @@ class UserAdminConfig(UserAdmin):
                     'is_active',
                     'is_staff',
                     'is_superuser',
-                    'password'
+                    'date_joined'
                     )
 
     fieldsets = (

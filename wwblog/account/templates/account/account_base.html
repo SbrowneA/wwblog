@@ -7,15 +7,15 @@
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{% static 'wwapp/style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/fonts.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'wwapp/style.css' %}">
     {#    <link href="/{{ MEDIA_URL }}images/ww_favicon.ico" rel="icon" type="image/x-icon" />#}
 </head>
-<body class="container fluid h-100 bg-dark text-white">
+<body class="container fluid h-100 bg-dark text-white" style="font-family: WorkSans, serif">
 <div class="d-flex justify-content-center pt-5">
-{% block content %}
+    {% block content %}
 
-{% endblock %}
+    {% endblock %}
 </div>
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
