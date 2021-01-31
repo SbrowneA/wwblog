@@ -63,8 +63,6 @@ class Category(models.Model):
             except exceptions.ObjectDoesNotExist:
                 pass
 
-
-
     def __str__(self):
         parent_cat_name = "Null"
         try:
@@ -78,7 +76,7 @@ class Category(models.Model):
         output = f" - Category Name:{self.category_name} " \
                  f"\n - Type:{self.category_type} " \
                  f"\n - Parent: {parent_cat_name} " \
-                 f"\n - By: {self.category_creator.username}"
+                 f"\n - By: {self.category_creator}"
         return output
 
 
@@ -86,15 +84,13 @@ class Article(models.Model):
     article_id = models.AutoField(primary_key=True)
     # TODO make id for table and article_no for reference
     # article_no = models.IntegerField(default=0)
-    # TODO make new table called ArticleVersion(articleID, Version, previousArticleID)
-    #  --where id is unique and previous version is unique
     article_title = models.CharField(max_length=45)
     pub_date = models.DateTimeField(blank=True, null=True)
     author = models.ForeignKey(User, on_delete=models.PROTECT)
     published = models.BooleanField(default=False)
     creation_date = models.DateTimeField(auto_now_add=True)
     # creation_date = models.DateTimeField(default=timezone.now)
-    # article_parent = models.ForeignKey("Article", on_delete=models.SET_DEFAULT, default=None, null=True, blank=True)
+    article_parent = models.ForeignKey("Article", on_delete=models.SET_NULL, null=True, blank=True)
 
     # visits = models.IntegerField(default=0) TODO make 1*n table storing ip of each visitor and article id
     """
@@ -121,12 +117,14 @@ class Article(models.Model):
             #         raise exceptions.ValidationError("The Article cannot be published without a parent Category")
             # if exists no changes need to be made to CategoryItem, just save Article
             super().save()
-        except (exceptions.ObjectDoesNotExist, exceptions.ValidationError):
+        except exceptions.ObjectDoesNotExist:
             # create new category item and save
             if not self.published:
                 super().save()
+                a = self.article_id
                 # v =
-                ArticleVersion.objects.create(article_id=self.article_id)
+                ArticleVersion(article_id=self.article_id).save()
+                # ArticleVersion.objects.create(article_id=self.article_id)
                 # i =
                 CategoryItem.objects.create(item_article_id=self.article_id)
             else:
@@ -146,7 +144,7 @@ class ArticleVersion(models.Model):
     version = models.IntegerField(default=1, null=False)
     article = models.ForeignKey(Article, null=False, blank=False, on_delete=models.CASCADE)
     # location = models.FileField(upload_to='posts/')
-    content = tinymce_models.HTMLField(null=True, blank=True)
+    # content = tinymce_models.HTMLField(null=True, blank=True)
 
     class Meta:
         constraints = [
@@ -156,10 +154,10 @@ class ArticleVersion(models.Model):
     def save(self, *args, **kwargs):
         # ** only new versions should be saved. old versions should not be overridden
         try:
-            self.file_name = f'{self.article_id}_{self.version}'
-            versions = ArticleVersion.objects.filter(self.article_id).order_by('version')
+            # self.file_name = f'{self.article_id}_{self.version}'
+            versions = ArticleVersion.objects.filter(article_id=self.article_id).order_by('version')
             # check if content is different from last version
-            last_ver = versions[-1]
+            # last_ver = versions[-1]
             # if last_ver != current session
             self.version = len(versions) + 1
             super().save(*args, **kwargs)
@@ -178,10 +176,10 @@ class CategoryItem(models.Model):
     def __str__(self):
         if self.item_article_id is not None:
             a = Article.objects.get(article_id=self.item_article.article_id)
-            return f"Article {a.__str__()}"
+            return f"Item Article {a.__str__()}"
         else:
             c = Category.objects.get(category_id=self.item_category.category_id)
-            return f"Category {c.__str__()}"
+            return f"Item Category {c.__str__()}"
 
     def save(self, *args, **kwargs):
         if (self.item_article_id is None and self.item_category_id is not None) or \
@@ -246,7 +244,7 @@ class Image(models.Model):
     local_image = models.ForeignKey(ImageLocal, null=True, blank=True, on_delete=models.CASCADE)
     remote_image = models.ForeignKey(ImageRemote, null=True, blank=True, on_delete=models.CASCADE)
     description = models.CharField(max_length=45, null=True, blank=True)
-    upload_date = models.DateTimeField(editable=False, default=django.utils.timezone.now())
+    upload_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         output = f"- Image Id:{self.image_id}" \
@@ -259,9 +257,9 @@ class Image(models.Model):
     def save(self, *args, **kwargs):
         if (self.local_image is None and self.remote_image is not None)\
                 or (self.local_image is not None and self.remote_image is None):
-            if not self.id:
-                # if the image doesn't have an id it has only just been created
-                self.upload_date = django.utils.timezone.now()
+            # if not self.id:
+            #     if the image doesn't have an id it has only just been created
+                # self.upload_date = django.utils.timezone.now()
             super().save(*args, **kwargs)
         else:
             raise exceptions.ValidationError("An Image must either have a local_image or a remote_image, but not both")

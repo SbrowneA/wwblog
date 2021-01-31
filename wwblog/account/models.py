@@ -63,7 +63,6 @@ class UserManager(BaseUserManager):
     #     return self.create_user(email, username, password, **kwargs)
 
 
-# class User(AbstractBaseUser, PermissionsMixin):
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
     username = models.CharField(max_length=30, unique=True)
@@ -80,6 +79,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         'email',
     ]
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['username', 'email']),
+        ]
+
     # register custom object manager
     objects = UserManager()
 
@@ -90,4 +94,3 @@ class User(AbstractBaseUser, PermissionsMixin):
     #     print("User.save()")
         # super().save(self, *args, **kwargs)
 # class ModeratorGroup:
-#
