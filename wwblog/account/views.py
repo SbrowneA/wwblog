@@ -14,6 +14,7 @@ from django.contrib.auth.models import Group
 User = get_user_model()
 
 
+@unauthenticated_user
 def login_user(request):
     form = forms.LoginForm(request.POST or None)
     try:
@@ -51,6 +52,7 @@ def logout_user(request):
     return redirect("wwapp:index")
 
 
+@unauthenticated_user
 def register_user(request):
     # if request.session.get('successfully_registered') == 1:
     #     return redirect("wwapp:index")
@@ -77,6 +79,7 @@ def register_user(request):
     return render(request, "account/register.html", {'form': form})
 
 
+@unauthenticated_user
 def register_success(request):
     success = request.session.get('successfully_registered') or 0
     if success == 1:
@@ -85,6 +88,7 @@ def register_success(request):
         return redirect("wwapp:index")
 
 
+@unauthenticated_user
 def unverified_user(request):
     request.session['successfully_registered'] = 1
     return render(request, "account/unactivated_account.html")
