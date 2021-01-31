@@ -23,7 +23,8 @@ urlpatterns = [
     # path('category/browse', views.browse_categories, name='browse_categories'),
     # path('category/<int:category_id>/view', views.open_category, name='open_category'),
     # path('category/<str:category_name>/edit', views.edit_category, name='edit_category'),
-    path('test', views.upload_test, name='editor_test'),
+    path('test', views.image_upload_test, name='upload_test'),
+    path('edit', views.editor_test, name='editor_test'),
 ]
  # if settings.DEBUG:
  #     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

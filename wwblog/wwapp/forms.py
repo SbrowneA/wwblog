@@ -1,23 +1,9 @@
 from django import forms
 from .models import *
-# from django.contrib.flatpages.models import FlatPage
+from django.contrib.flatpages.models import FlatPage
 from tinymce.widgets import TinyMCE
 
-#
-# class Login(forms.Form):
-#     username = forms.CharField(label="Username", max_length=14)
-#     # email = forms.CharField(label="Email", max_length=150)
-#     password = forms.CharField(label="Password", max_length=45)
-#     password_confirm = forms.CharField(label="Confirm-Password", max_length=45)
-# WRONG
-# class Editor(forms.Form):
-#     content = forms.CharField(widget=TinyMCE())
 
-#
-# class Register(forms.Form):
-#     pass
-#
-#
 # class EditCategory(forms.Form):
 #     # category_name = forms.CharField()
 #     pass
@@ -38,6 +24,18 @@ from tinymce.widgets import TinyMCE
 #         #     'author': forms.Select(attrs={'class': 'form-control'}),
 #         # }
 
+class TestArticle2(forms.Form):
+    content = forms.CharField(
+        widget=TinyMCE(attrs={'cols': 80, 'rows': 30,
+                              'class': 'tiny-mce-editor', 'id': 'tiny-mce'}))
+
+
+class TestArticle(forms.ModelForm):
+    content = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30, 'class': 'tiny-mce-editor', 'id': 'tiny-mce'}))
+
+    class Meta:
+        model = FlatPage
+        fields = ['content']
 
 
 # class ArticleVersionForm(forms.ModelForm):

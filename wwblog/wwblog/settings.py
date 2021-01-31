@@ -34,24 +34,23 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    # defualt
+    # default
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # my apps
-    'wwapp.apps.WwappConfig',
-    'account.apps.AccountConfig',
-    # 'account',
-
     # third party
     'tinymce',
     'crispy_forms',
-    # 'django.contrib.sites',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
+    # my apps
+    'wwapp.apps.WwappConfig',
+    'account.apps.AccountConfig',
 ]
-# SITE_ID = 1
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -140,12 +139,14 @@ USE_TZ = True
 #     os.path.join(Path(__file__).resolve().parent.parent.parent, 'static', 'wwapp')
 # )
 
-STATIC_URL = 'wwapp/static/'
+STATIC_URL = '/wwapp/static/'
+# STATIC_URL = 'wwapp/static/' # wrong I think?
 STATIC_ROOT = os.path.join(BASE_DIR, 'wwapp', 'static')
 # STATIC_ROOT = Path(__file__).resolve().parent.parent / 'wwapp/static/'
 # STATIC_ROOT = Path(__file__).resolve().parent.parent.parent / 'static/'
 #
-MEDIA_URL = 'wwapp/media/'
+MEDIA_URL = '/wwapp/media/'
+# MEDIA_URL = 'wwapp/media/' # wrong I think?
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'wwapp', 'media')
 # MEDIA_ROOT = Path(__file__).resolve().parent.parent / 'wwapp/media/'
@@ -155,10 +156,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'wwapp', 'media')
 
 # TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
 
+POSTS_ROOT = os.path.join(MEDIA_ROOT, 'posts')
 
 TINYMCE_DEFAULT_CONFIG = {
-    "height": "320px",
-    "width": "960px",
+    "min-height": "1000px",
+    # "height": "auto",
+    "width": "95%",
+    "margin": "auto",
     "menubar": "file edit view insert format tools table help",
     "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code "
     "fullscreen insertdatetime media table paste code help wordcount spellchecker",
