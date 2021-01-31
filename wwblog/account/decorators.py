@@ -45,3 +45,28 @@ def active_user(view_func):
             # return view_func(request, *args, **kwargs)
     return wrapper_func
 
+
+def minimum_role_required(min_role):
+    def decorator(view_func):
+        def wrapper_func(request, *args, **kwargs):
+            if request.user.groups.exists():
+                groups = request.user.groups.all()
+                max_role = get_max_role(groups)
+                if role_hierarchy.index(max_role) <= role_hierarchy.index(min_role):
+                    return view_func(request, *args, **kwargs)
+            HttpResponseForbidden()
+        return wrapper_func
+    return decorator
+
+
+def get_max_role(groups):
+    max_role_i = len(role_hierarchy)-1
+    for group in groups:
+        role_position = role_hierarchy.index(group.name)
+        if role_position < max_role_i:
+            max_role_i = role_position
+    return role_hierarchy[max_role_i]
+
+
+# lower index is superior
+role_hierarchy = ['admin', 'moderator', 'member', 'general']
