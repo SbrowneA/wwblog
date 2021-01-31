@@ -19,7 +19,11 @@
     /*height: 2vw;width: 100%;*/
 }
 
-#login-btn {
+#logout-btn {
+    background: #6DDCBD;
+}
+
+#login-btn, #logout-btn {
     background: #6DDCBD;
 }
 
@@ -38,7 +42,10 @@ footer {
 }
 
 .content {
-    min-height: 100vh;
+    min-height: 90vh;
+    /*background-color: red;*/
+    /*border: dashed #00dd00;*/
+    border-radius: 4%;
 }
 
 
@@ -86,4 +93,16 @@ h1, h2 {
 
 h3, h4 {
     font-weight: 600;
+}
+
+/*dropzone customisation*/
+.dz-custom {
+    border: dashed !important;
+    border-color: #3c3c3c;
+    border-radius: 20px;
+    background-color: #757373;
+}
+
+.dz-custom:hover {
+    background-color: #aea2d7;
 }
