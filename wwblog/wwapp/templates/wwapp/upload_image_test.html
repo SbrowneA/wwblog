@@ -1,0 +1,35 @@
+{% extends 'wwapp/base.html' %}
+{% block title %} test image upload {% endblock %}
+{% block head %}
+    {% load static %}
+    {#    dropzone  js & css#}
+    {#    TODO get local#}
+    <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
+    <link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css">
+    {#    <link rel="stylesheet" href="{% static 'wwapp/css/style.css' %}">#}
+    {#    <script src="{% static 'dropzone/dropzone.js' %}"></script>#}
+    {#    <link rel="stylesheet" type="text/css" href="{% static 'dropzone/dropzone.css' %}">#}
+{% endblock %}
+
+{% block content %}
+    <ul>
+    {% for item in image_items %}
+        <li>
+            <a href="{{ item.link }}"> {{ item.title }} | {{ item.views }} views</a>
+        </li>
+
+    {% endfor %}
+    </ul>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="document">
+        <button type="submit">Upload File</button>
+    </form>
+
+{#    <form class="dropzone dz-custom" action="" method="post" enctype="multipart/form-data">#}
+{#        {% csrf_token %}#}
+{#        <div>#}
+{#            <input class="fallback" type="file" name="file"/>#}
+{#        </div>#}
+{#    </form>#}
+{% endblock %}
