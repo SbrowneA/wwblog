@@ -263,45 +263,48 @@ class ArticleHandler:
 
     def get_editors(self):
         # try:
-            editors = ArticleEditor.objects.filter(article_id=self.article.article_id)
-            if len(editors) == 0:
-                raise exceptions.EmptyResultSet("This article has no editors")
-            return editors
+        editors = ArticleEditor.objects.filter(article_id=self.article.article_id)
+        if len(editors) == 0:
+            return None
+            # raise exceptions.EmptyResultSet("This article has no editors")
+        return editors
+
         # except exceptions.EmptyResultSet:
             # raise exceptions.EmptyResultSet("This article has no editors")
             # raise exceptions.EmptyResultSet()
 
     def get_parent_article(self):
         try:
-            return Article.objects.get(article_id=self.article.parent_id)
+            return Article.objects.get(article_id=self.article.article_parent_id)
         except exceptions.ObjectDoesNotExist:
-            raise exceptions.ObjectDoesNotExist
+            return None
 
     def get_child_article(self):
-        return None
+        try:
+            return Article.objects.get(article_parent_id=self.article.article_id)
+        except exceptions.ObjectDoesNotExist:
+            return None
 
     def get_article_group(self):
-        pass
         articles = [self.article]
+        a = self.article
         # get children
-        try:
-            a = self.article
-            while True:
-                child = ArticleHandler(a).get_child_article()
-                articles.append(child)
-                a = child
-        except exceptions.ObjectDoesNotExist:
-            pass
-
+        valid = True
+        while valid is True:
+            a = ArticleHandler(a).get_child_article()
+            if a is not None:
+                articles.append(a)
+            else:
+                valid = False
         # get parents
-        try:
-            a = self.article
-            while a is not None:
-                parent = ArticleHandler(a).get_parent_article()
-                articles.insert(0, parent)
-                a = parent
-        except exceptions.ObjectDoesNotExist:
-            pass
+        valid = True
+        a = self.article
+        while valid is True:
+            a = ArticleHandler(a).get_parent_article()
+            if a is not None:
+                articles.insert(0, a)
+            else:
+                valid = False
 
         if len(articles) == 1:
             raise exceptions.ObjectDoesNotExist
@@ -327,9 +330,12 @@ class ArticleHandler:
         return ArticleVersion.objects.filter(article_id=self.article.article_id).order_by('version')
 
     def get_latest_version(self):
-        return self.get_all_versions()[-1]
+        # getting versions because "Negative indexing is not supported."
+        versions = self.get_all_versions()
+        ver = versions[len(versions)-1]
+        return ver
 
-    def get_article_content(self):
+    def get_article_content(self) -> str:
         ver = self.get_latest_version()
         version = ver.version
         file_name = f"{self.article.article_id}-{version}.html"
@@ -337,6 +343,6 @@ class ArticleHandler:
         try:
             with open(file_dir, "r") as file:
                 content = file.read()
-            return content
+            return str(content)
         except FileNotFoundError:
-            return None
+            return ""

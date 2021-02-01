@@ -24,7 +24,12 @@ from tinymce.widgets import TinyMCE
 #         #     'author': forms.Select(attrs={'class': 'form-control'}),
 #         # }
 
-class TestArticle2(forms.Form):
+class ArticleEdit(forms.Form):
+    title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    secret_note = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}))
+    # needs to be cleaned
+    # add_editor = forms.Select(attrs={'class': 'form-control'})
+
     content = forms.CharField(
         widget=TinyMCE(attrs={'cols': 80, 'rows': 30,
                               'class': 'tiny-mce-editor', 'id': 'tiny-mce'}))
@@ -36,14 +41,3 @@ class TestArticle(forms.ModelForm):
     class Meta:
         model = FlatPage
         fields = ['content']
-
-
-# class ArticleVersionForm(forms.ModelForm):
-#     class Meta:
-#         model = ArticleVersion
-#         fields = ('content', '')
-#
-#         widgets = {
-#             'title': forms.TextInput(attrs={'class': 'form-control'}),
-#             'author': forms.Select(attrs={'class': 'form-control'}),
-#         }

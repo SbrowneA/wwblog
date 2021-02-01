@@ -1,10 +1,26 @@
-{% extends 'wwapp/base.html'%}
+{% extends 'wwapp/base.html' %}
 {% block title %}
-   {{ article.article_title }}
+    {{ article.article_title }}
+    {% load static %}
 {% endblock %}
 
 {% block content %}
-    <h1>Article Details:</h1>
-    <p>{{ article_text }}</p>
+    <h3>{{ article.article_title }}</h3>
+    {% if has_editor_privelage %}
+        <div>
+            {{ hidden_notes }}
+        </div>
+    {% endif %}
 
+    <div>
+        {{ content }}
+    </div>
+{% endblock %}
+
+{% block right_nav %}
+    {% if article.published %}
+        <button>Draft</button>
+    {% else %}
+        <button>Publish</button>
+    {% endif %}
 {% endblock %}

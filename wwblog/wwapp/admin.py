@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import *
-from tinymce.widgets import TinyMCE
+# from tinymce.widgets import TinyMCE
 
 #
 # class TinyMCEAdmin(admin.ModelAdmin):
@@ -9,12 +9,16 @@ from tinymce.widgets import TinyMCE
 #     }
 #
 #
-# admin.site.register(User)
 # admin.site.register(Article, TinyMCEAdmin)
-# admin.site.register(Category)
-# admin.site.register(CategoryEditor)
-# admin.site.register(CategoryItem)
-# admin.site.register(CategoryItemAssignation)
+
+admin.site.register(Article)
+admin.site.register(ArticleEditor)
+admin.site.register(ArticleVersion)
+admin.site.register(Image)
+admin.site.register(Category)
+admin.site.register(CategoryEditor)
+admin.site.register(CategoryItem)
+admin.site.register(CategoryItemAssignation)
 
 
 

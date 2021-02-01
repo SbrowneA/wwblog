@@ -97,8 +97,3 @@ deactivate
 https://django-tinymce.readthedocs.io/en/latest/installation.html
 # add to requirements.txt
 django-tinymce==3.2.0
-
-
-
-
-

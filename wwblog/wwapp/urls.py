@@ -14,9 +14,9 @@ urlpatterns = [
     path('register/', account_views.register_user, name='register'),
     path('register/success', account_views.register_success, name='register_success'),
     path('unverified', account_views.unverified_user, name='unverified_user'),
-
-    # path('post/<int:article_id>/view', views.open_article, name='open_article'),
-    # path('post/<int:article_id>/edit', views.edit_article, name='edit_article'),
+    path('post/create', views.create_new_article, name='new_article'),
+    path('post/<int:article_id>/view', views.open_article, name='open_article'),
+    path('post/<int:article_id>/edit', views.edit_article, name='edit_article'),
     # path('post/browse', views.browse_articles, name='browse_articles'),
     # path('author/browse', views.browse_users, name='browse_users'),
     # path('author/<int:user_id>/details', views.user_details, name='user_details'),
@@ -24,7 +24,7 @@ urlpatterns = [
     # path('category/<int:category_id>/view', views.open_category, name='open_category'),
     # path('category/<str:category_name>/edit', views.edit_category, name='edit_category'),
     path('test', views.image_upload_test, name='upload_test'),
-    path('edit', views.editor_test, name='editor_test'),
+    # path('edit', views.editor_test, name='editor_test'),
 ]
  # if settings.DEBUG:
  #     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

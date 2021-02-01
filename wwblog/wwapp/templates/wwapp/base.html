@@ -51,7 +51,9 @@
 <div class="row max-width h-100">
 
     <div class="nav col-3 ">
-        <h1 class="mx-auto">Nav div</h1>
+        {% block left_nav %}
+            <h1 class="mx-auto">Nav div</h1>
+        {% endblock %}
     </div>
 
     <div class="content col-6" , id="content" ,>
@@ -62,10 +64,9 @@
     </div>
 
     <div class="aside col-3">
-        <h1>Nav div</h1>
-        <h2>{% if request.user.is_authenticated %}
-            Hello, {{ request.user.username }}
-        {% endif %}</h2>
+        {% block right_nav %}
+            <h1>Nav div</h1>
+        {% endblock %}
     </div>
 
 </div>
