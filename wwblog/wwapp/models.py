@@ -109,12 +109,12 @@ class Article(models.Model):
         # check if CategoryItem already exists
         try:
             i = CategoryItem.objects.get(item_article_id=self.article_id)
-            # if self.published:
-            #     try:
-            #         a = CategoryItemAssignation.objects.get(item_id=i.item_id)
-            #         parent = Category.objects.get(category_id=a.parent_category_id)
-            #     except exceptions.ObjectDoesNotExist:
-            #         raise exceptions.ValidationError("The Article cannot be published without a parent Category")
+            if self.published:
+                try:
+                    a = CategoryItemAssignation.objects.get(item_id=i.item_id)
+                    parent = Category.objects.get(category_id=a.parent_category_id)
+                except exceptions.ObjectDoesNotExist:
+                    raise exceptions.ValidationError("The Article cannot be published without a parent Category")
             # if exists no changes need to be made to CategoryItem, just save Article
             super().save()
         except exceptions.ObjectDoesNotExist:
@@ -134,7 +134,6 @@ class Article(models.Model):
         output = f"\n - ID: {self.article_id}" \
                  f"\n - Title: {self.article_title}" \
                  f"\n - By: {self.author.username}"
-        # f"\n - Creation Date: {self.pub_date}"
         return output
 
 
@@ -143,6 +142,7 @@ class ArticleVersion(models.Model):
     edit_date = models.DateTimeField(default=timezone.now)
     version = models.IntegerField(default=1, null=False)
     article = models.ForeignKey(Article, null=False, blank=False, on_delete=models.CASCADE)
+    hidden_notes = models.TextField(null=True, blank=True)
     # location = models.FileField(upload_to='posts/')
     # content = tinymce_models.HTMLField(null=True, blank=True)
 

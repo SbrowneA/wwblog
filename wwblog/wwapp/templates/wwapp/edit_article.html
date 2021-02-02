@@ -1,18 +1,75 @@
-{% extends 'wwapp/base.html'%}
+{% extends 'wwapp/base.html' %}
 {% block title %}
-   edit {{ article.article_title }}
+    edit {{ article.article_title }}
+{% endblock %}
+
+{% block head %}
+    {{ form.media }}
+{% endblock %}
+
+{% block left_nav %}
+    <ul class="no-bullet">
+        <li>
+        {% if article.published %}
+            <button class="btn btn-primary">Draft</button>
+        {% else %}
+            <button class="btn btn-primary">Publish</button>
+        {% endif %}
+    </li>
+    <li class="mt-5">
+        {% if article.author_id == request.user.id %}
+            <button class="btn btn-danger">Delete</button>
+        {% endif %}
+    </li>
+    </ul>
+
+
+
+{% endblock %}
+
+{% block right_nav %}
+    <h4><a href="{% url 'wwapp:browse_own_articles' %}">Browse My Posts</a></h4>
 {% endblock %}
 
 {% block content %}
-    <h1>Edit Article :</h1>
-    <p>{{ article_text }}</p>
-    {% if editors_count == 0  %}
+    {% load static %}
+    {# <script src="{% static 'tiny_mce/tinymce.min.js' %}" referrerpolicy="origin"></script>#}
+    <script src="https://cdn.tiny.cloud/1/9kc0jaf7jhmllq281dt33c7bosywayiwi04amdwlkm192lzt/tinymce/5/tinymce.min.js"
+            referrerpolicy="origin"></script>
+    {% if request.user == article.autor or request.user in editors %}
+        <p>Hidden header</p>
+    {% endif %}
+
+
+
+    <div id="editorContainer">
+        <form method="post" class="TinyEditor" id="formTinyM">
+            {% csrf_token %}
+            {{ form.title.label }}
+            {{ form.title }}
+            {{ form.secret_note.label }}
+            {{ form.secret_note }}
+            {{ form.content }}
+            <p>
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            </p>
+            <button type="submit" class="btn btn-success">Save</button>
+
+        </form>
+    </div>
+
+
+    {% if editors_count == 0 %}
         <p>no editors</p>
     {% else %}
         <ul>
-        {% for e in editors %}
-            <li>e.editor_id_id</li>
-        {% endfor %}
+            {% for e in editors %}
+                <li>e.editor_id_id</li>
+            {% endfor %}
         </ul>
     {% endif %}
 {% endblock %}

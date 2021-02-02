@@ -54,6 +54,10 @@ footer {
     display: none;
 }
 
+/*remove bullets from ul elements*/
+.no-bullet {
+  list-style-type: none;
+}
 
 /*FONT CONFIGURATION*/
 html {

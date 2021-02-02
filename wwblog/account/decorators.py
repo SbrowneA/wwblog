@@ -155,9 +155,9 @@ def is_author(request, article_id):
 
 def get_article_id_from_request_path(request):
     url = request.path
-    print(f"URL: {url}")
-    print(f"LIST: {url.split('/')}")
-    print(f"ID: {url.split('/')[2]}")
+    # print(f"URL: {url}")
+    # print(f"LIST: {url.split('/')}")
+    # print(f"ID: {url.split('/')[2]}")
     return url.split('/')[2]
 
 # CATEGORY CHECK METHODS

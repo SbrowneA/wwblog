@@ -1,0 +1,50 @@
+{% extends 'wwapp/base.html'%}
+{% block title %}
+   My Posts
+{% endblock %}
+
+{% block left_nav %}
+{% endblock %}
+
+{% block right_nav %}
+    {% if request.user.is_authenticated %}
+{#        <h2>Hello, {{ request.user.username }}</h2>#}
+        <h4><a href="{% url 'wwapp:new_article' %}">Make new post</a></h4>
+{#        <h4><a href="{% url 'wwapp:browse_own_articles' %}">Browse My Posts</a></h4>#}
+    {% endif %}
+{% endblock %}
+
+
+{% block content %}
+    <h3>Your Publications</h3>
+    {% if published_articles %}
+        <ul title="publications_list">
+            {% for article in published_articles %}
+                <li>
+                    <a href="{% url 'wwapp:open_article' article.article_id %}">{{ article.article_title }}</a>
+                    <a href="{% url 'wwapp:edit_article' article.article_id %}">
+                        <img alt="edit" src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/274/memo_1f4dd.png">
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no published articles.</p>
+    {% endif %}
+
+    <h3>Your Drafts</h3>
+    {% if drafted_articles %}
+        <ul title="drafts_list">
+            {% for article in drafted_articles %}
+                <li>
+                    {{ article.article_title }}
+{#                    <a href="{% url 'wwapp:open_article' article.article_id %}">{{ article.article_title }}</a>#}
+                    <a href="{% url 'wwapp:edit_article' article.article_id %}">edit</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no drafts.</p>
+    {% endif %}
+
+{% endblock %}

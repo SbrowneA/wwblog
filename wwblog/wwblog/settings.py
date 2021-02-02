@@ -161,7 +161,7 @@ POSTS_ROOT = os.path.join(MEDIA_ROOT, 'posts')
 TINYMCE_DEFAULT_CONFIG = {
     "min-height": "1000px",
     # "height": "auto",
-    "width": "95%",
+    "width": "100%",
     "margin": "auto",
     "menubar": "file edit view insert format tools table help",
     "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code "

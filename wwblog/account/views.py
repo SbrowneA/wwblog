@@ -54,27 +54,32 @@ def logout_user(request):
 
 @unauthenticated_user
 def register_user(request):
-    # if request.session.get('successfully_registered') == 1:
-    #     return redirect("wwapp:index")
+    if request.session.get('successfully_registered') == 1:
+        return redirect("wwapp:register_success")
     form = forms.RegisterFrom(request.POST or None)
 
     try:
         if form.is_valid() is True:
             username = form.cleaned_data.get("username")
             email = form.cleaned_data.get("email")
+            # password = form.cleaned_data.get("password1")
+            # password2 = form.cleaned_data.get("password2")
             password = form.cleaned_data.get("password2")
-            password2 = form.cleaned_data.get("password2")
             qs1 = User.objects.filter(username=username).count()
             qs2 = User.objects.filter(email=email).count()
-            if password == password2 and qs1 == 0 and qs2 == 0:
+            # if password == password2 and qs1 == 0 and qs2 == 0:
+            if qs1 == 0 and qs2 == 0:
                 user = User.objects.create_user(username=username, password=password, email=email)
                 request.session['successfully_registered'] = 1
-                group = Group.objects.get(name='member')
-                user.groups.add(group)
+                # # TODO
+                # group = Group.objects.get(name='member')
+                # user.groups.add(group)
                 return redirect("wwapp:register_success")
     except (exceptions.ValidationError, exceptions.ObjectDoesNotExist, IntegrityError):
-        form.add_error(form.password2, "Something went wrong")
-        return render(request, "account/login.html", {'form': form})
+        # form.add_error(form.fields['username'], "Something went wrong")
+        # form.add_error(form.username, "Something went wrong")
+        form.add_error(None, "Something went wrong")
+        return render(request, "account/register.html", {'form': form})
 
     return render(request, "account/register.html", {'form': form})
 

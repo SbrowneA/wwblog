@@ -17,6 +17,7 @@ urlpatterns = [
     path('post/create', views.create_new_article, name='new_article'),
     path('post/<int:article_id>/view', views.open_article, name='open_article'),
     path('post/<int:article_id>/edit', views.edit_article, name='edit_article'),
+    path('my/posts', views.browse_own_articles, name='browse_own_articles'),
     # path('post/browse', views.browse_articles, name='browse_articles'),
     # path('author/browse', views.browse_users, name='browse_users'),
     # path('author/<int:user_id>/details', views.user_details, name='user_details'),

@@ -163,8 +163,6 @@ class ArticleModelTests(TestCase):
         self.assertIsInstance(i, CategoryItem)
         self.assertIsInstance(i2, CategoryItem)
 
-    # todo
-    @skip
     def test_save_article_raises_validation_error_if_published_to_no_category(self):
         print(f"\nTEST START:{self._testMethodName}")
         self.main_article.published = True

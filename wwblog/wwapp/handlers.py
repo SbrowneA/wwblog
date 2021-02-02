@@ -2,7 +2,10 @@ import os
 
 from django.db import models, IntegrityError
 from django.core import exceptions
-from .models import *
+from .models import (Article, ArticleEditor, ArticleVersion,
+                     Category, CategoryEditor, CategoryItem,
+                     CategoryItemAssignation)
+from wwblog.settings import POSTS_ROOT
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -192,27 +195,62 @@ class CategoryHandler:
         # and assign it to the new category
         pass
 
-    def draft_child_articles(self):
+    def draft_child_articles(self) -> []:
         articles = self.get_child_articles()
         for a in articles:
             a_handler = ArticleHandler(a)
             a_handler.draft_article()
 
-#
+
+def create_new_article(user):
+    # a = Article(author=user)
+    # a.save()
+    a = Article.objects.create(author=user)
+    # a.save()
+    return ArticleHandler(a)
+
+
 class ArticleHandler:
     def __init__(self, article):
         self.article = article
 
-    def get_category_item(self):
+    def get_category_item(self) -> CategoryItem:
         return CategoryItem.objects.get(item_article_id=self.article.article_id)
 
-    def get_parent_category(self):
+    def get_parent_category(self) -> Category:
         try:
             return _CategoryItemHandler(self.get_category_item()).get_parent_category()
         except exceptions.ObjectDoesNotExist:
-            raise exceptions.ObjectDoesNotExist
+            raise exceptions.ObjectDoesNotExist("The article has no parent category,"
+                                                " check the article is not drafted")
+
+    def has_parent_article(self) -> bool:
+        if self.article.article_parent is not None:
+            return True
+        return False
+
+    def has_child_article(self) -> bool:
+        try:
+            Article.objects.get(article_parent=self.article.article_id)
+            return True
+        except exceptions.ObjectDoesNotExist:
+            return False
+
+    def remove_child_article(self):
+        if self.has_child_article():
+            a = self.get_child_article()
+            a.article_parent = None
+            a.save()
+
+    def remove_parent_article(self):
+        if self.has_parent_article():
+            self.article.article_parent = None
+            self.article.save()
 
     def draft_article(self):
+        self.remove_child_article()
+        self.remove_parent_article()
+
         pass
         # try:
         #     cat = self.get_parent_category()
@@ -240,10 +278,10 @@ class ArticleHandler:
 
     def add_editor(self, user):
         try:
-            if user.user_id == self.article.author_id:
+            if user.id == self.article.author_id:
                 raise exceptions.ValidationError("This author is already the creator and editor of the article")
             else:
-                editor = ArticleEditor(editor_id=user.user_id, article=self.article)
+                editor = ArticleEditor(editor_id=user.id, article=self.article)
                 editor.save()
         except IntegrityError:
             raise IntegrityError("This author is already and editor on this article")
@@ -251,7 +289,7 @@ class ArticleHandler:
     def remove_editor(self, user):
         """remove an article editor from a user object"""
         try:
-            if user.user_id == self.article.author_id:
+            if user.id == self.article.author_id:
                 raise exceptions.ValidationError("The creator of the article cannot be removed")
             else:
                 editor = self.get_editor(user)
@@ -261,7 +299,7 @@ class ArticleHandler:
         except exceptions.ValidationError:
             raise exceptions.ValidationError("The creator of the article cannot be removed")
 
-    def get_editors(self):
+    def get_editors(self) -> ArticleEditor or None:
         # try:
         editors = ArticleEditor.objects.filter(article_id=self.article.article_id)
         if len(editors) == 0:
@@ -270,22 +308,22 @@ class ArticleHandler:
         return editors
 
         # except exceptions.EmptyResultSet:
-            # raise exceptions.EmptyResultSet("This article has no editors")
-            # raise exceptions.EmptyResultSet()
+        # raise exceptions.EmptyResultSet("This article has no editors")
+        # raise exceptions.EmptyResultSet()
 
-    def get_parent_article(self):
+    def get_parent_article(self) -> Article or None:
         try:
             return Article.objects.get(article_id=self.article.article_parent_id)
         except exceptions.ObjectDoesNotExist:
             return None
 
-    def get_child_article(self):
+    def get_child_article(self) -> Article or None:
         try:
             return Article.objects.get(article_parent_id=self.article.article_id)
         except exceptions.ObjectDoesNotExist:
             return None
 
-    def get_article_group(self):
+    def get_article_group(self) -> [Article]:
         articles = [self.article]
         a = self.article
         # get children
@@ -310,39 +348,78 @@ class ArticleHandler:
             raise exceptions.ObjectDoesNotExist
         return articles
 
-    def get_editor(self, user):
+    def get_editor(self, user) -> ArticleEditor:
         try:
-            return ArticleEditor.objects.get(editor_id=user.user_id, article_id=self.article.article_id)
+            return ArticleEditor.objects.get(editor_id=user.id, article_id=self.article.article_id)
         except exceptions.ObjectDoesNotExist:
             raise exceptions.ObjectDoesNotExist
 
     @staticmethod
-    def get_latest_articles(count):
-        latest_articles = Article.objects.order_by('-pub_date')[:int(count)]
+    def get_latest_published_articles(count) -> [Article]:
+        latest_articles = Article.objects.filter(published=True).order_by('-pub_date')[:int(count)]
         return latest_articles
 
+    # @staticmethod
+    # def create_new_article(user):
+    #     a = Article(author=user)
+    #     a.save()
+    #     # a = Article.objects.create(author=user)
+    #     # a.save()
+    #     return ArticleHandler(a)
+
+    # @staticmethod
+    # def get_user_articles(user) -> [Article] or None:
+    #     try:
+    #         return Article.objects.filter(author_id=user.id)
+    #     except exceptions.EmptyResultSet:
+    #         return None
+
     @staticmethod
-    def create_new_article(user):
-        a = Article.objects.create(author=user)
-        return ArticleHandler(a)
+    def get_user_published_articles(user) -> [Article] or None:
+        try:
+            return Article.objects.filter(author_id=user.id, published=True).order_by('-pub_date')
+        except exceptions.EmptyResultSet:
+            return None
+
+    @staticmethod
+    def get_user_drafted_articles(user) -> [Article] or None:
+        try:
+            return Article.objects.filter(author_id=user.id, published=False).order_by('-creation_date')
+        except exceptions.EmptyResultSet:
+            return None
 
     def get_all_versions(self):
-        return ArticleVersion.objects.filter(article_id=self.article.article_id).order_by('version')
+        return ArticleVersion.objects.filter(article_id=self.article.article_id).order_by('-version')
 
-    def get_latest_version(self):
-        # getting versions because "Negative indexing is not supported."
+    def get_latest_version(self) -> ArticleVersion:
+        # creating versions variable because "Negative indexing is not supported."
+        # i.e. self.get_all_versions()[-1]
         versions = self.get_all_versions()
-        ver = versions[len(versions)-1]
+        ver = versions[len(versions) - 1]
         return ver
 
-    def get_article_content(self) -> str:
-        ver = self.get_latest_version()
-        version = ver.version
-        file_name = f"{self.article.article_id}-{version}.html"
-        file_dir = os.path.join(settings.POSTS_ROOT, file_name)
+    def get_latest_file_dir(self) -> str:
+        file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
+        return os.path.join(POSTS_ROOT, file_name)
+
+    def save_article_content(self, new_content) -> bool:
+        # try:
+        file_dir = self.get_latest_file_dir()
+        with open(file_dir, 'w') as file:
+            file.write(new_content)
+        return True
+
+    # except Exception:
+    #     return False
+
+    @property
+    def get_article_content(self):
+        file_dir = self.get_latest_file_dir()
         try:
             with open(file_dir, "r") as file:
                 content = file.read()
+                print("article content loaded")
             return str(content)
         except FileNotFoundError:
+            print("FileNotFoundError was thrown: article content NOT found")
             return ""
