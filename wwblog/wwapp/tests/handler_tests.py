@@ -2,27 +2,14 @@ from django.core import exceptions
 from django.db import IntegrityError
 from django.test import TestCase
 from unittest import skip
-from wwapp.models import (Category, CategoryItem, CategoryItemAssignation, ArticleEditor, Article)
-from wwapp.handlers import (ArticleHandler, CategoryHandler, _CategoryItemHandler, create_new_article, get_user_model)
-import time
-from .model_tests import setup_authors
+from wwapp.models import (Category, CategoryItem,
+                          CategoryItemAssignation, ArticleEditor,
+                          Article)
+from wwapp.handlers import (ArticleHandler, CategoryHandler, _CategoryItemHandler)
+from django.contrib.auth import get_user_model
+from .setups import setup_authors, setup_superuser, get_micro_time
 
 User = get_user_model()
-
-
-# to make dummy users
-# def setup_authors():
-#     authors = []
-#     author_names = ['testAuthor1', 'testAuthor2', 'testAuthor3', 'testAuthor4']
-#     for u in author_names:
-#         user = User(username=u)
-#         user.save()
-#         authors.append(user)
-#     return authors
-
-
-def get_micro_time():
-    return int(time.time() * 1000)
 
 
 class CategoryHandlerTests(TestCase):
@@ -33,7 +20,7 @@ class CategoryHandlerTests(TestCase):
         # create users
         cls.authors = setup_authors()
         # create project
-        cls.prj_name = f"main_test_proj-{int(time.time() * 10000)}"
+        cls.prj_name = f"main_test_proj-{get_micro_time()}"
         cls.prj = Category(category_creator=cls.authors[0], category_name=cls.prj_name)
         cls.prj.save()
         print(f"\n{cls.__name__}Setting up test data complete")
@@ -42,9 +29,8 @@ class CategoryHandlerTests(TestCase):
     def test_create_and_save_project(self):
         print(f"\nTEST START:{self._testMethodName}")
         cat_name = f"test_proj-{get_micro_time()}"
-        p = Category(category_creator=self.authors[0], category_name=cat_name)
-        p.save()
-        print(str(p))
+        p = Category.objects.create(category_creator=self.authors[0], category_name=cat_name)
+        # p = Category(category_creator=self.authors[0], category_name=cat_name)
         # p.save()
         cat_id = p.category_id
         self.assertRaises(exceptions.ObjectDoesNotExist, CategoryItem.objects.get, item_category_id=cat_id)
@@ -53,11 +39,9 @@ class CategoryHandlerTests(TestCase):
     def test_category_item_created_when_topic_saved(self):
         print(f"\nTEST START:{self._testMethodName}")
         topic_name = f"test_topic-{get_micro_time()}"
-        p = Category(category_creator=self.authors[0], category_name=topic_name,
-                     category_type=Category.CategoryType.TOPIC)
-        p.save()
-        print(str(p))
-        # p.save()
+        p = Category.objects.create(category_creator=self.authors[0], category_name=topic_name,
+                                    category_type=Category.CategoryType.TOPIC)
+        # print(str(p))
         cat_id = p.category_id
         i = CategoryItem.objects.get(item_category_id=cat_id)
         self.assertIsInstance(i, CategoryItem)
@@ -65,11 +49,9 @@ class CategoryHandlerTests(TestCase):
     def test_category_item_created_when_subtopic_saved(self):
         print(f"\nTEST START:{self._testMethodName}")
         topic_name = f"test_topic-{get_micro_time()}"
-        p = Category(category_creator=self.authors[0], category_name=topic_name,
-                     category_type=Category.CategoryType.SUBTOPIC)
-        p.save()
-        print(str(p))
-        # p.save()
+        p = Category.objects.create(category_creator=self.authors[0], category_name=topic_name,
+                                    category_type=Category.CategoryType.SUBTOPIC)
+        # print(str(p))
         cat_id = p.category_id
         i = CategoryItem.objects.get(item_category_id=cat_id)
         self.assertIsInstance(i, CategoryItem)
@@ -77,9 +59,8 @@ class CategoryHandlerTests(TestCase):
     def test_assign_project_to_project(self):
         print(f"\nTEST START:{self._testMethodName}")
         topic_name = f"test_topic-{get_micro_time()}"
-        child_prj = Category(category_creator=self.authors[0], category_name=topic_name,
-                             category_type=Category.CategoryType.PROJECT)
-        child_prj.save()
+        child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name,
+                                            category_type=Category.CategoryType.PROJECT)
         handler = CategoryHandler(self.prj)
         handler.add_child_category(child_prj)
 
@@ -131,8 +112,7 @@ class CategoryHandlerTests(TestCase):
         num_child = 10
         for i in range(num_child):
             topic_name = f"test_subtopic-{get_micro_time()}"
-            child_prj = Category(category_creator=self.authors[0], category_name=topic_name)
-            child_prj.save()
+            child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
             handler.add_child_category(child_prj)
 
         child_items = handler.get_items()
@@ -147,8 +127,7 @@ class CategoryHandlerTests(TestCase):
         num_child = 10
         for i in range(num_child):
             topic_name = f"test_subtopic-{get_micro_time()}"
-            child_prj = Category(category_creator=self.authors[0], category_name=topic_name)
-            child_prj.save()
+            child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
             handler.add_child_category(child_prj)
         # TODO remove a category
         del_cat = handler.get_child_categories()[3]
@@ -165,9 +144,8 @@ class ArticleHandlerTests(TestCase):
         # super().setUpTestData()
         cls.authors = setup_authors()
 
-        cls.main_article = Article(author=cls.authors[0],
-                                   article_title="main-article")
-        cls.main_article.save()
+        cls.main_article = Article.objects.create(author=cls.authors[0],
+                                                  article_title="main-article")
         cls.main_handler = ArticleHandler(cls.main_article)
         print(f"\n{cls.__name__}: Setup Test Data Complete")
 
@@ -177,8 +155,10 @@ class ArticleHandlerTests(TestCase):
         e = self.main_handler.get_editor(self.authors[1])
         self.assertIsInstance(e, ArticleEditor)
 
-    def test_get_editor_throws_object_does_not_exit(self):
-        self.assertRaises(exceptions.ObjectDoesNotExist, self.main_handler.get_editor, self.authors[1])
+    def test_get_editor_returns_none_when_object_does_not_exits(self):
+        print(f"\n{self._testMethodName}")
+        self.assertIsNone(self.main_handler.get_editor(self.authors[1]))
+        # self.assertRaises(exceptions.ObjectDoesNotExist, self.main_handler.get_editor, self.authors[1])
 
     def test_get_editors(self):
         print(f"\n{self._testMethodName}")
@@ -191,10 +171,9 @@ class ArticleHandlerTests(TestCase):
 
     def test_get_editors_returns_none_when_empty(self):
         print(f"\n{self._testMethodName}")
-        a = Article(author=self.authors[2], article_title="unrelated article")
-        a.save()
+        a = Article.objects.create(author=self.authors[2], article_title="unrelated article")
 
-        self.assertEqual(self.main_handler.get_editors(), None)
+        self.assertIsNone(self.main_handler.get_editors())
         ArticleHandler(a).add_editor(self.authors[3])
 
     def test_get_latest_articles(self):
@@ -212,11 +191,7 @@ class ArticleHandlerTests(TestCase):
 
     def test_get_no_editors_returns_none(self):
         print(f"\n{self._testMethodName}")
-        # uhu = self.main_handler.get_editors()
-        # print(uhu)
-        # self.assertEqual()
-        self.assertEqual(self.main_handler.get_editors)
-        self.assertRaises(exceptions.EmptyResultSet, self.main_handler.get_editors)
+        self.assertIsNone(self.main_handler.get_editors())
 
     def test_add_editor_to_article(self):
         print(f"\n{self._testMethodName}")
@@ -249,7 +224,8 @@ class ArticleHandlerTests(TestCase):
 
     def test_remove_editor_raises_object_does_not_exist(self):
         print(f"\n{self._testMethodName}")
-        self.assertRaises(exceptions.ObjectDoesNotExist, self.main_handler.remove_editor, self.authors[1])
+        user = User(username="username", email="email", password="password", )
+        self.assertRaises(exceptions.ObjectDoesNotExist, self.main_handler.remove_editor, user)
 
     def test_publish_article(self):
         print(f"\n{self._testMethodName}")

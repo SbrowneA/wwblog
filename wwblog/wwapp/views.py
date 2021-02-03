@@ -13,7 +13,8 @@ from account.decorators import (authentication_required,
                                 minimum_role_required,
                                 article_edit_privilege_required,
                                 must_be_author_or_moderator,)
-from .handlers import ArticleHandler, CategoryHandler, create_new_article as new_article_handler
+from .handlers import ArticleHandler, CategoryHandler
+    # , create_new_article as new_article_handler
 from . import imgur
 from .models import (Article,
                      Category)
@@ -45,7 +46,7 @@ def create_new_article(request):
     # a = Article.objects.create(author=request.user)
     # a.save()
     # return redirect('wwapp:edit_article', article_id=a.article_id, permanent=True)
-    handler = new_article_handler(request.user)
+    handler = ArticleHandler.create_new_article(request.user)
     return redirect('wwapp:edit_article', article_id=handler.article.article_id)
 
 

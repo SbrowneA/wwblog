@@ -1,24 +1,18 @@
 from django.test import TestCase
-from django.db import models, IntegrityError
-from django.test import TransactionTestCase
-from django.test import SimpleTestCase
+# from django.db import models, IntegrityError
+# from django.test import TransactionTestCase
+# from django.test import SimpleTestCase
 # from django.test import client
 from django.core import exceptions
 from unittest import skip
-from wwapp.models import *
-from wwapp.handlers import *
+from wwapp.models import (Article, ArticleEditor, ArticleVersion,
+                          Category, CategoryEditor, CategoryItem,
+                          CategoryItemAssignation)
 import time
+from .setups import setup_authors, setup_superuser
+from django.contrib.auth import get_user_model
 
-
-# to make dummy users
-def setup_authors():
-    authors = []
-    author_names = ['testAuthor1', 'testAuthor2', 'testAuthor3', 'testAuthor4']
-    for u in author_names:
-        user = User(username=u, email=f"{u}@mail.com")
-        user.save()
-        authors.append(user)
-    return authors
+User = get_user_model()
 
 
 def get_micro_time():
@@ -136,7 +130,7 @@ class ArticleModelTests(TestCase):
         # cls.main_article = Article(author=cls.authors[0],
         #                            article_title="main-article")
         # cls.main_article.save()
-        cls.main_handler = ArticleHandler(cls.main_article)
+        # cls.main_handler = ArticleHandler(cls.main_article)
 
     # model test
     def test_save_article_creates_category_item(self):

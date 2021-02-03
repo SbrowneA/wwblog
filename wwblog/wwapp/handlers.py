@@ -45,7 +45,7 @@ class CategoryHandler:
         try:
             return self.get_parent_category().category_name
         except exceptions.ObjectDoesNotExist:
-            return ""
+            return None
 
     def get_item_assignations(self):
         try:
@@ -84,13 +84,12 @@ class CategoryHandler:
 
     def get_category_editors(self):
         try:
-            # TODO make sure working correctly
             editors = CategoryEditor.objects.filter(category_id=self.category.category_id)
             if len(editors) != 0:
                 return editors
-            return []
-        except exceptions.ObjectDoesNotExist:
-            return []
+        except exceptions.EmptyResultSet:
+            pass
+        return None
 
     def get_child_assignations(self):
         """gets all the child assignations ordered by position"""
@@ -202,14 +201,6 @@ class CategoryHandler:
             a_handler.draft_article()
 
 
-def create_new_article(user):
-    # a = Article(author=user)
-    # a.save()
-    a = Article.objects.create(author=user)
-    # a.save()
-    return ArticleHandler(a)
-
-
 class ArticleHandler:
     def __init__(self, article):
         self.article = article
@@ -293,13 +284,15 @@ class ArticleHandler:
                 raise exceptions.ValidationError("The creator of the article cannot be removed")
             else:
                 editor = self.get_editor(user)
+                if editor is None:
+                    raise exceptions.ObjectDoesNotExist
                 editor.delete()
         except exceptions.ObjectDoesNotExist:
             raise exceptions.ObjectDoesNotExist("This author is not an editor on this article or they are the creator")
         except exceptions.ValidationError:
             raise exceptions.ValidationError("The creator of the article cannot be removed")
 
-    def get_editors(self) -> ArticleEditor or None:
+    def get_editors(self):
         # try:
         editors = ArticleEditor.objects.filter(article_id=self.article.article_id)
         if len(editors) == 0:
@@ -311,13 +304,13 @@ class ArticleHandler:
         # raise exceptions.EmptyResultSet("This article has no editors")
         # raise exceptions.EmptyResultSet()
 
-    def get_parent_article(self) -> Article or None:
+    def get_parent_article(self):
         try:
             return Article.objects.get(article_id=self.article.article_parent_id)
         except exceptions.ObjectDoesNotExist:
             return None
 
-    def get_child_article(self) -> Article or None:
+    def get_child_article(self):
         try:
             return Article.objects.get(article_parent_id=self.article.article_id)
         except exceptions.ObjectDoesNotExist:
@@ -348,31 +341,21 @@ class ArticleHandler:
             raise exceptions.ObjectDoesNotExist
         return articles
 
-    def get_editor(self, user) -> ArticleEditor:
+    def get_editor(self, user):
         try:
             return ArticleEditor.objects.get(editor_id=user.id, article_id=self.article.article_id)
         except exceptions.ObjectDoesNotExist:
-            raise exceptions.ObjectDoesNotExist
+            return None
 
     @staticmethod
     def get_latest_published_articles(count) -> [Article]:
         latest_articles = Article.objects.filter(published=True).order_by('-pub_date')[:int(count)]
         return latest_articles
 
-    # @staticmethod
-    # def create_new_article(user):
-    #     a = Article(author=user)
-    #     a.save()
-    #     # a = Article.objects.create(author=user)
-    #     # a.save()
-    #     return ArticleHandler(a)
-
-    # @staticmethod
-    # def get_user_articles(user) -> [Article] or None:
-    #     try:
-    #         return Article.objects.filter(author_id=user.id)
-    #     except exceptions.EmptyResultSet:
-    #         return None
+    @staticmethod
+    def create_new_article(user):
+        a = Article.objects.create(author=user)
+        return ArticleHandler(a)
 
     @staticmethod
     def get_user_published_articles(user) -> [Article] or None:
