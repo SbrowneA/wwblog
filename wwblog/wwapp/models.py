@@ -3,7 +3,7 @@ from django.core import exceptions
 # from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.db import models
+from django.db import models, IntegrityError
 # from django.contrib.auth import get_user_model
 from django.conf import settings
 from tinymce import models as tinymce_models
@@ -112,9 +112,9 @@ class Article(models.Model):
             if self.published:
                 try:
                     a = CategoryItemAssignation.objects.get(item_id=i.item_id)
-                    parent = Category.objects.get(category_id=a.parent_category_id)
+                    Category.objects.get(category_id=a.parent_category_id)
                 except exceptions.ObjectDoesNotExist:
-                    raise exceptions.ValidationError("The Article cannot be published without a parent Category")
+                    raise IntegrityError("The Article cannot be published without a parent Category")
             # if exists no changes need to be made to CategoryItem, just save Article
             super().save()
         except exceptions.ObjectDoesNotExist:
@@ -129,6 +129,8 @@ class Article(models.Model):
                 CategoryItem.objects.create(item_article_id=self.article_id)
             else:
                 raise exceptions.ValidationError("The Article cannot be published without CategoryItem")
+        except IntegrityError:
+            raise IntegrityError("The Article cannot be published without a parent Category")
 
     def __str__(self):
         output = f"\n - ID: {self.article_id}" \
@@ -152,20 +154,22 @@ class ArticleVersion(models.Model):
         ]
 
     def save(self, *args, **kwargs):
-        # ** only new versions should be saved. old versions should not be overridden
-        try:
-            # self.file_name = f'{self.article_id}_{self.version}'
-            versions = ArticleVersion.objects.filter(article_id=self.article_id).order_by('version')
-            # check if content is different from last version
-            # last_ver = versions[-1]
-            # if last_ver != current session
-            self.version = len(versions) + 1
-            super().save(*args, **kwargs)
-            # else
-            # do nothing
-        except exceptions.EmptyResultSet:
-            self.version = 1
-            super().save(*args, **kwargs)
+        # TODO for later: make new version when saving instead of only keeping the first
+        #  ** only new versions should be saved. old versions should not be overridden
+        # try:
+        #     # self.file_name = f'{self.article_id}_{self.version}'
+        #     versions = ArticleVersion.objects.filter(article_id=self.article_id).order_by('version')
+        #     # check if content is different from last version
+        #     # last_ver = versions[-1]
+        #     # if last_ver != current session
+        #     self.version = len(versions) + 1
+        #     super().save(*args, **kwargs)
+        #     # else
+        #     # do nothing
+        # except exceptions.EmptyResultSet:
+        #     self.version = 1
+        #     super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class CategoryItem(models.Model):
@@ -175,10 +179,10 @@ class CategoryItem(models.Model):
 
     def __str__(self):
         if self.item_article_id is not None:
-            a = Article.objects.get(article_id=self.item_article.article_id)
+            a = Article.objects.get(article_id=self.item_article_id)
             return f"Item Article {a.__str__()}"
         else:
-            c = Category.objects.get(category_id=self.item_category.category_id)
+            c = Category.objects.get(category_id=self.item_category_id)
             return f"Item Category {c.__str__()}"
 
     def save(self, *args, **kwargs):

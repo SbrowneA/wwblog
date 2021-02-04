@@ -1,26 +1,44 @@
 {% extends 'wwapp/base.html' %}
+{% load static %}
+
 {% block title %}
     edit {{ article.article_title }}
 {% endblock %}
 
 {% block head %}
+{#    <script type="text/javascript" src="{% static 'wwapp/js/main.js' %}"></script>#}
+    <script type="text/javascript">
+        function deleteArticle(the_id) {
+            if (confirm("Are you sure you want to delete this post (" + '{{ article.article_title }}'
+                + ")?\nLinked posts will not be deleted, only unliked")) {
+                var url = "/post/" + the_id.toString() + "/delete";
+                window.location.replace(url);
+            } else {
+                return false;
+            }
+        }
+    </script>
     {{ form.media }}
 {% endblock %}
 
 {% block left_nav %}
     <ul class="no-bullet">
         <li>
-        {% if article.published %}
-            <button class="btn btn-primary">Draft</button>
-        {% else %}
-            <button class="btn btn-primary">Publish</button>
-        {% endif %}
-    </li>
-    <li class="mt-5">
-        {% if article.author_id == request.user.id %}
-            <button class="btn btn-danger">Delete</button>
-        {% endif %}
-    </li>
+            {% if article.published %}
+                <button class="btn btn-primary">Draft</button>
+            {% else %}
+                <button class="btn btn-primary">Publish</button>
+            {% endif %}
+        </li>
+        <li class="mt-5">
+            {#    TODO check too if moderator#}
+            {% if article.author_id == request.user.id %}
+                {#            <button onclick="location.href='{% url "wwapp:delete_article" article.article_id %}'" class="btn btn-danger">Delete</button>#}
+                {#                <button onclick="deleteArticle('{{ article.article_id }}')" class="btn btn-danger">Delete</button>#}
+                <button onclick="deleteArticle({{ article.article_id }})" class="btn btn-danger">Delete</button>
+                {#                <button onclick="linked()" class="btn btn-danger">Delete</button>#}
+            {% endif %}
+        </li>
     </ul>
 
 

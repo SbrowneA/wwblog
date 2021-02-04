@@ -71,9 +71,9 @@ def register_user(request):
             if qs1 == 0 and qs2 == 0:
                 user = User.objects.create_user(username=username, password=password, email=email)
                 request.session['successfully_registered'] = 1
-                # # TODO
-                # group = Group.objects.get(name='member')
-                # user.groups.add(group)
+                # TODO
+                group = Group.objects.get(name='member')
+                user.groups.add(group)
                 return redirect("wwapp:register_success")
     except (exceptions.ValidationError, exceptions.ObjectDoesNotExist, IntegrityError):
         # form.add_error(form.fields['username'], "Something went wrong")

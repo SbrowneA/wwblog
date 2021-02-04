@@ -55,7 +55,7 @@ def active_user(view_func):
     return wrapper_func
 
 
-def minimum_role_required(min_role_name=""):
+def minimum_role_required(min_role_name):
     def decorator(view_func):
         def wrapper_func(request, *args, **kwargs):
             groups = get_user_groups(request)
@@ -83,10 +83,26 @@ def article_edit_privilege_required(view_func):
     return wrapper_func
 
 
-def must_be_author_or_moderator(view_func):
+def must_be_article_author_or_moderator(view_func):
     def wrapper_func(request, *args, **kwargs):
         article_id = get_article_id_from_request_path(request)
         if is_author(request, article_id) or is_moderator_or_admin(request):
+            return view_func(request, *args, **kwargs)
+        HttpResponseForbidden()
+    return wrapper_func
+
+
+def article_published_or_editor_privilege_required(view_func):
+    def wrapper_func(request, *args, **kwargs):
+        article_id = get_article_id_from_request_path(request)
+        article = Article.objects.get(article_id=article_id)
+        if not request.user.is_authenticated:
+            if article.published:
+                return view_func(request, *args, **kwargs)
+        elif is_author(request, article_id) or \
+                is_article_editor(request, article_id) or \
+                is_moderator_or_admin(request) or \
+                article.published:
             return view_func(request, *args, **kwargs)
         HttpResponseForbidden()
     return wrapper_func

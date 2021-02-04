@@ -12,16 +12,16 @@ User = get_user_model()
 
 
 class _CategoryItemHandler:
-    def __init__(self, item):
+    def __init__(self, item: CategoryItem):
         self.item = item
 
-    def get_assignation(self):
+    def get_assignation(self) -> CategoryItemAssignation:
         try:
             return CategoryItemAssignation.objects.get(item_id=self.item.item_id)
         except exceptions.ObjectDoesNotExist:
             raise exceptions.ObjectDoesNotExist
 
-    def get_parent_category(self):
+    def get_parent_category(self) -> Category:
         try:
             a = self.get_assignation()
             return Category.objects.get(parent_category_id=a.parent_category_id)
@@ -47,24 +47,30 @@ class CategoryHandler:
         except exceptions.ObjectDoesNotExist:
             return None
 
-    def get_item_assignations(self):
+    def get_child_assignations(self) -> [CategoryItemAssignation]:
         try:
-            return CategoryItemAssignation.objects.filter(parent_category_id=self.category.category_id)
+            """gets all the child assignations ordered by position"""
+            # todo test if > 0 check is required
+            li = CategoryItemAssignation.objects.filter(
+                parent_category_id=self.category.category_id).order_by('position')
+            if li > 0:
+                return li
+            raise exceptions.EmptyResultSet()
         except exceptions.EmptyResultSet:
-            raise exceptions.EmptyResultSet
+            raise exceptions.EmptyResultSet()
 
-    def get_items(self):
+    def get_items(self) -> [CategoryItem]:
         try:
-            assignations = self.get_item_assignations()
+            assignations = self.get_child_assignations()
             items = []
             for a in assignations:
                 item = CategoryItem.objects.get(item_id=a.item_id)
                 items.append(item)
             return items
-        except exceptions.ObjectDoesNotExist:
-            return []
+        except (exceptions.ObjectDoesNotExist, exceptions.EmptyResultSet):
+            return None
 
-    def get_child_categories(self):
+    def get_child_categories(self) -> [Category]:
         items = self.get_items()
         sub_cats = []
         for i in items:
@@ -88,39 +94,36 @@ class CategoryHandler:
             if len(editors) != 0:
                 return editors
         except exceptions.EmptyResultSet:
-            pass
+            pass  # pass to return none if the object does not exist (D.R.Y)
         return None
 
-    def get_child_assignations(self):
-        """gets all the child assignations ordered by position"""
+    def add_child_item(self, new_child_item):
         try:
-            a_list = CategoryItemAssignation.objects.filter(
-                parent_category_id=self.category.category_id).order_by('position')
+            last_pos = len(self.get_child_assignations())
         except exceptions.EmptyResultSet:
-            a_list = []
-        return a_list
+            last_pos = 0
 
-    def add_child_item(self, child_item):
-        last_pos = len(self.get_child_assignations())
         try:
             # get item assignation and assign parent to self
-            a = CategoryItemAssignation.objects.get(item_id=child_item.item_id)
+            a = CategoryItemAssignation.objects.get(item_id=new_child_item.item_id)
             if a.parent_category_id == self.category.category_id:
-                print("This item has already been assigned to the parent category, try moving it instead")
+                raise ValueError("This item has already been assigned to the parent category, try moving it instead")
             else:
+                _CategoryItemHandler(new_child_item).get_parent_category()
                 a.parent_category_id = self.category.category_id
                 a.position = last_pos
                 a.save()
+
         except exceptions.ObjectDoesNotExist:
             # make new assignation with parent as self
-            a = CategoryItemAssignation(parent_category_id=self.category.category_id, item=child_item,
+            a = CategoryItemAssignation(parent_category_id=self.category.category_id, item=new_child_item,
                                         position=last_pos)
             a.save()
 
-        # def add_child_article(self):
-        # TODO needed if PROJECT cant contain articles
+    # def add_child_article(self):
+    # TODO needed if PROJECT cant contain articles
 
-    def add_child_category(self, child_cat):
+    def add_child_category(self, child_cat: Category):
         if self.category.category_type is not Category.CategoryType.SUBTOPIC:
             if self.category.category_type is Category.CategoryType.PROJECT:
                 child_cat.category_type = Category.CategoryType.TOPIC
@@ -136,39 +139,39 @@ class CategoryHandler:
         else:
             raise ValueError("This Category is invalid")
 
-    def __set_assignation_position(self, old_pos, new_pos):
+    # used by self.move_child_item
+    def __set_assignation_position(self, old_pos: int, new_pos: int):
         a = CategoryItemAssignation.objects.get(parent_category_id=self.category.category_id, position=old_pos)
         a.position = new_pos
         a.save()
 
-    def move_child_item(self, child_item, new_pos):
-        try:
-            if new_pos >= 0:
-                raise ValueError("Position new must be greater than 0")
-            assignations = self.get_child_assignations()
-            moving_a = CategoryItemAssignation.objects.get(item=child_item)
-            old_pos = moving_a.position
-            new_pos -= 1
-            # assign temp position for CategoryItemAssignation being moved
-            moving_a.position = len(assignations)
-            moving_a.save()
-            if new_pos > old_pos:
-                for i in range(old_pos, new_pos + 1):
-                    self.__set_assignation_position(i, i - 1)
-            elif new_pos < old_pos:
-                for i in range(old_pos, new_pos - 1, -1):
-                    self.__set_assignation_position(i, i + 1)
-            else:
-                print("Item was not moved")
+    def move_child_item(self, child_item: CategoryItem, new_pos: int):
+        # try:
+        if new_pos <= 0:
+            raise ValueError("Position new must be greater than 0")
+        assignations = self.get_child_assignations()
+        moving_a = _CategoryItemHandler(child_item).get_assignation()
+        old_pos = moving_a.position
+        new_pos -= 1
+        # assign temp position for CategoryItemAssignation being moved
+        moving_a.position = len(assignations)
+        moving_a.save()
+        if new_pos > old_pos:
+            for i in range(old_pos, new_pos + 1):
+                self.__set_assignation_position(i, i - 1)
+        elif new_pos < old_pos:
+            for i in range(old_pos, new_pos - 1, -1):
+                self.__set_assignation_position(i, i + 1)
+        else:
+            print("Item was not moved")
+        moving_a.position = new_pos
+        moving_a.save()
+        # except exceptions.ObjectDoesNotExist:
+        #     raise exceptions.ObjectDoesNotExist("Category.move_child_item() "
+        #                                         "-> ObjectDoesNotExist: Unexpected Error occurred")
 
-            moving_a.position = new_pos
-            moving_a()
-        except exceptions.ObjectDoesNotExist:
-            raise exceptions.ObjectDoesNotExist("Category.move_child_item() "
-                                                "-> ObjectDoesNotExist: Unexpected Error occurred")
-
-    def delete_child_assignation(self, child_item):
-        pos = child_item.position
+    def delete_child_item_assignation(self, child_item: CategoryItem):
+        pos = _CategoryItemHandler(child_item).get_assignation().position
         assignations = self.get_child_assignations()
         del_a = _CategoryItemHandler(child_item).get_assignation()
         del_a.delete()
@@ -177,15 +180,33 @@ class CategoryHandler:
             a.position = a.position - 1
             a.save()
 
-    def delete_child_category(self, del_cat):
-        # TODO check if sub cats
-        #  delete sub cats & articles
+    def delete_child_category(self, del_cat: Category):
         # check sub items
-        child_handler = CategoryHandler(del_cat)
-        child_items = child_handler.get_items()
-        if len(child_items) > 0:
-            # delete child items
-            pass
+        del_handler = CategoryHandler(del_cat)
+        child_items = del_handler.get_items()
+        if child_items is not None:
+            # delete child items of del_cat
+            del_handler.draft_child_articles()
+            del_handler.delete_child_categories()
+        # un-assign del_cat from self and delete
+        self.delete_child_item_assignation(del_handler.get_category_item())
+        del_cat.delete()
+        # Category.objects.get(category_id=del_cat.category_id)
+
+    def delete_child_categories(self):
+        categories = self.get_child_categories()
+        for cat in categories:
+            self.delete_child_category(cat)
+
+    def draft_child_articles(self):
+        articles = self.get_child_articles()
+        for a in articles:
+            a_handler = ArticleHandler(a)
+            # draft_article uses CategoryHandler.delete_child_item_assignation
+            a_handler.draft_article()
+
+    def get_category_item(self) -> CategoryItem:
+        return CategoryItem.objects.get(item_category_id=self.category.category_id)
 
     def transfer_child_items(self, new_category):
         # TODO
@@ -193,12 +214,6 @@ class CategoryHandler:
         # loop through all articles in old cat
         # and assign it to the new category
         pass
-
-    def draft_child_articles(self) -> []:
-        articles = self.get_child_articles()
-        for a in articles:
-            a_handler = ArticleHandler(a)
-            a_handler.draft_article()
 
 
 class ArticleHandler:
@@ -241,31 +256,27 @@ class ArticleHandler:
     def draft_article(self):
         self.remove_child_article()
         self.remove_parent_article()
+        # TODO
+        try:
+            cat = self.get_parent_category()
+            CategoryHandler(cat).delete_child_item_assignation(self.get_category_item())
+            self.article.published = False
+            self.article.save()
+        except exceptions.ObjectDoesNotExist:
+            raise exceptions.ObjectDoesNotExist("This article is already drafted")
 
-        pass
-        # try:
-        #     cat = self.get_parent_category()
-        #     c_handler = CategoryHandler(cat)
-        #     c_handler.delete_child_assignation(self.get_category_item())
-        #     self.article.published = False
-        #     self.article.save()
-        # except exceptions.ObjectDoesNotExist:
-        #     raise exceptions.ObjectDoesNotExist("This article is already drafted")
-
-    def publish_article(self, category):
-        pass
-        # item = self.get_category_item()
+    def publish_article(self, category: Category):
+        item = self.get_category_item()
         # i_handler = _CategoryItemHandler(item)
-        # try:
-        #     a = i_handler.get_assignation()
-        #     a.parent_category_id = category.category_id
-        #     a.save()
-        # except exceptions.ObjectDoesNotExist:
-        #     cat_handler = CategoryHandler(category)
-        #     cat_handler.add_child_item(item)
-        #
-        # self.article.published = True
-        # self.article.save()
+        # c_handler = CategoryHandler(category)
+        # check if already published
+        if self.article.published:
+            self.draft_article()
+        # publish to new category
+        cat_handler = CategoryHandler(category)
+        cat_handler.add_child_item(item)
+        self.article.published = True
+        self.article.save()
 
     def add_editor(self, user):
         try:
@@ -277,8 +288,8 @@ class ArticleHandler:
         except IntegrityError:
             raise IntegrityError("This author is already and editor on this article")
 
-    def remove_editor(self, user):
-        """remove an article editor from a user object"""
+    def remove_editor(self, user: User):
+        """remove an article editor object """
         try:
             if user.id == self.article.author_id:
                 raise exceptions.ValidationError("The creator of the article cannot be removed")
@@ -341,14 +352,14 @@ class ArticleHandler:
             raise exceptions.ObjectDoesNotExist
         return articles
 
-    def get_editor(self, user):
+    def get_editor(self, user: User):
         try:
             return ArticleEditor.objects.get(editor_id=user.id, article_id=self.article.article_id)
         except exceptions.ObjectDoesNotExist:
             return None
 
     @staticmethod
-    def get_latest_published_articles(count) -> [Article]:
+    def get_latest_published_articles(count: int) -> [Article]:
         latest_articles = Article.objects.filter(published=True).order_by('-pub_date')[:int(count)]
         return latest_articles
 
@@ -358,21 +369,21 @@ class ArticleHandler:
         return ArticleHandler(a)
 
     @staticmethod
-    def get_user_published_articles(user) -> [Article] or None:
+    def get_user_published_articles(user: User):
         try:
             return Article.objects.filter(author_id=user.id, published=True).order_by('-pub_date')
         except exceptions.EmptyResultSet:
             return None
 
     @staticmethod
-    def get_user_drafted_articles(user) -> [Article] or None:
+    def get_user_drafted_articles(user: User):
         try:
             return Article.objects.filter(author_id=user.id, published=False).order_by('-creation_date')
         except exceptions.EmptyResultSet:
             return None
 
-    def get_all_versions(self):
-        return ArticleVersion.objects.filter(article_id=self.article.article_id).order_by('-version')
+    def get_all_versions(self) -> [ArticleVersion]:
+        return ArticleVersion.objects.filter(article_id=self.article.article_id).order_by('version')
 
     def get_latest_version(self) -> ArticleVersion:
         # creating versions variable because "Negative indexing is not supported."
@@ -381,23 +392,19 @@ class ArticleHandler:
         ver = versions[len(versions) - 1]
         return ver
 
-    def get_latest_file_dir(self) -> str:
+    def __get_latest_file_dir(self) -> str:
         file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
         return os.path.join(POSTS_ROOT, file_name)
 
+    # must return T or F!!
     def save_article_content(self, new_content) -> bool:
-        # try:
-        file_dir = self.get_latest_file_dir()
+        file_dir = self.__get_latest_file_dir()
         with open(file_dir, 'w') as file:
             file.write(new_content)
         return True
 
-    # except Exception:
-    #     return False
-
-    @property
-    def get_article_content(self):
-        file_dir = self.get_latest_file_dir()
+    def get_article_content(self) -> str:
+        file_dir = self.__get_latest_file_dir()
         try:
             with open(file_dir, "r") as file:
                 content = file.read()
@@ -406,3 +413,29 @@ class ArticleHandler:
         except FileNotFoundError:
             print("FileNotFoundError was thrown: article content NOT found")
             return ""
+
+    def __remove_latest_file(self):
+        file_dir = self.__get_latest_file_dir()
+        if os.path.exists(file_dir):
+            os.remove(file_dir)
+        else:
+            # TODO make sure this is not a security risk
+            # raise FileNotFoundError(f"file could not be found at {file_dir}")
+            raise FileNotFoundError("File for the latest version of this article could not be found")
+
+    def __remove_all_article_files(self):
+        all_ver = self.get_all_versions()
+        for ver in all_ver:
+            file_name = f"{self.article.article_id}-{ver.version}.html"
+            file_dir = os.path.join(POSTS_ROOT, file_name)
+            if os.path.exists(file_dir):
+                os.remove(file_dir)
+            else:
+                print("This article version has no corresponding file")
+                # raise FileNotFoundError("File for the latest version of this article could not be found")
+
+    def delete_article(self):
+        if self.article.published:
+            self.draft_article()
+        self.__remove_all_article_files()
+        self.article.delete()

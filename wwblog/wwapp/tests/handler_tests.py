@@ -119,6 +119,10 @@ class CategoryHandlerTests(TestCase):
         move_i = child_items[0]
         move_a = CategoryItemAssignation.objects.get(item_id=move_i.item_id)
         old_pos = move_a.position
+        handler.move_child_item(child_item=move_i, new_pos=5)
+        self.assertEqual((handler.get_items()), 10)
+        last = handler.get_child_assignations()[-1]
+        self.assertEqual(last)
 
     @skip("test_delete_child_category - not complete")
     def test_delete_child_category(self):

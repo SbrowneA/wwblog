@@ -12,9 +12,9 @@ from account.decorators import (authentication_required,
                                 active_user,
                                 minimum_role_required,
                                 article_edit_privilege_required,
-                                must_be_author_or_moderator,)
+                                must_be_article_author_or_moderator, )
 from .handlers import ArticleHandler, CategoryHandler
-    # , create_new_article as new_article_handler
+# , create_new_article as new_article_handler
 from . import imgur
 from .models import (Article,
                      Category)
@@ -38,14 +38,8 @@ def index(request):
 
 
 @login_required
-# @minimum_role_required(min_role_name='member')
+@minimum_role_required(min_role_name='member')
 def create_new_article(request):
-    # user = User.objects.get(id=request.user.id)
-    # handler = ArticleHandler.create_new_article(request.user)
-    # a = Article(author=request.user)
-    # a = Article.objects.create(author=request.user)
-    # a.save()
-    # return redirect('wwapp:edit_article', article_id=a.article_id, permanent=True)
     handler = ArticleHandler.create_new_article(request.user)
     return redirect('wwapp:edit_article', article_id=handler.article.article_id)
 
@@ -69,15 +63,32 @@ def edit_article(request, article_id):
     # editors = handler.get_editors()
     # get latest version content
     loaded_content = handler.get_article_content
-    form = forms.ArticleEdit(request.POST or None, initial={'content': loaded_content})
+    secret_note = handler.get_latest_version().hidden_notes
+    if secret_note is None:
+        secret_note = ""
+    form = forms.ArticleEdit(request.POST or None, initial={
+        'content': loaded_content,
+        'title': article.article_title,
+        'secret_note': secret_note}
+                             )
 
+    # TODO
     values = {
         'form': form,
         'article': article,
     }
 
     if form.is_valid():
-        print("\n\nPOSTED")
+        if "publish_article" in form.data:
+            print("sum sum")
+            # save first
+            # code to publish
+            pass
+
+        if "save" in form.data:
+            print("save")
+            pass
+            # code to save
         article.article_title = form.cleaned_data.get("title")
         ver = handler.get_latest_version()
         ver.hidden_notes = form.cleaned_data.get("secret_note")
@@ -88,6 +99,15 @@ def edit_article(request, article_id):
             form.add_error(None, "There was an error saving!")
 
     return render(request, "wwapp/edit_article.html", values)
+
+
+@login_required
+# @must_be_article_author_or_moderator
+def delete_article(request, article_id):
+    a = get_object_or_404(Article, article_id=article_id)
+    handler = ArticleHandler(a)
+    handler.delete_article()
+    return redirect('wwapp:browse_own_articles')
 
 
 @login_required
