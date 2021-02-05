@@ -22,15 +22,21 @@ from tinymce.widgets import TinyMCE
 #         #     'title': forms.TextInput(attrs={'class': 'form-control'}),
 #         #     'author': forms.Select(attrs={'class': 'form-control'}),
 #         # }
+# class ArticlePublish(forms.Form):
+#     categories_select = forms.Select(choices=[])
+
 
 class ArticleEdit(forms.Form):
-    title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    secret_note = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control'}))
+    title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}))
+    placeholder = 'place any secret notes here..\n WARNING: the author, and all the editors on this post,' \
+                  ' and moderators can read this '
+    secret_note = forms.CharField(label='secret notes', required=False, widget=forms.Textarea(
+        attrs={'class': 'form-control', 'placeholder': placeholder, }))
     # publish_date = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'class': 'form-control'}))
     # needs to be cleaned to make sure users in list are not author or already an editor
     # add_editor = forms.Select(attrs={'class': 'form-control'})
-    categories_select = forms.Select(choices=[])
     parent_article = forms.Select(choices=[])
+    categories_select = forms.Select(choices=[])
     # editors = forms.ModelMultipleChoiceField(queryset=None,
     #                                          widget=forms.ModelMultipleChoiceField(attrs={'class': 'form-control'}))
     content = forms.CharField(required=False,

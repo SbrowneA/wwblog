@@ -1,11 +1,18 @@
-from django.http import HttpResponse
+# from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponseForbidden
-from wwapp.models import Article, ArticleEditor
+from wwapp.models import (Article, Category,)
 from wwapp.handlers import ArticleHandler, CategoryHandler
-from django.core import exceptions
+# from django.core import exceptions
 # lower index is superior
 role_hierarchy = ['admin', 'moderator', 'member', 'general']
+
+
+class Role:
+    # TODO
+    #   use enums instead of list
+    pass
+
 
 """AUTHENTICATION DECORATORS"""
 
@@ -58,9 +65,9 @@ def active_user(view_func):
 def minimum_role_required(min_role_name):
     def decorator(view_func):
         def wrapper_func(request, *args, **kwargs):
-            groups = get_user_groups(request)
+            groups = _get_user_groups(request)
             if groups is not None:
-                max_role_name = get_max_role_name(groups)
+                max_role_name = _get_max_role_name(groups)
                 if role_hierarchy.index(max_role_name) <= role_hierarchy.index(min_role_name):
                     return view_func(request, *args, **kwargs)
             return HttpResponseForbidden()
@@ -71,37 +78,37 @@ def minimum_role_required(min_role_name):
 """ARTICLE DECORATORS"""
 
 
-def article_edit_privilege_required(view_func):
+def article_edit_privilege(view_func):
     def wrapper_func(request, *args, **kwargs):
-        article_id = get_article_id_from_request_path(request)
-        if is_author(request, article_id) or\
-                is_article_editor(request, article_id) or\
-                is_moderator_or_admin(request):
+        article_id = _get_id_from_request_path(request)
+        if _is_article_author(request, article_id) or\
+                _is_article_editor(request, article_id) or\
+                _is_moderator_or_admin(request):
             return view_func(request, *args, **kwargs)
         # return view_func(request, *args, **kwargs)
         return HttpResponseForbidden()
     return wrapper_func
 
 
-def must_be_article_author_or_moderator(view_func):
+def article_author_or_moderator(view_func):
     def wrapper_func(request, *args, **kwargs):
-        article_id = get_article_id_from_request_path(request)
-        if is_author(request, article_id) or is_moderator_or_admin(request):
+        article_id = _get_id_from_request_path(request)
+        if _is_article_author(request, article_id) or _is_moderator_or_admin(request):
             return view_func(request, *args, **kwargs)
         HttpResponseForbidden()
     return wrapper_func
 
 
-def article_published_or_editor_privilege_required(view_func):
+def article_published_or_has_editor_privilege(view_func):
     def wrapper_func(request, *args, **kwargs):
-        article_id = get_article_id_from_request_path(request)
+        article_id = _get_id_from_request_path(request)
         article = Article.objects.get(article_id=article_id)
         if not request.user.is_authenticated:
             if article.published:
                 return view_func(request, *args, **kwargs)
-        elif is_author(request, article_id) or \
-                is_article_editor(request, article_id) or \
-                is_moderator_or_admin(request) or \
+        elif _is_article_author(request, article_id) or \
+                _is_article_editor(request, article_id) or \
+                _is_moderator_or_admin(request) or \
                 article.published:
             return view_func(request, *args, **kwargs)
         HttpResponseForbidden()
@@ -109,6 +116,27 @@ def article_published_or_editor_privilege_required(view_func):
 
 
 """CATEGORY DECORATORS"""
+
+
+def category_edit_privilege(view_func):
+    def wrapper_func(request, *args, **kwargs):
+        article_id = _get_id_from_request_path(request)
+        if _is_category_creator(request, article_id) or\
+                _is_category_editor(request, article_id) or\
+                _is_moderator_or_admin(request):
+            return view_func(request, *args, **kwargs)
+        # return view_func(request, *args, **kwargs)
+        return HttpResponseForbidden()
+    return wrapper_func
+
+
+def category_creator_or_moderator(view_func):
+    def wrapper_func(request, *args, **kwargs):
+        article_id = _get_id_from_request_path(request)
+        if _is_category_creator(request, article_id) or _is_moderator_or_admin(request):
+            return view_func(request, *args, **kwargs)
+        HttpResponseForbidden()
+    return wrapper_func
 
 
 """ CHECK METHODS
@@ -120,7 +148,7 @@ or their role in relation to the Article/Category.
 
 # AUTHENTICATION CHECK METHODS
 # minimum_role_required check method
-def get_max_role_name(groups):
+def _get_max_role_name(groups):
     max_role_i = len(role_hierarchy) - 1
     for group in groups:
         role_position = role_hierarchy.index(group.name)
@@ -129,24 +157,24 @@ def get_max_role_name(groups):
     return role_hierarchy[max_role_i]
 
 
-def get_user_groups(request):
+def _get_user_groups(request):
     if request.user.groups.exists():
         return request.user.groups.all()
     else:
         return None
 
 
-def is_moderator_or_admin(request):
-    groups = get_user_groups(request)
+def _is_moderator_or_admin(request):
+    groups = _get_user_groups(request)
     if groups is not None:
-        max_role_name = get_max_role_name(groups)
+        max_role_name = _get_max_role_name(groups)
         if max_role_name == "admin" or max_role_name == "moderator":
             return True
     return False
 
 
 # ARTICLE CHECK METHODS
-def is_article_editor(request, article_id):
+def _is_article_editor(request, article_id):
     article = Article.objects.get(article_id=article_id)
     editors = ArticleHandler(article).get_editors()
     if editors is not None:
@@ -155,7 +183,7 @@ def is_article_editor(request, article_id):
     return False
 
 
-def is_author(request, article_id):
+def _is_article_author(request, article_id):
     article = get_object_or_404(Article, article_id=article_id)
     if article.author_id == request.user.id:
         return True
@@ -169,13 +197,26 @@ def is_author(request, article_id):
     # return False
 
 
-def get_article_id_from_request_path(request):
+def _get_id_from_request_path(request):
     url = request.path
     # print(f"URL: {url}")
     # print(f"LIST: {url.split('/')}")
     # print(f"ID: {url.split('/')[2]}")
     return url.split('/')[2]
 
+
 # CATEGORY CHECK METHODS
+def _is_category_creator(request, category_id):
+    cat = get_object_or_404(Category, category_id=category_id)
+    if cat.category_creator == request.user.id:
+        return True
+    return False
 
 
+def _is_category_editor(request, category_id):
+    c = get_object_or_404(Category, category_id=category_id)
+    editors = CategoryHandler(c).get_category_editors()
+    if editors is not None:
+        if request.user in editors:
+            return True
+    return False

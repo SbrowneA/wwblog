@@ -11,8 +11,11 @@ from account.decorators import (authentication_required,
                                 allowed_user_roles,
                                 active_user,
                                 minimum_role_required,
-                                article_edit_privilege_required,
-                                must_be_article_author_or_moderator, )
+                                article_edit_privilege,
+                                article_author_or_moderator,
+                                category_edit_privilege,
+                                category_creator_or_moderator,
+                                )
 from .handlers import ArticleHandler, CategoryHandler
 # , create_new_article as new_article_handler
 from . import imgur
@@ -54,7 +57,7 @@ def open_article(request, article_id):
 
 
 @login_required
-@article_edit_privilege_required
+@article_edit_privilege
 def edit_article(request, article_id):
     # get article
     article = get_object_or_404(Article, article_id=article_id)
@@ -64,14 +67,13 @@ def edit_article(request, article_id):
     # get latest version content
     loaded_content = handler.get_article_content
     secret_note = handler.get_latest_version().hidden_notes
+    projects = CategoryHandler.get_user_projects(request.user)
     if secret_note is None:
         secret_note = ""
     form = forms.ArticleEdit(request.POST or None, initial={
         'content': loaded_content,
         'title': article.article_title,
-        'secret_note': secret_note}
-                             )
-
+        'secret_note': secret_note})
     # TODO
     values = {
         'form': form,
@@ -108,6 +110,35 @@ def delete_article(request, article_id):
     handler = ArticleHandler(a)
     handler.delete_article()
     return redirect('wwapp:browse_own_articles')
+
+
+@login_required
+def create_project(request):
+    proj = CategoryHandler.create_project(request.user)
+    return redirect('wwapp:edit_category', proj.category_id)
+
+
+@login_required
+@category_edit_privilege
+def edit_category(request, category_id):
+    # TODO
+    c = get_object_or_404(Category, category_id=category_id)
+    c_handler = CategoryHandler(c)
+    return render(request, 'wwapp/edit_category.html')
+
+
+@login_required
+@category_creator_or_moderator
+def delete_category(request, category_id):
+    # TODO
+    pass
+
+
+@login_required
+@category_creator_or_moderator
+def create_sub_category(request, parent_id):
+    # TODO
+    pass
 
 
 @login_required
@@ -150,14 +181,21 @@ def image_upload_test(request):
 #     return render(request, 'wwapp/upload_test.html', values)
 
 @login_required
-def browse_own_articles(request):
+def manage_own_content(request):
     drafted_articles = ArticleHandler.get_user_drafted_articles(request.user)
     published_articles = ArticleHandler.get_user_published_articles(request.user)
     values = {
         "drafted_articles": drafted_articles,
         "published_articles": published_articles
     }
-    return render(request, 'wwapp/manage_user_articles.html', values)
+    return render(request, 'wwapp/manage_user_content.html', values)
+
+
+@login_required
+@minimum_role_required(min_role_name="moderator")
+def manage_user_content(requiest, user_id):
+    # TODO
+    pass
 
 
 def browse_articles(request):

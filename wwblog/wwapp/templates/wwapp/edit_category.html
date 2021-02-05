@@ -6,16 +6,24 @@
 
 {% block content %}
     <h2>{{ category.category_name }}</h2>
-    <h3>Sub-Categories:</h3>
-    {% if category.category_type != category.Category_Type.SUBTOPIC %}
-        {% if child_categories == 0 %}
-            {% for c in child_categories %}
-                <a href="{% url 'wwapp:open_category' c.category_id  %}">c.category_name</a>
-            {% endfor %}
-        {% else %}
-            <p><i>No Articles</i></p>
-        {% endif %}
+    {% if category.category_type == "PROJECT" %}
+        <h3>Topics</h3>
+    {% elif category.category_type == "TOPIC" %}
+        <h3>Sub-Topics</h3>
+    {% else %}
+        <h3>This is a sub topic, right?</h3>
     {% endif %}
+
+    {% if child_categories %}
+        {% for cat in sub_cats %}
+            <a href="{% url 'wwapp:open_category' c.category_id %}">c.category_name</a>
+            {#            TODO#}
+{#            <a href="{% url 'wwapp:' c.category_id %}">delete</a>#}
+        {% endfor %}
+    {% else %}
+        <p><i>No topics in this {{ cat.category_type }}</i></p>
+    {% endif %}
+
     <h3>Articles:</h3>
     {% if child_articles %}
         <ul>
@@ -26,12 +34,17 @@
             {% endfor %}
         </ul>
     {% else %}
-        <p><i>No Articles</i></p>
+        <p><i>No Articles in this {{ category.category_type }}</i></p>
     {% endif %}
 
+    <form method="post" class="form-group">
+        <p>add category: {{ form.new_category }}</p>
+        <button type="submit" name="save">Add</button>
+    </form>
 
-    <h3>Editors:</h3>
-    <a href="{% url 'wwapp:user_details' category_creator.user_id %}">{{ category_creator.username }} - Creator of category</a>
+    <h3>Category Editors:</h3>
+    <a href="{% url 'wwapp:user_details' category_creator.user_id %}">{{ category_creator.username }}
+        - Creator of category</a>
     {% if editors %}
         {% for u in editors %}
             <a href="{% url 'wwapp:user_details' u.user_id %}">{{ u.username }}</a>

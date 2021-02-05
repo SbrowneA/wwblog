@@ -1,5 +1,5 @@
 import os
-
+import hashlib
 from django.db import models, IntegrityError
 from django.core import exceptions
 from .models import (Article, ArticleEditor, ArticleVersion,
@@ -214,6 +214,45 @@ class CategoryHandler:
         # loop through all articles in old cat
         # and assign it to the new category
         pass
+
+    @staticmethod
+    def get_user_projects(user: User) -> [Category]:
+        try:
+            return Category.objects.filter(category_creator_id=user.id,
+                                           category_type=Category.CategoryType.PROJECT).order_by('category_name')
+        except exceptions.EmptyResultSet:
+            return []
+
+    @staticmethod
+    def get_all_projects() -> [Category]:
+        try:
+            return Category.objects.filter(category_type=Category.CategoryType.PROJECT).order_by('category_name')
+        except exceptions.EmptyResultSet:
+            return []
+
+    @staticmethod
+    def create_project(user: User) -> Category:
+        # get the last id of all Category objects
+        try:
+            cats = Category.objects.all().order_by('category_id')
+            last_num = cats[-1].category_id + 1
+        except exceptions.EmptyResultSet:
+            last_num = 0
+        # ensure category_name is unique
+        proj_name = f"Project {last_num}"
+        try:
+            Category.objects.get(category_name=proj_name)
+            unique = False
+            while not unique:
+                proj_name = f"Project {_make_hash(proj_name)}"
+                Category.objects.get(category_name=proj_name)
+        except exceptions.ObjectDoesNotExist:
+            # pass because the title is unique
+            pass
+        proj = Category.objects.create(category_creator_id=user,
+                                       category_type=Category.CategoryType.PROJECT,
+                                       category_name=proj_name)
+        return proj
 
 
 class ArticleHandler:
@@ -439,3 +478,23 @@ class ArticleHandler:
             self.draft_article()
         self.__remove_all_article_files()
         self.article.delete()
+
+
+def _make_hash(value: str) -> str:
+    # encoded = value.encode('utf=8')
+    h = hashlib.sha224(value.encode('utf=8'), usedforsecurity=False)
+    return str(h)
+
+
+class CategoryGroup:
+    # TODO
+    def __init__(self, category):
+        self.category = category
+        # list of child category groups
+        self.sub_cat_groups = []
+        self.articles = []
+
+    # @property
+    # def category(self):
+    #     return self.category
+    pass
