@@ -130,13 +130,20 @@ def edit_category(request, category_id):
 @login_required
 @category_creator_or_moderator
 def delete_category(request, category_id):
-    # TODO
-    pass
+    cat = get_object_or_404(Category, category_id=category_id)
+    CategoryHandler.delete_category(cat)
+    parent_id = request.session.get("parent_category_return") or None
+    if parent_id is not None:
+        request.session.delete('parent_category_return')
+        redirect(edit_category, parent_id)
+    # redirect()
 
 
 @login_required
 @category_creator_or_moderator
 def create_sub_category(request, parent_id):
+    parent_cat = Category.objects.get(category_id=parent_id)
+    new_cat = Category.objects.create()
     # TODO
     pass
 
@@ -157,45 +164,32 @@ def upload_test(request):
     return render(request, 'wwapp/upload_test.html', values)
 
 
-def image_upload_test(request):
-    items = imgur.start()
-    values = {
-        'image_items': items
-    }
-    # if request.POST
-
-    return render(request, 'wwapp/upload_image_test.html', values)
-
-
-# def upload_test2(request):
-#     values = {}
-#     if request.method == "POST":
-#         # name of input 'document'
-#         new_file = request.FILES['document']
-#         fs = FileSystemStorage()
-#         file_name = fs.save(new_file.name, new_file)
-#         url = fs.url(file_name)
-#         values['image_url'] = url
-#         print(f"File name: {new_file.name}")
-#         print(f"File size: {new_file.size}")
-#     return render(request, 'wwapp/upload_test.html', values)
-
 @login_required
 def manage_own_content(request):
     drafted_articles = ArticleHandler.get_user_drafted_articles(request.user)
     published_articles = ArticleHandler.get_user_published_articles(request.user)
     values = {
         "drafted_articles": drafted_articles,
-        "published_articles": published_articles
+        "published_articles": published_articles,
+        # passing user manage_user_content to use the same template
+        "user": request.user,
     }
     return render(request, 'wwapp/manage_user_content.html', values)
 
 
 @login_required
 @minimum_role_required(min_role_name="moderator")
-def manage_user_content(requiest, user_id):
-    # TODO
-    pass
+def manage_user_content(request, user_id):
+    user = User.objects.get(id=user_id)
+    drafted_articles = ArticleHandler.get_user_drafted_articles(user)
+    published_articles = ArticleHandler.get_user_published_articles(user)
+    values = {
+        "drafted_articles": drafted_articles,
+        "published_articles": published_articles,
+        "user": user,
+    }
+    # TODO replace request.user in template with user
+    return render(request, 'wwapp/manage_user_content.html', values)
 
 
 def browse_articles(request):
@@ -260,3 +254,27 @@ def browse_categories(request):
 #     }
 #
 #     return render(request, 'wwapp/edit_category.html', values)
+
+
+def image_upload_test(request):
+    items = imgur.start()
+    values = {
+        'image_items': items
+    }
+    # if request.POST
+
+    return render(request, 'wwapp/upload_image_test.html', values)
+
+
+# def upload_test2(request):
+#     values = {}
+#     if request.method == "POST":
+#         # name of input 'document'
+#         new_file = request.FILES['document']
+#         fs = FileSystemStorage()
+#         file_name = fs.save(new_file.name, new_file)
+#         url = fs.url(file_name)
+#         values['image_url'] = url
+#         print(f"File name: {new_file.name}")
+#         print(f"File size: {new_file.size}")
+#     return render(request, 'wwapp/upload_test.html', values)

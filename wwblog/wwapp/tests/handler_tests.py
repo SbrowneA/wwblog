@@ -115,16 +115,16 @@ class CategoryHandlerTests(TestCase):
             child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
             handler.add_child_category(child_prj)
 
-        child_items = handler.get_items()
+        child_items = handler.get_child_items()
         move_i = child_items[0]
         move_a = CategoryItemAssignation.objects.get(item_id=move_i.item_id)
         old_pos = move_a.position
         handler.move_child_item(child_item=move_i, new_pos=5)
-        self.assertEqual((handler.get_items()), 10)
+        self.assertEqual((handler.get_child_items()), 10)
         last = handler.get_child_assignations()[-1]
-        self.assertEqual(last)
+        # self.assertEqual()
 
-    @skip("test_delete_child_category - not complete")
+    # @skip("test_delete_child_category - not complete")
     def test_delete_child_category(self):
         print(f"\nTEST START:{self._testMethodName}")
         handler = CategoryHandler(self.prj)
@@ -133,11 +133,14 @@ class CategoryHandlerTests(TestCase):
             topic_name = f"test_subtopic-{get_micro_time()}"
             child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
             handler.add_child_category(child_prj)
-        # TODO remove a category
         del_cat = handler.get_child_categories()[3]
-        handler.delete_child_category(del_cat)
-        a = handler.get_child_assignations()
-        self.assertEqual(num_child - 1, len(a))
+        CategoryHandler.delete_category(del_cat)
+
+        assignations = handler.get_child_assignations()
+        self.assertEqual(num_child - 1, len(assignations))
+        # check all positions were adjusted correctly
+        for i in range(0, len(assignations)):
+            self.assertEqual(i, assignations[i].position)
 
 
 class ArticleHandlerTests(TestCase):

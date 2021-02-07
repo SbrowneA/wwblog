@@ -15,11 +15,14 @@
     {% endif %}
 
     {% if child_categories %}
-        {% for cat in sub_cats %}
-            <a href="{% url 'wwapp:open_category' c.category_id %}">c.category_name</a>
-            {#            TODO#}
-{#            <a href="{% url 'wwapp:' c.category_id %}">delete</a>#}
-        {% endfor %}
+        <ul>
+            {% for cat in sub_cats %}
+                <li>
+                    <a href="{% url 'wwapp:open_category' c.category_id %}">c.category_name</a>
+                    <a href="{% url 'wwapp:delete_category' c.category_id %}">delete</a>
+                </li>
+            {% endfor %}
+        </ul>
     {% else %}
         <p><i>No topics in this {{ cat.category_type }}</i></p>
     {% endif %}

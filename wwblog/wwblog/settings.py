@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -29,7 +28,6 @@ SECRET_KEY = ')h7b*d9af)!tn7j=ab65h*gu-i51!47v0hyndm6pc$!q^%%pqj'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -83,7 +81,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'wwblog.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -94,7 +91,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -114,7 +110,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -129,7 +124,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
@@ -139,21 +133,18 @@ USE_TZ = True
 #     os.path.join(Path(__file__).resolve().parent.parent.parent, 'static', 'wwapp')
 # )
 
-STATIC_URL = '/wwapp/static/'
-# STATIC_URL = 'wwapp/static/' # wrong I think?
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'wwapp', 'static')
 # STATIC_ROOT = Path(__file__).resolve().parent.parent / 'wwapp/static/'
 # STATIC_ROOT = Path(__file__).resolve().parent.parent.parent / 'static/'
 #
-MEDIA_URL = '/wwapp/media/'
-# MEDIA_URL = 'wwapp/media/' # wrong I think?
+MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'wwapp', 'media')
 # MEDIA_ROOT = Path(__file__).resolve().parent.parent / 'wwapp/media/'
 # MEDIA_ROOT = Path(__file__).resolve().parent.parent.parent / 'media/'
 
 # TINYMCE_JS_URL = os.path.join(STATIC_URL, "path/to/tiny_mce/tiny_mce.js")
-
 # TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
 
 POSTS_ROOT = os.path.join(MEDIA_ROOT, 'posts')
@@ -165,15 +156,15 @@ TINYMCE_DEFAULT_CONFIG = {
     "margin": "auto",
     "menubar": "file edit view insert format tools table help",
     "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code "
-    "fullscreen insertdatetime media table paste code help wordcount spellchecker",
+               "fullscreen insertdatetime media table paste code help wordcount spellchecker",
     "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft "
-    "aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor "
-    "backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | "
-    "fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | "
-    "a11ycheck ltr rtl | showcomments addcomment code",
+               "aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor "
+               "backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | "
+               "fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | "
+               "a11ycheck ltr rtl | showcomments addcomment code",
     "custom_undo_redo_levels": 20,
-    "language": "en_UK",  # To force a specific language instead of the Django current language.
 }
+# "language": "en_UK",  # To force a specific language instead of the Django current language.
 
 # 'clenaup_on_startup': True,
 # 'theme': 'modern',

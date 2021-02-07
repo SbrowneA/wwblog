@@ -5,13 +5,24 @@ from wwapp.models import (Article, Category,)
 from wwapp.handlers import ArticleHandler, CategoryHandler
 # from django.core import exceptions
 # lower index is superior
+from enum import Enum
 role_hierarchy = ['admin', 'moderator', 'member', 'general']
 
 
-class Role:
+class Role(Enum):
+    ADMIN = 0
+    MODERATOR = 2
+    MEMBER = 3
+    GENERAL = 4
     # TODO
     #   use enums instead of list
-    pass
+
+#
+# role_hierarchy = {'admin': Role.ADMIN,
+#                   'moderator': Role.MODERATOR,
+#                   'member': Role.MEMBER,
+#                   'general': Role.GENERAL}
+
 
 
 """AUTHENTICATION DECORATORS"""

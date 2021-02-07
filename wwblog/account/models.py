@@ -40,28 +40,6 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, username, password, **kwargs)
 
-    # def create_moderator(self, email, username, password, **kwargs):
-    #     # TODO change to False
-    #     # TODO set group
-    #     kwargs.setdefault('is_staff', True)
-    #     kwargs.setdefault('is_active', True)
-    #     kwargs.setdefault('is_staff', False)
-    #     return self.create_user(email, username, password, **kwargs)
-    #
-    # def create_member(self, email, username, password, **kwargs):
-    #     # TODO set group
-    #     kwargs.setdefault('is_staff', False)
-    #     kwargs.setdefault('is_active', False)
-    #     kwargs.setdefault('is_staff', False)
-    #     return self.create_user(email, username, password, **kwargs)
-    #
-    # def create_general(self, email, username, password, **kwargs):
-    #     # TODO set group
-    #     kwargs.setdefault('is_staff', False)
-    #     kwargs.setdefault('is_active', False)
-    #     kwargs.setdefault('is_staff', False)
-    #     return self.create_user(email, username, password, **kwargs)
-
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)

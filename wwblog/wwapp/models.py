@@ -25,6 +25,7 @@ class Category(models.Model):
     category_type = models.CharField(max_length=45, choices=CategoryType.choices, default=CategoryType.PROJECT)
 
     class Meta:
+        verbose_name_plural = 'Categories'
         indexes = [
             models.Index(fields=['category_name']),
         ]

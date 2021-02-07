@@ -15,7 +15,6 @@ def is_blacklisted_domain(address):
 
 
 class LoginForm(forms.Form):
-    # todo allow email login as well
     username = forms.CharField(label="Username or Email",
                                widget=forms.TextInput(
                                    attrs={"class": 'form-control', "style='font-family'": 'WorkSans, serif'}))

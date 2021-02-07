@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import *
 from django.contrib.auth.admin import UserAdmin
 
+
 class UserAdminConfig(UserAdmin):
     ordering = ('-date_joined', 'id')
     list_display = ('email',

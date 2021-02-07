@@ -3,9 +3,9 @@ from django.contrib.flatpages.models import FlatPage
 from tinymce.widgets import TinyMCE
 
 
-# class EditCategory(forms.Form):
-#     # category_name = forms.CharField()
-#     pass
+class AddCategory(forms.Form):
+    category_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}))
+
 
 
 # class ArticleForm(forms.ModelForm):

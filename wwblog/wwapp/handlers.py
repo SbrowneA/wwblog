@@ -24,10 +24,25 @@ class _CategoryItemHandler:
     def get_parent_category(self) -> Category:
         try:
             a = self.get_assignation()
-            return Category.objects.get(parent_category_id=a.parent_category_id)
+            return Category.objects.get(category_id=a.parent_category_id)
         except exceptions.ObjectDoesNotExist:
             raise exceptions.ObjectDoesNotExist(
                 f"{self.__class__.__name__} => This CategoryItem has no parent assigned")
+
+
+class CategoryGroup:
+    def __init__(self, category: Category):
+        self.category = category
+        self.handler = CategoryHandler(category)
+        self.articles = self.handler.get_child_articles()
+
+        # list of child category groups
+        self.sub_cat_groups = []
+        child_cats = self.handler.get_child_categories()
+        if child_cats is not None:
+            for cat in child_cats:
+                group = CategoryGroup(cat)
+                self.sub_cat_groups.append(group)
 
 
 class CategoryHandler:
@@ -53,13 +68,13 @@ class CategoryHandler:
             # todo test if > 0 check is required
             li = CategoryItemAssignation.objects.filter(
                 parent_category_id=self.category.category_id).order_by('position')
-            if li > 0:
+            if len(li) > 0:
                 return li
             raise exceptions.EmptyResultSet()
         except exceptions.EmptyResultSet:
             raise exceptions.EmptyResultSet()
 
-    def get_items(self) -> [CategoryItem]:
+    def get_child_items(self) -> [CategoryItem]:
         try:
             assignations = self.get_child_assignations()
             items = []
@@ -71,16 +86,17 @@ class CategoryHandler:
             return None
 
     def get_child_categories(self) -> [Category]:
-        items = self.get_items()
+        items = self.get_child_items()
         sub_cats = []
-        for i in items:
-            if i.item_category_id is not None:
-                sub_cat = Category.objects.get(category_id=i.item_category_id)
-                sub_cats.append(sub_cat)
+        if items is not None:
+            for i in items:
+                if i.item_category_id is not None:
+                    sub_cat = Category.objects.get(category_id=i.item_category_id)
+                    sub_cats.append(sub_cat)
         return sub_cats
 
     def get_child_articles(self):
-        items = self.get_items()
+        items = self.get_child_items()
         articles = []
         for i in items:
             if i.item_article_id is not None:
@@ -180,23 +196,45 @@ class CategoryHandler:
             a.position = a.position - 1
             a.save()
 
-    def delete_child_category(self, del_cat: Category):
-        # check sub items
+    @staticmethod
+    def delete_category(del_cat: Category):
         del_handler = CategoryHandler(del_cat)
-        child_items = del_handler.get_items()
-        if child_items is not None:
+        # check for and delete child items
+        child_items = del_handler.get_child_items()
+        if child_items is not None and len(child_items) != 0:
             # delete child items of del_cat
             del_handler.draft_child_articles()
             del_handler.delete_child_categories()
-        # un-assign del_cat from self and delete
-        self.delete_child_item_assignation(del_handler.get_category_item())
+
+        # if has parent remove assignation
+        try:
+            parent = del_handler.get_parent_category()
+        except exceptions.ObjectDoesNotExist:
+            parent = None
+        if parent is not None:
+            parent_handler = CategoryHandler(parent)
+            parent_handler.delete_child_item_assignation(del_handler.get_category_item())
         del_cat.delete()
-        # Category.objects.get(category_id=del_cat.category_id)
+
+    # def delete_child_category(self, del_cat: Category):
+    #     # check sub items
+    #     # todo static make method vvv
+    #     del_handler = CategoryHandler(del_cat)
+    #     child_items = del_handler.get_child_items()
+    #     if child_items is not None and len(child_items) != 0:
+    #         # delete child items of del_cat
+    #         del_handler.draft_child_articles()
+    #         del_handler.delete_child_categories()
+    #     # TODO ^^^
+    #     # un-assign del_cat from self and delete
+    #     self.delete_child_item_assignation(del_handler.get_category_item())
+    #     del_cat.delete()
 
     def delete_child_categories(self):
         categories = self.get_child_categories()
         for cat in categories:
-            self.delete_child_category(cat)
+            CategoryHandler.delete_category(cat)
+            # self.delete_child_category(cat)
 
     def draft_child_articles(self):
         articles = self.get_child_articles()
@@ -253,6 +291,9 @@ class CategoryHandler:
                                        category_type=Category.CategoryType.PROJECT,
                                        category_name=proj_name)
         return proj
+
+    def get_category_group(self) -> CategoryGroup:
+        return CategoryGroup(self.category)
 
 
 class ArticleHandler:
@@ -484,17 +525,3 @@ def _make_hash(value: str) -> str:
     # encoded = value.encode('utf=8')
     h = hashlib.sha224(value.encode('utf=8'), usedforsecurity=False)
     return str(h)
-
-
-class CategoryGroup:
-    # TODO
-    def __init__(self, category):
-        self.category = category
-        # list of child category groups
-        self.sub_cat_groups = []
-        self.articles = []
-
-    # @property
-    # def category(self):
-    #     return self.category
-    pass
