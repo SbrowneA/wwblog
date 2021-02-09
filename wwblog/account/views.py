@@ -55,7 +55,7 @@ def logout_user(request):
 @unauthenticated_user
 def register_user(request):
     if request.session.get('successfully_registered') == 1:
-        return redirect("wwapp:register_success")
+        return redirect("wwapp:register_success", permanent=True)
     form = forms.RegisterFrom(request.POST or None)
 
     try:
@@ -74,7 +74,7 @@ def register_user(request):
                 # TODO
                 group = Group.objects.get(name='member')
                 user.groups.add(group)
-                return redirect("wwapp:register_success")
+                return redirect("wwapp:register_success", permanent=True)
     except (exceptions.ValidationError, exceptions.ObjectDoesNotExist, IntegrityError):
         # form.add_error(form.fields['username'], "Something went wrong")
         # form.add_error(form.username, "Something went wrong")

@@ -146,6 +146,7 @@ class ArticleVersion(models.Model):
     version = models.IntegerField(default=1, null=False)
     article = models.ForeignKey(Article, null=False, blank=False, on_delete=models.CASCADE)
     hidden_notes = models.TextField(null=True, blank=True)
+
     # location = models.FileField(upload_to='posts/')
     # content = tinymce_models.HTMLField(null=True, blank=True)
 
@@ -254,17 +255,17 @@ class Image(models.Model):
     def __str__(self):
         output = f"- Image Id:{self.image_id}" \
                  f"{self.description}" \
-                 f"{str(self.local_image)}"\
-                 f"{str(self.remote_image)}"\
+                 f"{str(self.local_image)}" \
+                 f"{str(self.remote_image)}" \
                  f"Upload date - {str(self.upload_date)}"
         return output
 
     def save(self, *args, **kwargs):
-        if (self.local_image is None and self.remote_image is not None)\
+        if (self.local_image is None and self.remote_image is not None) \
                 or (self.local_image is not None and self.remote_image is None):
             # if not self.id:
             #     if the image doesn't have an id it has only just been created
-                # self.upload_date = django.utils.timezone.now()
+            # self.upload_date = django.utils.timezone.now()
             super().save(*args, **kwargs)
         else:
             raise exceptions.ValidationError("An Image must either have a local_image or a remote_image, but not both")
@@ -340,4 +341,3 @@ class ArticleEditor(models.Model):
         output = f"Article\n{article.__str__()}" \
                  f"Editor\n{editor.__str__()}"
         return output
-

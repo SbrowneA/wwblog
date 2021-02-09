@@ -1,11 +1,12 @@
 # from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponseForbidden
-from wwapp.models import (Article, Category,)
+from wwapp.models import (Article, Category, )
 from wwapp.handlers import ArticleHandler, CategoryHandler
 # from django.core import exceptions
 # lower index is superior
 from enum import Enum
+
 role_hierarchy = ['admin', 'moderator', 'member', 'general']
 
 
@@ -17,12 +18,12 @@ class Role(Enum):
     # TODO
     #   use enums instead of list
 
+
 #
 # role_hierarchy = {'admin': Role.ADMIN,
 #                   'moderator': Role.MODERATOR,
 #                   'member': Role.MEMBER,
 #                   'general': Role.GENERAL}
-
 
 
 """AUTHENTICATION DECORATORS"""
@@ -70,6 +71,7 @@ def active_user(view_func):
             return view_func(request, *args, **kwargs)
         else:
             return redirect('wwapp:unverified_user')
+
     return wrapper_func
 
 
@@ -82,7 +84,9 @@ def minimum_role_required(min_role_name):
                 if role_hierarchy.index(max_role_name) <= role_hierarchy.index(min_role_name):
                     return view_func(request, *args, **kwargs)
             return HttpResponseForbidden()
+
         return wrapper_func
+
     return decorator
 
 
@@ -92,12 +96,13 @@ def minimum_role_required(min_role_name):
 def article_edit_privilege(view_func):
     def wrapper_func(request, *args, **kwargs):
         article_id = _get_id_from_request_path(request)
-        if _is_article_author(request, article_id) or\
-                _is_article_editor(request, article_id) or\
+        if _is_article_author(request, article_id) or \
+                _is_article_editor(request, article_id) or \
                 _is_moderator_or_admin(request):
             return view_func(request, *args, **kwargs)
         # return view_func(request, *args, **kwargs)
         return HttpResponseForbidden()
+
     return wrapper_func
 
 
@@ -107,6 +112,7 @@ def article_author_or_moderator(view_func):
         if _is_article_author(request, article_id) or _is_moderator_or_admin(request):
             return view_func(request, *args, **kwargs)
         HttpResponseForbidden()
+
     return wrapper_func
 
 
@@ -123,6 +129,7 @@ def article_published_or_has_editor_privilege(view_func):
                 article.published:
             return view_func(request, *args, **kwargs)
         HttpResponseForbidden()
+
     return wrapper_func
 
 
@@ -131,24 +138,30 @@ def article_published_or_has_editor_privilege(view_func):
 
 def category_edit_privilege(view_func):
     def wrapper_func(request, *args, **kwargs):
-        article_id = _get_id_from_request_path(request)
-        if _is_category_creator(request, article_id) or\
-                _is_category_editor(request, article_id) or\
+        category_id = _get_id_from_request_path(request)
+        if _is_category_creator(request, category_id) or \
+                _is_category_editor(request, category_id) or \
                 _is_moderator_or_admin(request):
             return view_func(request, *args, **kwargs)
         # return view_func(request, *args, **kwargs)
         return HttpResponseForbidden()
+
     return wrapper_func
 
 
 def category_creator_or_moderator(view_func):
     def wrapper_func(request, *args, **kwargs):
-        article_id = _get_id_from_request_path(request)
-        if _is_category_creator(request, article_id) or _is_moderator_or_admin(request):
+        category_id = _get_id_from_request_path(request)
+        if _is_category_creator(request, category_id) or \
+                _is_category_editor(request, category_id) or \
+                _is_moderator_or_admin(request):
             return view_func(request, *args, **kwargs)
         HttpResponseForbidden()
+
     return wrapper_func
 
+
+# TODO child_category_creator_or_moderator
 
 """ CHECK METHODS
 used by the decorators to not repeat logic
@@ -184,6 +197,14 @@ def _is_moderator_or_admin(request):
     return False
 
 
+def _get_id_from_request_path(request):
+    url = request.path
+    # print(f"URL: {url}")
+    # print(f"LIST: {url.split('/')}")
+    # print(f"ID: {url.split('/')[2]}")
+    return url.split('/')[2]
+
+
 # ARTICLE CHECK METHODS
 def _is_article_editor(request, article_id):
     article = Article.objects.get(article_id=article_id)
@@ -206,14 +227,6 @@ def _is_article_author(request, article_id):
     # except exceptions.ObjectDoesNotExist:
     #     return False
     # return False
-
-
-def _get_id_from_request_path(request):
-    url = request.path
-    # print(f"URL: {url}")
-    # print(f"LIST: {url.split('/')}")
-    # print(f"ID: {url.split('/')[2]}")
-    return url.split('/')[2]
 
 
 # CATEGORY CHECK METHODS

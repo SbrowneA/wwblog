@@ -98,10 +98,11 @@ class CategoryHandler:
     def get_child_articles(self):
         items = self.get_child_items()
         articles = []
-        for i in items:
-            if i.item_article_id is not None:
-                a = Article.objects.get(article_id=i.item_article_id)
-                articles.append(a)
+        if items:
+            for i in items:
+                if i.item_article_id is not None:
+                    a = Article.objects.get(article_id=i.item_article_id)
+                    articles.append(a)
         return articles
 
     def get_category_editors(self):
@@ -113,7 +114,7 @@ class CategoryHandler:
             pass  # pass to return none if the object does not exist (D.R.Y)
         return None
 
-    def add_child_item(self, new_child_item):
+    def _add_child_item(self, new_child_item):
         try:
             last_pos = len(self.get_child_assignations())
         except exceptions.EmptyResultSet:
@@ -151,18 +152,30 @@ class CategoryHandler:
             i = CategoryItem.objects.get(item_category_id=child_cat.category_id)
 
             child_cat.save()
-            self.add_child_item(i)
+            self._add_child_item(i)
         else:
             raise ValueError("This Category is invalid")
 
     # used by self.move_child_item
     def __set_assignation_position(self, old_pos: int, new_pos: int):
+        """
+        private method that sets the position value of a CategoryItemAssignation object.
+        used internally by methods to rearrange the order within a category
+        :param old_pos:
+        :param new_pos:
+        :return:
+        """
         a = CategoryItemAssignation.objects.get(parent_category_id=self.category.category_id, position=old_pos)
         a.position = new_pos
         a.save()
 
     def move_child_item(self, child_item: CategoryItem, new_pos: int):
-        # try:
+        """
+        changes the position of a child item within a category and adjusts all other items accordingly
+        :param child_item:
+        :param new_pos:
+        :return:
+        """
         if new_pos <= 0:
             raise ValueError("Position new must be greater than 0")
         assignations = self.get_child_assignations()
@@ -186,7 +199,14 @@ class CategoryHandler:
         #     raise exceptions.ObjectDoesNotExist("Category.move_child_item() "
         #                                         "-> ObjectDoesNotExist: Unexpected Error occurred")
 
-    def delete_child_item_assignation(self, child_item: CategoryItem):
+    def _delete_child_item_assignation(self, child_item: CategoryItem):
+        """
+        method only used to assign a child of a category item and re adjust the preceding assignation
+        positions accordingly. This method is only to be used my other methods such as ArticleHandler.draft_article
+        or CategoryHandler.delete_category which handle cases such as article groups or categories with children.
+        :param child_item:
+        :return:
+        """
         pos = _CategoryItemHandler(child_item).get_assignation().position
         assignations = self.get_child_assignations()
         del_a = _CategoryItemHandler(child_item).get_assignation()
@@ -213,22 +233,8 @@ class CategoryHandler:
             parent = None
         if parent is not None:
             parent_handler = CategoryHandler(parent)
-            parent_handler.delete_child_item_assignation(del_handler.get_category_item())
+            parent_handler._delete_child_item_assignation(del_handler.get_category_item())
         del_cat.delete()
-
-    # def delete_child_category(self, del_cat: Category):
-    #     # check sub items
-    #     # todo static make method vvv
-    #     del_handler = CategoryHandler(del_cat)
-    #     child_items = del_handler.get_child_items()
-    #     if child_items is not None and len(child_items) != 0:
-    #         # delete child items of del_cat
-    #         del_handler.draft_child_articles()
-    #         del_handler.delete_child_categories()
-    #     # TODO ^^^
-    #     # un-assign del_cat from self and delete
-    #     self.delete_child_item_assignation(del_handler.get_category_item())
-    #     del_cat.delete()
 
     def delete_child_categories(self):
         categories = self.get_child_categories()
@@ -246,12 +252,23 @@ class CategoryHandler:
     def get_category_item(self) -> CategoryItem:
         return CategoryItem.objects.get(item_category_id=self.category.category_id)
 
-    def transfer_child_items(self, new_category):
+    def transfer_child_items(self, destination_category):
         # TODO
-        # new_category
-        # loop through all articles in old cat
-        # and assign it to the new category
+        self.get_child_assignations()
+        destination_category = CategoryHandler(destination_category)
+        # destination_category._add_child_item()
+
+        # loop through all assignations and add them to new cat
+        # todo: check if they need to be un assigned first?
         pass
+
+    def get_child_category_type(self):
+        if self.category.category_type == Category.CategoryType.PROJECT:
+            return Category.CategoryType.TOPIC
+        elif self.category.category_type == Category.CategoryType.TOPIC:
+            return Category.CategoryType.TOPIC
+        elif self.category.category_type == Category.CategoryType.SUBTOPIC:
+            return None
 
     @staticmethod
     def get_user_projects(user: User) -> [Category]:
@@ -273,7 +290,13 @@ class CategoryHandler:
         # get the last id of all Category objects
         try:
             cats = Category.objects.all().order_by('category_id')
-            last_num = cats[-1].category_id + 1
+            print(cats)
+            if len(cats) > 0:
+                # negative indexing is not supported again? (i.e. cats[-1])
+                last_cat = cats[len(cats) - 1]
+                last_num = last_cat.category_id + 1
+            else:
+                last_num = 0
         except exceptions.EmptyResultSet:
             last_num = 0
         # ensure category_name is unique
@@ -287,7 +310,7 @@ class CategoryHandler:
         except exceptions.ObjectDoesNotExist:
             # pass because the title is unique
             pass
-        proj = Category.objects.create(category_creator_id=user,
+        proj = Category.objects.create(category_creator_id=user.id,
                                        category_type=Category.CategoryType.PROJECT,
                                        category_name=proj_name)
         return proj
@@ -336,10 +359,10 @@ class ArticleHandler:
     def draft_article(self):
         self.remove_child_article()
         self.remove_parent_article()
-        # TODO
+        # TODO test
         try:
             cat = self.get_parent_category()
-            CategoryHandler(cat).delete_child_item_assignation(self.get_category_item())
+            CategoryHandler(cat)._delete_child_item_assignation(self.get_category_item())
             self.article.published = False
             self.article.save()
         except exceptions.ObjectDoesNotExist:
@@ -354,7 +377,7 @@ class ArticleHandler:
             self.draft_article()
         # publish to new category
         cat_handler = CategoryHandler(category)
-        cat_handler.add_child_item(item)
+        cat_handler._add_child_item(item)
         self.article.published = True
         self.article.save()
 

@@ -1,56 +1,90 @@
 {% extends "wwapp/base.html" %}
-
+{% block head %}
+    <script type="text/javascript">
+        function deleteCategory(the_id) {
+            if (confirm("Are you sure you want to delete this {{ category_type }} ({{ category.category_name }})?"
+                + "\nAll child {{ child_category_type }}s will be deleted, and all articles will be drafted")) {
+                var url = "/category/" + the_id.toString() + "/delete";
+                window.location.replace(url);
+            } else {
+                return false;
+            }
+        }
+    </script>
+{% endblock %}
 {% block title %}
     {{ category.category_name }} - Edit
 {% endblock %}
+{% block left_nav %}
+    <p class="ml-5"><button class="btn btn-danger" onclick="deleteCategory({{ category.category_id }})">Delete</button></p>
+{% endblock %}
+
+{% block right_nav %}
+    <h4><a href="{% url 'wwapp:manage_own_content' %}">Browse My Posts</a></h4>
+{% endblock %}
 
 {% block content %}
-    <h2>{{ category.category_name }}</h2>
-    {% if category.category_type == "PROJECT" %}
-        <h3>Topics</h3>
-    {% elif category.category_type == "TOPIC" %}
-        <h3>Sub-Topics</h3>
-    {% else %}
-        <h3>This is a sub topic, right?</h3>
-    {% endif %}
-
-    {% if child_categories %}
-        <ul>
-            {% for cat in sub_cats %}
-                <li>
-                    <a href="{% url 'wwapp:open_category' c.category_id %}">c.category_name</a>
-                    <a href="{% url 'wwapp:delete_category' c.category_id %}">delete</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p><i>No topics in this {{ cat.category_type }}</i></p>
-    {% endif %}
-
-    <h3>Articles:</h3>
-    {% if child_articles %}
-        <ul>
-            {% for a in child_articles %}
-                <li>
-                    <a href="{% url 'wwapp:open_article' a.article_id %}">{{ a.article_title }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p><i>No Articles in this {{ category.category_type }}</i></p>
-    {% endif %}
-
+    {#    <h2>{{ category.category_name }}</h2>#}
     <form method="post" class="form-group">
-        <p>add category: {{ form.new_category }}</p>
-        <button type="submit" name="save">Add</button>
+        {% csrf_token %}
+        {{ form.category_name }}
+        <h3>{{ child_category_type }}s</h3>
+        {% if child_categories %}
+            <ul>
+                {% for cat in sub_cats %}
+                    <li>
+                        <a href="{% url 'wwapp:open_category' c.category_id %}">c.category_name</a>
+                        <a href="{% url 'wwapp:delete_category' c.category_id %}">delete</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p><i>No {{ child_category_type }}s in this {{ category_type }}</i></p>
+        {% endif %}
+
+        Add new {{ child_category_type }}
+        {{ form.new_category_name }}
+        <p>
+            {% for error in form.new_category_name.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        </p>
+        <button class="btn btn-primary" type="submit" name="add" value="add">Add</button>
+        <p>
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        </p>
+
+
+        <h3>Articles:</h3>
+        {% if child_articles %}
+            <ul>
+                {% for a in child_articles %}
+                    <li>
+                        <a href="{% url 'wwapp:open_article' a.article_id %}">{{ a.article_title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p><i>No Articles in this {{ category_type }}</i></p>
+        {% endif %}
+
     </form>
 
     <h3>Category Editors:</h3>
-    <a href="{% url 'wwapp:user_details' category_creator.user_id %}">{{ category_creator.username }}
-        - Creator of category</a>
+    {#    <a href="{% url 'wwapp:user_details' category_creator.user_id %}">{{ category_creator.username }}#}
+    <p>{{ category.category_creator.username }}
+        - Creator of category</p>
     {% if editors %}
         {% for u in editors %}
-            <a href="{% url 'wwapp:user_details' u.user_id %}">{{ u.username }}</a>
+            <li>{{ u.username }}</li>
+            {#            <li><a href="{% url 'wwapp:user_details' u.user_id %}">{{ u.username }}</a></li>#}
+
         {% endfor %}
     {% else %}
         <p><i>No Other Editors</i></p>

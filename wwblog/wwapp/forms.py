@@ -1,12 +1,28 @@
 from django import forms
 from django.contrib.flatpages.models import FlatPage
 from tinymce.widgets import TinyMCE
+from .models import Category
 
 
-class AddCategory(forms.Form):
-    category_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}))
-
-
+class CategoryEdit(forms.Form):
+    category_name = forms.CharField(required=True,
+                                    widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}))
+    new_category_name = forms.CharField(required=False, widget=forms.TextInput(
+                                        attrs={'class': 'form-control', 'placeholder': 'New Title', 'initial': ''}))
+    parent_category_select = forms.Select(choices=[])
+    #
+    # def clean(self):
+    #     super().clean()
+    #     category_name = self.cleaned_data.get('category_name')
+    #     new_category_name = self.clean_new_category_name()
+    #     parent_category_select = self.cleaned_data.get('parent_category_select')
+    #
+    # def clean_new_category_name(self):
+    #     new_category_name = self.cleaned_data.get('new_category_name')
+    #     cats = Category.objects.filter(category_name=new_category_name)
+    #     if len(cats) > 0 and new_category_name != "":
+    #         raise forms.ValidationError("The title must be unique")
+    #     return new_category_name
 
 # class ArticleForm(forms.ModelForm):
 #     content = forms.CharField(
