@@ -160,6 +160,7 @@ def edit_category(request, category_id):
                 try:
                     cat_name = form.cleaned_data.get("category_name")
                     if cat_name != "" or None:
+                        print(f"new name: {cat_name}")
                         c.category_name = cat_name
                         c.save()
                     else:
@@ -167,7 +168,7 @@ def edit_category(request, category_id):
 
                 except IntegrityError:
                     form.add_error("category_name",
-                                   f"{c.category_type.lower().capitalize()} must be unique")
+                                   f"{c.category_type.lower().capitalize()} name must be unique")
     else:
         form = forms.CategoryEdit(
             initial={"category_name": c.category_name, "new_category_name": ""}

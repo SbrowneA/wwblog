@@ -16,18 +16,30 @@
     {{ category.category_name }} - Edit
 {% endblock %}
 {% block left_nav %}
-    <p class="ml-5"><button class="btn btn-danger" onclick="deleteCategory({{ category.category_id }})">Delete</button></p>
+    <p class="ml-5">
+        <button class="btn btn-danger" onclick="deleteCategory({{ category.category_id }})">Delete</button>
+    </p>
 {% endblock %}
 
 {% block right_nav %}
-    <h4><a href="{% url 'wwapp:manage_own_content' %}">Browse My Posts</a></h4>
+    <h4><a href="{% url 'wwapp:manage_own_content' %}">My Posts & Projects</a></h4>
 {% endblock %}
 
 {% block content %}
     {#    <h2>{{ category.category_name }}</h2>#}
     <form method="post" class="form-group">
         {% csrf_token %}
-        {{ form.category_name }}
+        <div>
+            {{ form.category_name }}
+            <p>
+                {% for error in form.category_name.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            </p>
+            <button class="btn btn-success" value="save" name="save" type="submit">Save</button>
+        </div>
         <h3>{{ child_category_type }}s</h3>
         {% if child_categories %}
             <ul>

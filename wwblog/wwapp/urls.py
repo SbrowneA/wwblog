@@ -12,13 +12,13 @@ urlpatterns = [
     path('login/', account_views.login_user, name='login'),
     path('logout/', account_views.logout_user, name='logout'),
     path('register/', account_views.register_user, name='register'),
-    path('register/success', account_views.register_success, name='register_success'),
-    path('unverified', account_views.unverified_user, name='unverified_user'),
-    path('post/create', views.create_new_article, name='new_article'),
-    path('post/<int:article_id>/view', views.open_article, name='open_article'),
-    path('post/<int:article_id>/edit', views.edit_article, name='edit_article'),
-    path('post/<int:article_id>/delete', views.delete_article, name='delete_article'),
-    path('post/me', views.manage_own_content, name='manage_own_content'),
+    path('register/success/', account_views.register_success, name='register_success'),
+    path('unverified/', account_views.unverified_user, name='unverified_user'),
+    path('post/create/', views.create_new_article, name='new_article'),
+    path('post/<int:article_id>/view/', views.open_article, name='open_article'),
+    path('post/<int:article_id>/edit/', views.edit_article, name='edit_article'),
+    path('post/<int:article_id>/delete/', views.delete_article, name='delete_article'),
+    path('me/', views.manage_own_content, name='manage_own_content'),
     # path('post/browse', views.browse_articles, name='browse_articles'),
     # path('author/browse', views.browse_users, name='browse_users'),
     # path('author/<int:user_id>/details', views.user_details, name='user_details'),
@@ -34,3 +34,10 @@ urlpatterns = [
 ]
 # if settings.DEBUG:
 #     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+"""
+the following urls cannot bee changed without making adjustments to dependent code
+category and article(post) urls:
+- decorators require format: '../<content_type>/<id>/<action>' 
+- delete urls are statically referenced in JS in Head tag
+"""
