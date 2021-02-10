@@ -142,16 +142,15 @@ class CategoryHandler:
 
     def add_child_category(self, child_cat: Category):
         if self.category.category_type is not Category.CategoryType.SUBTOPIC:
-            if self.category.category_type is Category.CategoryType.PROJECT:
+            if self.category.category_type == Category.CategoryType.PROJECT:
                 child_cat.category_type = Category.CategoryType.TOPIC
-                child_cat.save()
-            elif self.category.category_type is Category.CategoryType.TOPIC:
+                # child_cat.save()
+            elif self.category.category_type == Category.CategoryType.TOPIC:
                 child_cat.category_type = Category.CategoryType.SUBTOPIC
-                child_cat.save()
+                # child_cat.save()
             child_cat.save()  # save child_cat to make its category item
             i = CategoryItem.objects.get(item_category_id=child_cat.category_id)
-
-            child_cat.save()
+            # child_cat.save()
             self._add_child_item(i)
         else:
             raise ValueError("This Category is invalid")

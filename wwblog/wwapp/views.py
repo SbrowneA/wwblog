@@ -132,11 +132,13 @@ def edit_category(request, category_id):
     c_handler = CategoryHandler(c)
     values = {
         "category": c,
-        "child_category_type": c_handler.get_child_category_type().lower().capitalize(),
         "category_type": c.category_type.lower().capitalize(),
-        "child_categories": c_handler.get_child_articles(),
         "child_articles": c_handler.get_child_articles(),
     }
+    if c_handler.get_child_category_type() is not None:
+        values["child_category_type"] = c_handler.get_child_category_type().lower().capitalize()
+    if len(c_handler.get_child_categories()) > 0:
+        values["child_categories"] = c_handler.get_child_categories()
     # if request.method == "GET":
     #     form = forms.CategoryEdit()
     if request.method == "POST":
@@ -148,21 +150,23 @@ def edit_category(request, category_id):
                 try:
                     new_cat_name = form.cleaned_data.get("new_category_name")
                     print(f"Name: {new_cat_name}")
-                    form.add_error("new_category_name",
+                    if new_cat_name != "":
+                        new_cat = Category.objects.create(category_name=new_cat_name, category_creator=request.user)
+                        c_handler.add_child_category(new_cat)
+                        values["child_categories"] = c_handler.get_child_categories()
+                    else:
+                        form.add_error("new_category_name",
                                    f"This {c_handler.get_child_category_type().lower().capitalize()} name is invalid")
-                #     new_cat = Category.objects.create(category_name=new_cat_name)
-                #     c_handler.add_child_category(new_cat)
                 except IntegrityError:
                     form.add_error("new_category_name",
-                                   f"The {c_handler.get_child_category_type()} name must be unique globally")
+                                   f"The {c_handler.get_child_category_type().lower().capitalize()} name must be unique globally")
             if request.POST.get("save"):
-                print("SAVING CAT")
                 try:
                     cat_name = form.cleaned_data.get("category_name")
                     if cat_name != "" or None:
-                        print(f"new name: {cat_name}")
                         c.category_name = cat_name
                         c.save()
+                        values["category"] = c
                     else:
                         form.add_error("category_name", f"{c.category_type.lower().capitalize()} cannot be empty")
 

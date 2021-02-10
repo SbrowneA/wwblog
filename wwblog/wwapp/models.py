@@ -40,6 +40,7 @@ class Category(models.Model):
     #         return Category.objects.filter(category_type=Category.CategoryType.PROJECT)
     #
     def save(self, *args, **kwargs):
+        # save to create id
         super().save(*args, **kwargs)
         # create new category item and save
         # TODO validate selected parent_category is valid (must be PROJECT or TOPIC )
@@ -63,6 +64,7 @@ class Category(models.Model):
                       f" - id: {self.category_id}")
             except exceptions.ObjectDoesNotExist:
                 pass
+        # super().save(*args, **kwargs)
 
     def __str__(self):
         parent_cat_name = "Null"

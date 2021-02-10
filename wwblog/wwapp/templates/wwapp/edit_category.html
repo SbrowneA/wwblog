@@ -40,18 +40,23 @@
             </p>
             <button class="btn btn-success" value="save" name="save" type="submit">Save</button>
         </div>
-        <h3>{{ child_category_type }}s</h3>
-        {% if child_categories %}
-            <ul>
-                {% for cat in sub_cats %}
-                    <li>
-                        <a href="{% url 'wwapp:open_category' c.category_id %}">c.category_name</a>
-                        <a href="{% url 'wwapp:delete_category' c.category_id %}">delete</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p><i>No {{ child_category_type }}s in this {{ category_type }}</i></p>
+        {% if child_category_type %}
+            <h3>{{ child_category_type }}s</h3>
+            {% if child_categories %}
+                <ul>
+                    {% for cat in child_categories %}
+                        <li>
+                            {{ cat.category_name }}
+                            {#                                                    <a href="{% url 'wwapp:open_category' c.category_id %}">c.category_name</a>#}
+                            <a href="{% url 'wwapp:edit_category' cat.category_id %}">edit</a>
+                            {#                                                    TODO add comfirmatino#}
+                            <a href="{% url 'wwapp:delete_category' cat.category_id %}">delete</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p><i>No {{ child_category_type }}s in this {{ category_type }}</i></p>
+            {% endif %}
         {% endif %}
 
         Add new {{ child_category_type }}

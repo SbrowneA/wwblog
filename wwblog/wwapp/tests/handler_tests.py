@@ -131,6 +131,7 @@ class CategoryHandlerTests(TestCase):
         num_child = 10
         for i in range(num_child):
             topic_name = f"test_subtopic-{get_micro_time()}"
+            print(topic_name)
             child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
             handler.add_child_category(child_prj)
         del_cat = handler.get_child_categories()[3]
