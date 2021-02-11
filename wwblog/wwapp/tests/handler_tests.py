@@ -104,8 +104,7 @@ class CategoryHandlerTests(TestCase):
         self.assertEqual(a.parent_category_id, self.prj.category_id)
         self.assertIsInstance(a, CategoryItemAssignation)
 
-    @skip("test_delete_child_category - not complete")
-    def test_move_child_item(self):
+    def test_get_child_assignations(self):
         print(f"\nTEST START:{self._testMethodName}")
         # make multiple child items and assign them
         handler = CategoryHandler(self.prj)
@@ -115,14 +114,148 @@ class CategoryHandlerTests(TestCase):
             child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
             handler.add_child_category(child_prj)
 
+        children = handler.get_child_assignations()
+        self.assertEqual(num_child, len(children))
+        for c in children:
+            self.assertIsInstance(c, CategoryItemAssignation)
+
+    def test_get_child_items(self):
+        print(f"\nTEST START:{self._testMethodName}")
+        # make multiple child items and assign them
+        handler = CategoryHandler(self.prj)
+        num_child = 10
+        for i in range(num_child):
+            topic_name = f"test_subtopic-{get_micro_time()}"
+            child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
+            handler.add_child_category(child_prj)
+
+        children = handler.get_child_items()
+        self.assertEqual(num_child, len(children))
+        for c in children:
+            self.assertIsInstance(c, CategoryItem)
+        
+    # @skip("TODO")
+    def test_move_child_item_forward(self):
+        print(f"\nTEST START:{self._testMethodName}")
+        # make multiple child items and assign them
+        handler = CategoryHandler(self.prj)
+        num_child = 10
+        for i in range(num_child):
+            topic_name = f"test_subtopic-{i}"
+            child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
+            handler.add_child_category(child_prj)
         child_items = handler.get_child_items()
         move_i = child_items[0]
-        move_a = CategoryItemAssignation.objects.get(item_id=move_i.item_id)
-        old_pos = move_a.position
-        handler.move_child_item(child_item=move_i, new_pos=5)
-        self.assertEqual((handler.get_child_items()), 10)
-        last = handler.get_child_assignations()[-1]
-        # self.assertEqual()
+        move_a_id = CategoryItemAssignation.objects.get(item_id=move_i.item_id).item_assignation_id
+
+        new_pos = 5
+        all_a = handler.get_child_assignations()
+        # print(all_a)
+        handler.move_child_item(child_item=move_i, new_pos=new_pos)
+
+        all_a = handler.get_child_assignations()
+        child_items = handler.get_child_items()
+        # print(all_a)
+        new_i = child_items[new_pos-1]
+        new_a = CategoryItemAssignation.objects.get(item_id=new_i.item_id)
+        self.assertEqual(move_a_id,  new_a.item_assignation_id)
+        self.assertEqual(len(all_a), num_child)
+        self.assertEqual(new_a.position, new_pos-1)  # -1 because positions are 0 indexed
+        all_a = handler.get_child_assignations()
+        for i in range(len(all_a)):
+            self.assertIsInstance(all_a[i], CategoryItemAssignation)
+            self.assertEqual(all_a[i].position, i)
+
+    # @skip("TODO")
+    def test_move_child_item_backward(self):
+        print(f"\nTEST START:{self._testMethodName}")
+        # make multiple child items and assign them
+        handler = CategoryHandler(self.prj)
+        num_child = 10
+        for i in range(num_child):
+            topic_name = f"test_subtopic-{i}"
+            child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
+            handler.add_child_category(child_prj)
+        child_items = handler.get_child_items()
+        move_i = child_items[9]
+        move_a_id = CategoryItemAssignation.objects.get(item_id=move_i.item_id).item_assignation_id
+
+        new_pos = 5
+        handler.move_child_item(child_item=move_i, new_pos=new_pos)
+
+        all_a = handler.get_child_assignations()
+        child_items = handler.get_child_items()
+        # print(all_a)
+        new_i = child_items[new_pos - 1]
+        new_a = CategoryItemAssignation.objects.get(item_id=new_i.item_id)
+        self.assertEqual(move_a_id, new_a.item_assignation_id)
+        self.assertEqual(len(all_a), num_child)
+        self.assertEqual(new_a.position, new_pos - 1)  # -1 because positions are 0 indexed
+        all_a = handler.get_child_assignations()
+        for i in range(len(all_a)):
+            self.assertIsInstance(all_a[i], CategoryItemAssignation)
+            self.assertEqual(all_a[i].position, i)
+
+    # @skip("TODO")
+    def test_move_child_item_to_same(self):
+        print(f"\nTEST START:{self._testMethodName}")
+        # make multiple child items and assign them
+        handler = CategoryHandler(self.prj)
+        num_child = 10
+        for i in range(num_child):
+            topic_name = f"test_subtopic-{i}"
+            child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
+            handler.add_child_category(child_prj)
+        child_items = handler.get_child_items()
+        move_i = child_items[4]
+        old_move_a = CategoryItemAssignation.objects.get(item_id=move_i.item_id)
+
+        new_pos = 5
+        handler.move_child_item(child_item=move_i, new_pos=new_pos)
+
+        all_a = handler.get_child_assignations()
+        child_items = handler.get_child_items()
+        # print(all_a)
+        new_i = child_items[new_pos - 1]
+        new_a = CategoryItemAssignation.objects.get(item_id=new_i.item_id)
+        self.assertEqual(old_move_a.item_assignation_id, new_a.item_assignation_id)
+        self.assertEqual(len(all_a), num_child)
+        self.assertEqual(new_a.position, new_pos - 1)  # -1 because positions are 0 indexed
+        all_a = handler.get_child_assignations()
+        for i in range(len(all_a)):
+            self.assertIsInstance(all_a[i], CategoryItemAssignation)
+            self.assertEqual(all_a[i].position, i)
+
+    # @skip("TODO")
+    def test_move_child_item_to_less_than_lower_bond(self):
+        print(f"\nTEST START:{self._testMethodName}")
+        # make multiple child items and assign them
+        handler = CategoryHandler(self.prj)
+        num_child = 10
+        for i in range(num_child):
+            topic_name = f"test_subtopic-{i}"
+            child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
+            handler.add_child_category(child_prj)
+        child_items = handler.get_child_items()
+        move_i = child_items[4]
+        with self.assertRaises(ValueError):
+            # first checks boundary value before adjusting to 0 index (-1)
+            handler.move_child_item(child_item=move_i, new_pos=0)
+
+    # @skip("TODO")
+    def test_move_child_item_to_more_than_upper_bound(self):
+        print(f"\nTEST START:{self._testMethodName}")
+        # make multiple child items and assign them
+        handler = CategoryHandler(self.prj)
+        num_child = 10
+        for i in range(num_child):
+            topic_name = f"test_subtopic-{i}"
+            child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
+            handler.add_child_category(child_prj)
+        child_items = handler.get_child_items()
+        move_i = child_items[4]
+        with self.assertRaises(ValueError):
+            handler.move_child_item(child_item=move_i, new_pos=num_child+1)
 
     # @skip("test_delete_child_category - not complete")
     def test_delete_child_category(self):
@@ -194,7 +327,7 @@ class ArticleHandlerTests(TestCase):
             a.save()
         # get only 3 latest
         latest = ArticleHandler.get_latest_published_articles(3)
-        for i in range(0, 3, -1):
+        for i in range(3, 0, -1):
             self.assertEqual(articles[i + 2], latest[i])
 
     def test_get_no_editors_returns_none(self):

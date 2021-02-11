@@ -7,6 +7,7 @@ from .models import (Article, ArticleEditor, ArticleVersion,
                      CategoryItemAssignation)
 from wwblog.settings import POSTS_ROOT
 from django.contrib.auth import get_user_model
+from account.role_validator import is_moderator_or_admin
 
 User = get_user_model()
 
@@ -175,9 +176,9 @@ class CategoryHandler:
         :param new_pos:
         :return:
         """
-        if new_pos <= 0:
-            raise ValueError("Position new must be greater than 0")
         assignations = self.get_child_assignations()
+        if new_pos > len(assignations) or new_pos <= 0:
+            raise ValueError("Position new must be greater than 0")
         moving_a = _CategoryItemHandler(child_item).get_assignation()
         old_pos = moving_a.position
         new_pos -= 1
@@ -185,10 +186,10 @@ class CategoryHandler:
         moving_a.position = len(assignations)
         moving_a.save()
         if new_pos > old_pos:
-            for i in range(old_pos, new_pos + 1):
+            for i in range(old_pos + 1, new_pos + 1):
                 self.__set_assignation_position(i, i - 1)
         elif new_pos < old_pos:
-            for i in range(old_pos, new_pos - 1, -1):
+            for i in range(old_pos - 1, new_pos - 1, -1):
                 self.__set_assignation_position(i, i + 1)
         else:
             print("Item was not moved")
@@ -276,6 +277,93 @@ class CategoryHandler:
                                            category_type=Category.CategoryType.PROJECT).order_by('category_name')
         except exceptions.EmptyResultSet:
             return []
+
+    @staticmethod
+    def get_user_topics(user: User) -> [Category]:
+        try:
+            return Category.objects.filter(category_creator_id=user.id,
+                                           category_type=Category.CategoryType.TOPIC).order_by('category_name')
+        except exceptions.EmptyResultSet:
+            return []
+
+    @staticmethod
+    def get_user_subtopics(user: User) -> [Category]:
+        try:
+            return Category.objects.filter(category_creator_id=user.id,
+                                           category_type=Category.CategoryType.SUBTOPIC).order_by('category_name')
+        except exceptions.EmptyResultSet:
+            return []
+
+    @staticmethod
+    def get_editor_topics(user: User) -> [Category]:
+        # TODO test
+        topics = []
+        try:
+            editors = CategoryEditor.objects.filter(user_id=user.id)
+            for e in editors:
+                topic = Category.objects.get(category_id=e.category_id)
+                if topic.category_type == Category.CategoryType.TOPIC:
+                    topics.append(topic)
+                return sorted(topics, key=lambda topic: Category.category_name)
+        except exceptions.EmptyResultSet:
+            pass  # returns empty topics list
+        return topics
+
+    @staticmethod
+    def get_editor_subtopics(user: User) -> [Category]:
+        # TODO test
+        topics = []
+        try:
+            editors = CategoryEditor.objects.filter(user_id=user.id)
+            for e in editors:
+                subtopic = Category.objects.get(category_id=e.category_id)
+                if subtopic.category_type == Category.CategoryType.SUBTOPIC:
+                    topics.append(subtopic)
+                return sorted(topics, key=lambda topic: Category.category_name)
+                # topics.order_by('category_name')
+        except exceptions.EmptyResultSet:
+            pass  # returns empty topics list
+        return topics
+        # except exceptions.ObjectDoesNotExist:
+        #     log a critical error
+
+
+    @staticmethod
+    def convert_topics_to_choice(topics: [Category]):
+        choices = []
+        for t in topics:
+            choices.append((f"category-{t.category_id}", f"{t.category_name}"))
+        return choices
+
+    @staticmethod
+    def convert_articles_to_choice(articles: [Article]):
+        choices = []
+        for a in articles:
+            choices.append((f"article-{a.article_id}", f"{a.article_title}"))
+        return choices
+
+    @staticmethod
+    def get_publish_to_choices_for_user(user: User):
+        choices = []
+        # if is_moderator_or_admin(user):
+            # get all topics and sub topics
+            # get all articles
+            # pass
+        # else:
+        topics = CategoryHandler.get_user_topics(user)
+        subtopics = CategoryHandler.get_user_subtopics(user)
+        articles = ArticleHandler.get_user_published_articles(user)
+        print("topics", topics)
+        print("subtopics", subtopics)
+        # articles = sorted(articles, key=lambda article: article.article_title)
+        print("articles", articles)
+        list(articles).sort(key=lambda article: article.article_title)
+        # TODO get editor topics and articles
+        topics = list(topics) + list(subtopics)
+        choices = CategoryHandler.convert_topics_to_choice(topics)
+        choices += CategoryHandler.convert_articles_to_choice(articles)
+
+        return choices
 
     @staticmethod
     def get_all_projects() -> [Category]:
@@ -366,6 +454,18 @@ class ArticleHandler:
             self.article.save()
         except exceptions.ObjectDoesNotExist:
             raise exceptions.ObjectDoesNotExist("This article is already drafted")
+
+    def publish_as_child_article(self, article: Article):
+        if self.article.article_parent is not None:
+            self.draft_article()
+        # get cat of parent
+        p_handler = ArticleHandler(article)
+        cat = p_handler.get_parent_category()
+        # publish to cat
+        self.publish_article(cat)
+
+        # assign parent
+
 
     def publish_article(self, category: Category):
         item = self.get_category_item()

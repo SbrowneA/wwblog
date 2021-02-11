@@ -46,22 +46,22 @@ class Category(models.Model):
         # TODO validate selected parent_category is valid (must be PROJECT or TOPIC )
         if (self.category_type is Category.CategoryType.TOPIC) or (
                 self.category_type is Category.CategoryType.SUBTOPIC):
-            print(f"cat type: {self.category_type} is TOPIC or SUBTOPIC")
+            # print(f"cat type: {self.category_type} is TOPIC or SUBTOPIC")
             try:
                 CategoryItem.objects.get(item_category=self)
-                print(f"No new item was saved the item already exists:\n"
-                      f" - id: {self.category_id}")
+                # print(f"No new item was saved the item already exists:\n"
+                #       f" - id: {self.category_id}")
             except exceptions.ObjectDoesNotExist:
                 i = CategoryItem(item_category=self)
                 i.save()
-                print(f"Category.save()/new CategoryItem created and saved{i.__str__()}")
+                # print(f"Category.save()/new CategoryItem created and saved{i.__str__()}")
         else:
-            print(f"Category.save()/No CategoryItem was created since Category is a PROJECT")
+            # print(f"Category.save()/No CategoryItem was created since Category is a PROJECT")
             # check to delete any CategoryItems that may exist
             try:
                 CategoryItem.objects.get(item_category=self).delete()
-                print(f"Deleting Corresponding CategoryItem:\n"
-                      f" - id: {self.category_id}")
+                # print(f"Deleting Corresponding CategoryItem:\n"
+                #       f" - id: {self.category_id}")
             except exceptions.ObjectDoesNotExist:
                 pass
         # super().save(*args, **kwargs)
@@ -147,7 +147,8 @@ class ArticleVersion(models.Model):
     edit_date = models.DateTimeField(default=timezone.now)
     version = models.IntegerField(default=1, null=False)
     article = models.ForeignKey(Article, null=False, blank=False, on_delete=models.CASCADE)
-    hidden_notes = models.TextField(null=True, blank=True)
+    secret_note = models.TextField(null=True, blank=True)
+    # secret_notes = models.BaseEncryptedField(null=True, blank=True)
 
     # location = models.FileField(upload_to='posts/')
     # content = tinymce_models.HTMLField(null=True, blank=True)
