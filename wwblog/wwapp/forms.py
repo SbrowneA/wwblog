@@ -8,7 +8,7 @@ class CategoryEdit(forms.Form):
     category_name = forms.CharField(required=True,
                                     widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}))
     new_category_name = forms.CharField(required=False, widget=forms.TextInput(
-                                        attrs={'class': 'form-control', 'placeholder': 'New Title', 'initial': ''}))
+        attrs={'class': 'form-control', 'placeholder': 'New Title', 'initial': ''}))
     parent_category_select = forms.Select(choices=[])
     #
     # def clean(self):
@@ -23,6 +23,7 @@ class CategoryEdit(forms.Form):
     #     if len(cats) > 0 and new_category_name != "":
     #         raise forms.ValidationError("The title must be unique")
     #     return new_category_name
+
 
 # class ArticleForm(forms.ModelForm):
 #     content = forms.CharField(
@@ -53,11 +54,18 @@ class ArticleEdit(forms.Form):
     # add_editor = forms.Select(attrs={'class': 'form-control'})
     parent_article = forms.Select(choices=[])
     categories_select = forms.Select(choices=[])
+    # publish_to_select = forms.Select(choices=CHOICES)
+    # publish_to_select = forms.ChoiceField(choices=[])
+    publish_to_select = forms.ChoiceField(choices=[])
     # editors = forms.ModelMultipleChoiceField(queryset=None,
     #                                          widget=forms.ModelMultipleChoiceField(attrs={'class': 'form-control'}))
     content = forms.CharField(required=False,
                               widget=TinyMCE(attrs={'cols': 80, 'rows': 30,
                                                     'class': 'tiny-mce-editor', 'id': 'tiny-mce'}))
+
+    # def clean:
+    #
+    #     if "publish_article" in form.data:
 
 # class TestArticle(forms.ModelForm):
 #     content = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30,

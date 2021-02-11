@@ -28,8 +28,7 @@
                 <button class="btn btn-primary">Draft</button>
                 <p>Currently public in: {{ published_category }}</p>
             {% else %}
-                <button class="btn btn-primary">Publish</button>
-
+                <p>Not public</p>
             {% endif %}
         </li>
         <li class="mt-5">
@@ -79,6 +78,8 @@
                 {% endfor %}
             </p>
             <button type="submit" class="btn btn-success">Save</button>
+            Publish to:{{ form.publish_to_select }}
+            <button type="submit" value="publish" name="publish" class="btn btn-primary">Publish</button>
 
         </form>
     </div>

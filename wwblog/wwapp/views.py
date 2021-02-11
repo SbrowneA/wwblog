@@ -62,13 +62,11 @@ def open_article(request, article_id):
 @login_required
 @article_edit_privilege
 def edit_article(request, article_id):
-    # get article
     article = get_object_or_404(Article, article_id=article_id)
     # get author and editors
     handler = ArticleHandler(article)
     # editors = handler.get_editors()
-    # get latest version content
-    loaded_content = handler.get_article_content
+    loaded_content = handler.get_article_content()
     secret_note = handler.get_latest_version().hidden_notes
     projects = CategoryHandler.get_user_projects(request.user)
     if secret_note is None:
@@ -78,32 +76,37 @@ def edit_article(request, article_id):
         'title': article.article_title,
         'secret_note': secret_note})
     # TODO
+    # choices = [("yo", "yo"), ("som", "thin"), ("eyo", "eyo"), ]
+    # print(form['publish_to_select'])
+    # form.fields['publish_to_select'].choices = choices
+    print(form.fields['publish_to_select'].choices)
+    # print(form['publish_to_select'])
     values = {
         'form': form,
         'article': article,
     }
-
+    # if request.method == "POST":
+    #     print("Posted")
     if form.is_valid():
-        if "publish_article" in form.data:
-            print("sum sum")
+        if request.POST.get("publish"):
+            print("publish")
             # save first
             # code to publish
             pass
 
-        if "save" in form.data:
-            print("save")
-            pass
+        if request.POST.get("save"):
             # code to save
-        article.article_title = form.cleaned_data.get("title")
-        ver = handler.get_latest_version()
-        ver.hidden_notes = form.cleaned_data.get("secret_note")
-        ver.save()
-        article.save()
-        content = form.cleaned_data.get("content")
-        if not handler.save_article_content(content):
-            form.add_error(None, "There was an error saving!")
-            logging.error(f"{edit_article.__name__} - save "
-                          f"-> ArticleHandler.save_article_content() failed to return True")
+            print("save")
+        # article.article_title = form.cleaned_data.get("title")
+        # ver = handler.get_latest_version()
+        # ver.hidden_notes = form.cleaned_data.get("secret_note")
+        # ver.save()
+        # article.save()
+        # content = form.cleaned_data.get("content")
+        # if not handler.save_article_content(content):
+        #     form.add_error(None, "There was an error saving!")
+        #     logging.error(f"{edit_article.__name__} - save "
+        #                   f"-> ArticleHandler.save_article_content() failed to return True")
 
     return render(request, "wwapp/edit_article.html", values)
 
@@ -194,6 +197,7 @@ def delete_category(request, category_id):
         return redirect(edit_category, parent_id)
     print("redirecting to manage page")
     return redirect('wwapp:manage_own_content')
+
 
 @login_required
 @category_creator_or_moderator
