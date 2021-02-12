@@ -59,7 +59,7 @@ def active_user(view_func):
 def minimum_role_required(min_role_name):
     def decorator(view_func):
         def wrapper_func(request, *args, **kwargs):
-            groups = _get_user_groups(request)
+            groups = _get_user_groups(request.user)
             if groups is not None:
                 max_role_name = _get_max_role_name(groups)
                 if role_hierarchy.index(max_role_name) <= role_hierarchy.index(min_role_name):

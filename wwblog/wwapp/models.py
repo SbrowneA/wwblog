@@ -111,6 +111,8 @@ class Article(models.Model):
     def save(self, *args, **kwargs):
         # check if CategoryItem already exists
         try:
+            if self.article_id is None:
+                raise exceptions.ObjectDoesNotExist
             i = CategoryItem.objects.get(item_article_id=self.article_id)
             if self.published:
                 try:

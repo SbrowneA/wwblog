@@ -576,8 +576,8 @@ class ArticleHandler:
 
     @staticmethod
     def create_new_article(user):
-        a = Article.objects.create(author=user)
-        # does not make doesnt consistently make CategoryItem
+        # Article.objects.create does not consistently make CategoryItem
+        a = Article(author=user)
         a.save()
         return ArticleHandler(a)
 
