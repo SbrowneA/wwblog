@@ -87,6 +87,12 @@ class CategoryHandlerTests(TestCase):
         self.assertEqual(a.parent_category_id, self.prj.category_id)
         self.assertIsInstance(a, CategoryItemAssignation)
 
+    def test_assign_self_to_self_as_topic_raises_value_error(self):
+        print(f"\nTEST START:{self._testMethodName}")
+        handler = CategoryHandler(self.prj)
+        with self.assertRaises(ValueError):
+            handler.add_child_category(self.prj)
+
     def test_assign_subtopic_to_project(self):
         print(f"\nTEST START:{self._testMethodName}")
         topic_name = f"test_subtopic-{get_micro_time()}"
@@ -133,8 +139,7 @@ class CategoryHandlerTests(TestCase):
         self.assertEqual(num_child, len(children))
         for c in children:
             self.assertIsInstance(c, CategoryItem)
-        
-    # @skip("TODO")
+
     def test_move_child_item_forward(self):
         print(f"\nTEST START:{self._testMethodName}")
         # make multiple child items and assign them
@@ -166,7 +171,6 @@ class CategoryHandlerTests(TestCase):
             self.assertIsInstance(all_a[i], CategoryItemAssignation)
             self.assertEqual(all_a[i].position, i)
 
-    # @skip("TODO")
     def test_move_child_item_backward(self):
         print(f"\nTEST START:{self._testMethodName}")
         # make multiple child items and assign them
@@ -196,7 +200,6 @@ class CategoryHandlerTests(TestCase):
             self.assertIsInstance(all_a[i], CategoryItemAssignation)
             self.assertEqual(all_a[i].position, i)
 
-    # @skip("TODO")
     def test_move_child_item_to_same(self):
         print(f"\nTEST START:{self._testMethodName}")
         # make multiple child items and assign them
@@ -226,7 +229,6 @@ class CategoryHandlerTests(TestCase):
             self.assertIsInstance(all_a[i], CategoryItemAssignation)
             self.assertEqual(all_a[i].position, i)
 
-    # @skip("TODO")
     def test_move_child_item_to_less_than_lower_bond(self):
         print(f"\nTEST START:{self._testMethodName}")
         # make multiple child items and assign them
@@ -242,7 +244,6 @@ class CategoryHandlerTests(TestCase):
             # first checks boundary value before adjusting to 0 index (-1)
             handler.move_child_item(child_item=move_i, new_pos=0)
 
-    # @skip("TODO")
     def test_move_child_item_to_more_than_upper_bound(self):
         print(f"\nTEST START:{self._testMethodName}")
         # make multiple child items and assign them
@@ -257,7 +258,6 @@ class CategoryHandlerTests(TestCase):
         with self.assertRaises(ValueError):
             handler.move_child_item(child_item=move_i, new_pos=num_child+1)
 
-    # @skip("test_delete_child_category - not complete")
     def test_delete_child_category(self):
         print(f"\nTEST START:{self._testMethodName}")
         handler = CategoryHandler(self.prj)
@@ -327,7 +327,7 @@ class ArticleHandlerTests(TestCase):
             a.save()
         # get only 3 latest
         latest = ArticleHandler.get_latest_published_articles(3)
-        for i in range(3, 0, -1):
+        for i in range(0, 3, -1):
             self.assertEqual(articles[i + 2], latest[i])
 
     def test_get_no_editors_returns_none(self):
@@ -370,13 +370,71 @@ class ArticleHandlerTests(TestCase):
 
     def test_publish_article(self):
         print(f"\n{self._testMethodName}")
-        # TODO
-        pass
+        proj = CategoryHandler.create_project(self.authors[0])
+        topic = CategoryHandler.create_project(self.authors[0])
+        subtopic = CategoryHandler.create_project(self.authors[0])
+        CategoryHandler(proj).add_child_category(topic)
+        self.main_handler.publish_article(topic)
+        topic_handler = CategoryHandler(topic)
+        topic_handler.add_child_category(subtopic)
+        topic_handler.get_child_articles()
+        self.assertEqual(1, len(topic_handler.get_child_articles()))
+        self.assertEqual(2, len(topic_handler.get_child_assignations()))
+
+    def test_publish_article_to_as_child_article(self):
+        print(f"\n{self._testMethodName}")
+        proj = CategoryHandler.create_project(self.authors[0])
+        topic = CategoryHandler.create_project(self.authors[0])
+        CategoryHandler(proj).add_child_category(topic)
+        parent_article = ArticleHandler.create_new_article(self.authors[0]).article
+        print(parent_article.article_id)
+        item = CategoryItem.objects.get(item_article_id=parent_article.article_id)
+        print(f"ITEM: {item}")
+        ArticleHandler(parent_article).publish_article(topic)
+
+        handler = ArticleHandler.create_new_article(self.authors[0])
+        handler.publish_as_child_article(parent_article)
+        topic_handler = CategoryHandler(topic)
+        topic_handler.get_child_articles()
+        self.assertEqual(2, len(topic_handler.get_child_articles()))
+        self.assertEqual(2, len(topic_handler.get_child_assignations()))
+
+    def test_publish_article_to_project_raises_exception(self):
+        print(f"\n{self._testMethodName}")
+        proj = CategoryHandler.create_project(self.authors[0])
+        handler = ArticleHandler.create_new_article(self.authors[0])
+        with self.assertRaises(ValueError):
+            handler.publish_article(proj)
 
     def test_draft_article(self):
         print(f"\n{self._testMethodName}")
+        proj = CategoryHandler.create_project(self.authors[0])
+        topic = CategoryHandler.create_project(self.authors[0])
+        CategoryHandler(proj).add_child_category(topic)
+        topic_handler = CategoryHandler(topic)
+        self.main_handler.publish_article(topic)
+        self.assertEqual(len(topic_handler.get_child_assignations()), 1)
+        self.assertEqual(len(topic_handler.get_child_articles()), 1)
+        self.main_handler.draft_article()
+        self.assertEqual(len(topic_handler.get_child_articles()), 0)
+
+    def test_get_parent_article_returns_none(self):
+        print(f"\n{self._testMethodName}")
+        parent = ArticleHandler(self.main_article).get_parent_article()
+        self.assertIsNone(parent)
+
+    @skip("TODO")
+    def test_get_parent_article(self):
+        print(f"\n{self._testMethodName}")
+        # handler =
         pass
 
-    def test_get_parent_article(self):
+    @skip("TODO")
+    def test_get_child_article_returns_none(self):
+        print(f"\n{self._testMethodName}")
+        pass
+
+    @skip("TODO")
+    def test_get_child_article(self):
         print(f"\n{self._testMethodName}")
         pass

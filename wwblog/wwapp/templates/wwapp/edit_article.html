@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block head %}
-{#    <script type="text/javascript" src="{% static 'wwapp/js/main.js' %}"></script>#}
+    {#    <script type="text/javascript" src="{% static 'wwapp/js/main.js' %}"></script>#}
     <script type="text/javascript">
         function deleteArticle(the_id) {
             if (confirm("Are you sure you want to delete this post (" + '{{ article.article_title }}'
@@ -23,21 +23,12 @@
 
 {% block left_nav %}
     <ul class="no-bullet">
-        <li>
-            {% if article.published %}
-                <button class="btn btn-primary">Draft</button>
-                <p>Currently public in: {{ published_category }}</p>
-            {% else %}
-                <p>Not public</p>
-            {% endif %}
-        </li>
         <li class="mt-5">
             {#    TODO check too if moderator#}
             {% if article.author_id == request.user.id %}
                 {#            <button onclick="location.href='{% url "wwapp:delete_article" article.article_id %}'" class="btn btn-danger">Delete</button>#}
                 {#                <button onclick="deleteArticle('{{ article.article_id }}')" class="btn btn-danger">Delete</button>#}
                 <button onclick="deleteArticle({{ article.article_id }})" class="btn btn-danger">Delete</button>
-                {#                <button onclick="linked()" class="btn btn-danger">Delete</button>#}
             {% endif %}
         </li>
     </ul>
@@ -63,7 +54,7 @@
 
     <div id="editorContainer">
         <form method="post" class="TinyEditor" id="formTinyM">
-{#        {{ form.categories_select }}#}
+            {#        {{ form.categories_select }}#}
             {% csrf_token %}
             {{ form.title.label }}
             {{ form.title }}
@@ -78,10 +69,34 @@
                 {% endfor %}
             </p>
             <button type="submit" class="btn btn-success">Save</button>
-            Publish to:{{ form.publish_to_select }}
-            <button type="submit" value="publish" name="publish" class="btn btn-primary">Publish</button>
+
+            {% if article.author_id == request.user.id %}
+                {% if article.published %}
+{#                    <button class="btn btn-primary" onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft</button>#}
+                    <p>Currently public in: {{ parent_category }}</p>
+
+                {% else %}
+                    <div>
+                        Publish to:&nbsp{{ form.publish_to_select }}
+                        <button type="submit" value="publish" name="publish" class="btn btn-primary">Publish</button>
+                        <p>
+                            {% for error in form.publish_to_select.errors %}
+                                <div class="alert alert-danger">
+                                    <strong>{{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+                        </p>
+                    </div>
+                {% endif %}
+            {% endif %}
 
         </form>
+        {% if article.author_id == request.user.id %}
+                {% if article.published %}
+                    <button class="btn btn-primary" onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft</button>
+{#                    <p>Currently public in: {{ parent_category }}</p>#}
+                {% endif %}
+            {% endif %}
     </div>
 
 

@@ -56,7 +56,7 @@ class ArticleEdit(forms.Form):
     categories_select = forms.Select(choices=[])
     # publish_to_select = forms.Select(choices=CHOICES)
     # publish_to_select = forms.ChoiceField(choices=[])
-    publish_to_select = forms.ChoiceField(choices=[])
+    publish_to_select = forms.ChoiceField(required=False, choices=[])
     # editors = forms.ModelMultipleChoiceField(queryset=None,
     #                                          widget=forms.ModelMultipleChoiceField(attrs={'class': 'form-control'}))
     content = forms.CharField(required=False,

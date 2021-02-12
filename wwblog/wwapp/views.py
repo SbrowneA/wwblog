@@ -63,60 +63,89 @@ def open_article(request, article_id):
 @article_edit_privilege
 def edit_article(request, article_id):
     article = get_object_or_404(Article, article_id=article_id)
+    values = {
+        'article': article,
+    }
     # get author and editors
-    handler = ArticleHandler(article)
+    a_handler = ArticleHandler(article)
+    # c_handler = CategoryHandler()
     # editors = handler.get_editors()
-    loaded_content = handler.get_article_content()
-    secret_note = handler.get_latest_version().hidden_notes
-    projects = CategoryHandler.get_user_projects(request.user)
+    loaded_content = a_handler.get_article_content()
+    secret_note = a_handler.get_latest_version().secret_note
     if secret_note is None:
         secret_note = ""
     form = forms.ArticleEdit(request.POST or None, initial={
         'content': loaded_content,
         'title': article.article_title,
         'secret_note': secret_note})
-    # TODO
-    # choices = [("yo", "yo"), ("som", "thin"), ("eyo", "eyo"), ]
-    # print(form['publish_to_select'])
-    # form.fields['publish_to_select'].choices = choices
-    print(form.fields['publish_to_select'].choices)
-    # print(form['publish_to_select'])
-    values = {
-        'form': form,
-        'article': article,
-    }
+
+    if article.published:
+        parent_a = a_handler.get_parent_article()
+        if parent_a is not None:
+            values['parent_article'] = parent_a.article_title
+        parent_c = a_handler.get_parent_category()
+        if parent_c is not None:
+            values['parent_category'] = parent_c.category_name
+    else:
+        choices = [("", "-----------")]
+        choices += CategoryHandler.get_publish_to_choices_for_user(request.user)
+        form.fields['publish_to_select'].choices = choices
+    values['form'] = form
     # if request.method == "POST":
     #     print("Posted")
     if form.is_valid():
+        # save
+        article.article_title = form.cleaned_data.get("title")
+        ver = a_handler.get_latest_version()
+        ver.hidden_notes = form.cleaned_data.get("secret_note")
+        ver.save()
+        article.save()
+        content = form.cleaned_data.get("content")
+        if not a_handler.save_article_content(content):
+            form.add_error(None, "There was an error saving!")
+            logging.error(f"{edit_article.__name__} - save "
+                          f"-> ArticleHandler.save_article_content() failed to return True")
+
         if request.POST.get("publish"):
-            print("publish")
+            value = str(request.POST["publish_to_select"])
+            if value == "" or None:
+                form.add_error("publish_to_select", "Please select an option to publish to")
+            else:
+                content_type, content_id = value.split("-")[0], value.split("-")[1]
+                if content_type == "article":
+                    article = get_object_or_404(Article, article_id=content_id)
+                    print(f"Publishing to {article}")
+                    a_handler.publish_as_child_article(article)
+                else:
+                    cat = get_object_or_404(Category, category_id=content_id)
+                    print(f"Publishing to {cat}")
+                    a_handler.publish_article(cat)
+            # redirect so that the html refreshes
+            return redirect("wwapp:edit_article", article_id)
             # save first
             # code to publish
-            pass
-
-        if request.POST.get("save"):
-            # code to save
-            print("save")
-        # article.article_title = form.cleaned_data.get("title")
-        # ver = handler.get_latest_version()
-        # ver.hidden_notes = form.cleaned_data.get("secret_note")
-        # ver.save()
-        # article.save()
-        # content = form.cleaned_data.get("content")
-        # if not handler.save_article_content(content):
-        #     form.add_error(None, "There was an error saving!")
-        #     logging.error(f"{edit_article.__name__} - save "
-        #                   f"-> ArticleHandler.save_article_content() failed to return True")
-
+        # elif request.POST.get("draft"):
+        #     a_handler.draft_article()
+        # elif request.POST.get("save"):
+            # code to save already excecuted
+            # print("save")
+    # values['form'] = form
     return render(request, "wwapp/edit_article.html", values)
 
 
 @login_required
 @article_author_or_moderator
+def draft_article(request, article_id):
+    a = get_object_or_404(Article, article_id=article_id)
+    if a.published:
+        ArticleHandler(a).draft_article()
+    return redirect('wwapp:edit_article', article_id)
+
+@login_required
+@article_author_or_moderator
 def delete_article(request, article_id):
     a = get_object_or_404(Article, article_id=article_id)
-    handler = ArticleHandler(a)
-    handler.delete_article()
+    ArticleHandler(a).delete_article()
     return redirect('wwapp:manage_own_content')
 
 
@@ -148,8 +177,6 @@ def edit_category(request, category_id):
         form = forms.CategoryEdit(request.POST)
         if form.is_valid():
             if request.POST.get("add"):
-                print("ADDING NEW CAT")
-                # TODO
                 try:
                     new_cat_name = form.cleaned_data.get("new_category_name")
                     print(f"Name: {new_cat_name}")
@@ -187,7 +214,7 @@ def edit_category(request, category_id):
 
 @login_required
 @category_creator_or_moderator
-def delete_category(request, category_id):
+def delete_category(request, category_id: int):
     cat = get_object_or_404(Category, category_id=category_id)
     CategoryHandler.delete_category(cat)
     parent_id = request.session.get("parent_category_return") or None

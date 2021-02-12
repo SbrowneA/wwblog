@@ -55,7 +55,7 @@ class CategoryHandler:
             i = CategoryItem.objects.get(item_category_id=self.category.category_id)
             return _CategoryItemHandler(i).get_parent_category()
         except exceptions.ObjectDoesNotExist:
-            raise exceptions.ObjectDoesNotExist
+            raise exceptions.ObjectDoesNotExist("This CategoryItem has no parent category")
 
     def get_parent_category_name(self):
         try:
@@ -138,23 +138,30 @@ class CategoryHandler:
                                         position=last_pos)
             a.save()
 
-    # def add_child_article(self):
-    # TODO needed if PROJECT cant contain articles
-
-    def add_child_category(self, child_cat: Category):
-        if self.category.category_type is not Category.CategoryType.SUBTOPIC:
-            if self.category.category_type == Category.CategoryType.PROJECT:
-                child_cat.category_type = Category.CategoryType.TOPIC
-                # child_cat.save()
-            elif self.category.category_type == Category.CategoryType.TOPIC:
-                child_cat.category_type = Category.CategoryType.SUBTOPIC
-                # child_cat.save()
-            child_cat.save()  # save child_cat to make its category item
-            i = CategoryItem.objects.get(item_category_id=child_cat.category_id)
-            # child_cat.save()
+    def add_child_article(self, article: Article):
+        if self.category.category_type == Category.CategoryType.TOPIC or \
+                self.category.category_type == Category.CategoryType.SUBTOPIC:
+            i = CategoryItem.objects.get(item_article_id=article.article_id)
             self._add_child_item(i)
         else:
-            raise ValueError("This Category is invalid")
+            raise ValueError(
+                f"Articles can only be published to {Category.CategoryType.TOPIC} or {Category.CategoryType.SUBTOPIC}")
+
+    def add_child_category(self, child_cat: Category):
+        if self.category.category_id != child_cat.category_id:
+            if self.category.category_type is not Category.CategoryType.SUBTOPIC:
+                if self.category.category_type == Category.CategoryType.PROJECT:
+                    child_cat.category_type = Category.CategoryType.TOPIC
+                    # child_cat.save()
+                elif self.category.category_type == Category.CategoryType.TOPIC:
+                    child_cat.category_type = Category.CategoryType.SUBTOPIC
+                    # child_cat.save()
+                child_cat.save()  # save child_cat to make its category item
+                i = CategoryItem.objects.get(item_category_id=child_cat.category_id)
+                # child_cat.save()
+                self._add_child_item(i)
+        else:
+            raise ValueError("This Category is invalid: cannot assign self as child category.")
 
     # used by self.move_child_item
     def __set_assignation_position(self, old_pos: int, new_pos: int):
@@ -327,7 +334,6 @@ class CategoryHandler:
         # except exceptions.ObjectDoesNotExist:
         #     log a critical error
 
-
     @staticmethod
     def convert_topics_to_choice(topics: [Category]):
         choices = []
@@ -346,9 +352,9 @@ class CategoryHandler:
     def get_publish_to_choices_for_user(user: User):
         choices = []
         # if is_moderator_or_admin(user):
-            # get all topics and sub topics
-            # get all articles
-            # pass
+        # get all topics and sub topics
+        # get all articles
+        # pass
         # else:
         topics = CategoryHandler.get_user_topics(user)
         subtopics = CategoryHandler.get_user_subtopics(user)
@@ -359,6 +365,7 @@ class CategoryHandler:
         print("articles", articles)
         list(articles).sort(key=lambda article: article.article_title)
         # TODO get editor topics and articles
+        # not recommended to load the whole query set in to memory (i.e list()) and only load required variables instead
         topics = list(topics) + list(subtopics)
         choices = CategoryHandler.convert_topics_to_choice(topics)
         choices += CategoryHandler.convert_articles_to_choice(articles)
@@ -397,9 +404,10 @@ class CategoryHandler:
         except exceptions.ObjectDoesNotExist:
             # pass because the title is unique
             pass
-        proj = Category.objects.create(category_creator_id=user.id,
-                                       category_type=Category.CategoryType.PROJECT,
-                                       category_name=proj_name)
+        proj = Category(category_creator_id=user.id,
+                        category_type=Category.CategoryType.PROJECT,
+                        category_name=proj_name)
+        proj.save()
         return proj
 
     def get_category_group(self) -> CategoryGroup:
@@ -455,28 +463,29 @@ class ArticleHandler:
         except exceptions.ObjectDoesNotExist:
             raise exceptions.ObjectDoesNotExist("This article is already drafted")
 
-    def publish_as_child_article(self, article: Article):
-        if self.article.article_parent is not None:
-            self.draft_article()
-        # get cat of parent
-        p_handler = ArticleHandler(article)
-        cat = p_handler.get_parent_category()
-        # publish to cat
-        self.publish_article(cat)
-
-        # assign parent
-
-
-    def publish_article(self, category: Category):
-        item = self.get_category_item()
-        # i_handler = _CategoryItemHandler(item)
-        # c_handler = CategoryHandler(category)
-        # check if already published
+    def publish_as_child_article(self, p_article: Article):
         if self.article.published:
             self.draft_article()
+        # get cat of parent
+        p_handler = ArticleHandler(p_article)
+        p_cat = p_handler.get_parent_category()
+        # publish to cat
+        self.publish_article(p_cat)
+        # assign parent
+        p_cat_handler = CategoryHandler(p_cat)
+        p_assignation = _CategoryItemHandler(p_cat_handler.get_category_item()).get_assignation()
+        new_item = self.get_category_item()
+        p_cat_handler.move_child_item(new_item, p_assignation.position + 1)
+        self.article.article_parent_id = p_article.article_id
+        self.article.save()
+
+    def publish_article(self, category: Category):
+        # check if already published
+        if self.article.published:
+                self.draft_article()
         # publish to new category
         cat_handler = CategoryHandler(category)
-        cat_handler._add_child_item(item)
+        cat_handler.add_child_article(self.article)
         self.article.published = True
         self.article.save()
 
@@ -568,6 +577,8 @@ class ArticleHandler:
     @staticmethod
     def create_new_article(user):
         a = Article.objects.create(author=user)
+        # does not make doesnt consistently make CategoryItem
+        a.save()
         return ArticleHandler(a)
 
     @staticmethod

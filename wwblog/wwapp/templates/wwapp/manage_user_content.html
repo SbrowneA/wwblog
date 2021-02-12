@@ -29,7 +29,7 @@
             {% for article in published_articles %}
                 <li>
                     <a href="{% url 'wwapp:open_article' article.article_id %}">{{ article.article_title }}</a>
-                    <a href="{% url 'wwapp:edit_article' article.article_id %}"></a>
+                    <a href="{% url 'wwapp:edit_article' article.article_id %}">edit</a>
                 </li>
             {% endfor %}
         </ul>
@@ -93,5 +93,6 @@
 
 
     <h3>Shared with me</h3>
+    <p>Coming soon..</p>
 
 {% endblock %}

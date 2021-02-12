@@ -58,25 +58,25 @@
                 <p><i>No {{ child_category_type }}s in this {{ category_type }}</i></p>
             {% endif %}
         {% endif %}
-
-        Add new {{ child_category_type }}
-        {{ form.new_category_name }}
-        <p>
-            {% for error in form.new_category_name.errors %}
-                <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-            {% endfor %}
-        </p>
-        <button class="btn btn-primary" type="submit" name="add" value="add">Add</button>
-        <p>
-            {% for error in form.non_field_errors %}
-                <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-            {% endfor %}
-        </p>
-
+        {% if child_category_type %}
+            Add new {{ child_category_type }}
+            {{ form.new_category_name }}
+            <p>
+                {% for error in form.new_category_name.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            </p>
+            <button class="btn btn-primary" type="submit" name="add" value="add">Add</button>
+            <p>
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            </p>
+        {% endif %}
 
         <h3>Articles:</h3>
         {% if child_articles %}
