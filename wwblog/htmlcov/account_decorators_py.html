@@ -113,7 +113,7 @@
     <p id="t59" class="run"><span class="n"><a href="#t59">59</a></span><span class="t"><span class="key">def</span> <span class="nam">minimum_role_required</span><span class="op">(</span><span class="nam">min_role_name</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t60" class="run"><span class="n"><a href="#t60">60</a></span><span class="t">    <span class="key">def</span> <span class="nam">decorator</span><span class="op">(</span><span class="nam">view_func</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t61" class="run"><span class="n"><a href="#t61">61</a></span><span class="t">        <span class="key">def</span> <span class="nam">wrapper_func</span><span class="op">(</span><span class="nam">request</span><span class="op">,</span> <span class="op">*</span><span class="nam">args</span><span class="op">,</span> <span class="op">**</span><span class="nam">kwargs</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t62" class="mis show_mis"><span class="n"><a href="#t62">62</a></span><span class="t">            <span class="nam">groups</span> <span class="op">=</span> <span class="nam">_get_user_groups</span><span class="op">(</span><span class="nam">request</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t62" class="mis show_mis"><span class="n"><a href="#t62">62</a></span><span class="t">            <span class="nam">groups</span> <span class="op">=</span> <span class="nam">_get_user_groups</span><span class="op">(</span><span class="nam">request</span><span class="op">.</span><span class="nam">user</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t63" class="mis show_mis"><span class="n"><a href="#t63">63</a></span><span class="t">            <span class="key">if</span> <span class="nam">groups</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t64" class="mis show_mis"><span class="n"><a href="#t64">64</a></span><span class="t">                <span class="nam">max_role_name</span> <span class="op">=</span> <span class="nam">_get_max_role_name</span><span class="op">(</span><span class="nam">groups</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t65" class="mis show_mis"><span class="n"><a href="#t65">65</a></span><span class="t">                <span class="key">if</span> <span class="nam">role_hierarchy</span><span class="op">.</span><span class="nam">index</span><span class="op">(</span><span class="nam">max_role_name</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="nam">role_hierarchy</span><span class="op">.</span><span class="nam">index</span><span class="op">(</span><span class="nam">min_role_name</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -257,7 +257,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.3.1</a>,
-            created at 2021-02-11 22:29 +1030
+            created at 2021-02-15 20:50 +1030
         </p>
     </div>
 </div>

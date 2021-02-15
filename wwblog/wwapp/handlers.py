@@ -122,7 +122,7 @@ class CategoryHandler:
             last_pos = 0
 
         try:
-            # get item assignation and assign parent to self
+            # TODO get parent cat handler remove child item and add to self
             a = CategoryItemAssignation.objects.get(item_id=new_child_item.item_id)
             if a.parent_category_id == self.category.category_id:
                 raise ValueError("This item has already been assigned to the parent category, try moving it instead")

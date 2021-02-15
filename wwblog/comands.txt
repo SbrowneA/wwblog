@@ -82,7 +82,7 @@ pip install virtualenv
 
 py -m pip install --user virtualenv
 
-# create new virtual env
+# create new virtual env (same as making a new venv through pycharm)
 py -m virtualenv [env name]
 # or for venv
 py -m venv [env name]

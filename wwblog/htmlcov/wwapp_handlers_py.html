@@ -630,8 +630,8 @@
     <p id="t576" class="pln"><span class="n"><a href="#t576">576</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t577" class="run"><span class="n"><a href="#t577">577</a></span><span class="t">    <span class="op">@</span><span class="nam">staticmethod</span>&nbsp;</span><span class="r"></span></p>
     <p id="t578" class="run"><span class="n"><a href="#t578">578</a></span><span class="t">    <span class="key">def</span> <span class="nam">create_new_article</span><span class="op">(</span><span class="nam">user</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t579" class="run"><span class="n"><a href="#t579">579</a></span><span class="t">        <span class="nam">a</span> <span class="op">=</span> <span class="nam">Article</span><span class="op">.</span><span class="nam">objects</span><span class="op">.</span><span class="nam">create</span><span class="op">(</span><span class="nam">author</span><span class="op">=</span><span class="nam">user</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t580" class="pln"><span class="n"><a href="#t580">580</a></span><span class="t">        <span class="com"># does not make doesnt consistently make CategoryItem</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t579" class="pln"><span class="n"><a href="#t579">579</a></span><span class="t">        <span class="com"># Article.objects.create does not consistently make CategoryItem</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t580" class="run"><span class="n"><a href="#t580">580</a></span><span class="t">        <span class="nam">a</span> <span class="op">=</span> <span class="nam">Article</span><span class="op">(</span><span class="nam">author</span><span class="op">=</span><span class="nam">user</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t581" class="run"><span class="n"><a href="#t581">581</a></span><span class="t">        <span class="nam">a</span><span class="op">.</span><span class="nam">save</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t582" class="run"><span class="n"><a href="#t582">582</a></span><span class="t">        <span class="key">return</span> <span class="nam">ArticleHandler</span><span class="op">(</span><span class="nam">a</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t583" class="pln"><span class="n"><a href="#t583">583</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -717,7 +717,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.3.1</a>,
-            created at 2021-02-12 17:02 +1030
+            created at 2021-02-15 20:50 +1030
         </p>
     </div>
 </div>
