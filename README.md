@@ -1,2 +1,2 @@
-# WillAndWilliamBlog
- This is a blog made using the Django framework
+# WWBlog
+ A blog web app made using the Django framework
