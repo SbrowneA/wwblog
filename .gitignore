@@ -195,3 +195,4 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+/wwblog/wwapp/media/posts
