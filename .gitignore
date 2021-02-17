@@ -196,3 +196,5 @@ crashlytics-build.properties
 fabric.properties
 
 /wwblog/wwapp/media/posts
+/wwblog/account/migrations
+/wwblog/wwapp/migrations
