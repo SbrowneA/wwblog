@@ -147,6 +147,9 @@ dmypy.json
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
+# screw it ingore the whole folder 
+.idea
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
@@ -165,6 +168,8 @@ dmypy.json
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
+.idea/dataSources.xml
+.idea/discord.xml
 
 # Gradle
 .idea/**/gradle.xml
@@ -197,4 +202,5 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-/wwblog/wwapp/media/posts
+wwapp/media/posts
+
