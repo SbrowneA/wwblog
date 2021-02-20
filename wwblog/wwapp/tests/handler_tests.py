@@ -386,13 +386,13 @@ class ArticleHandlerTests(TestCase):
         proj = CategoryHandler.create_project(self.authors[0])
         topic = CategoryHandler.create_project(self.authors[0])
         CategoryHandler(proj).add_child_category(topic)
-        parent_article = ArticleHandler.create_new_article(self.authors[0]).article
+        parent_article = ArticleHandler.create_new_article(self.authors[0])
         print(parent_article.article_id)
         item = CategoryItem.objects.get(item_article_id=parent_article.article_id)
         print(f"ITEM: {item}")
         ArticleHandler(parent_article).publish_article(topic)
 
-        handler = ArticleHandler.create_new_article(self.authors[0])
+        handler = ArticleHandler(ArticleHandler.create_new_article(self.authors[0]))
         handler.publish_as_child_article(parent_article)
         topic_handler = CategoryHandler(topic)
         topic_handler.get_child_articles()
@@ -402,7 +402,7 @@ class ArticleHandlerTests(TestCase):
     def test_publish_article_to_project_raises_exception(self):
         print(f"\n{self._testMethodName}")
         proj = CategoryHandler.create_project(self.authors[0])
-        handler = ArticleHandler.create_new_article(self.authors[0])
+        handler = ArticleHandler(ArticleHandler.create_new_article(self.authors[0]))
         with self.assertRaises(ValueError):
             handler.publish_article(proj)
 
@@ -423,18 +423,38 @@ class ArticleHandlerTests(TestCase):
         parent = ArticleHandler(self.main_article).get_parent_article()
         self.assertIsNone(parent)
 
-    @skip("TODO")
     def test_get_parent_article(self):
         print(f"\n{self._testMethodName}")
-        # handler =
-        pass
+        prj_h = CategoryHandler(CategoryHandler.create_project(self.authors[0]))
+        topic = CategoryHandler.create_project(self.authors[0])
+        prj_h.add_child_category(topic)
+        a1 = Article(author=self.authors[0])
+        a1.save()
+        ArticleHandler(a1).publish_article(topic)
+        a2 = Article(author=self.authors[0])
+        a2.save()
+        handler = ArticleHandler(a2)
+        handler.publish_as_child_article(a1)
+        self.assertEqual(a1, handler.get_parent_article())
 
-    @skip("TODO")
     def test_get_child_article_returns_none(self):
         print(f"\n{self._testMethodName}")
-        pass
+        child = ArticleHandler(self.main_article).get_parent_article()
+        self.assertIsNone(child)
 
-    @skip("TODO")
+    # @skip("TODO")
     def test_get_child_article(self):
         print(f"\n{self._testMethodName}")
-        pass
+        prj_h = CategoryHandler(CategoryHandler.create_project(self.authors[0]))
+        topic = CategoryHandler.create_project(self.authors[0])
+        prj_h.add_child_category(topic)
+        a1 = Article(author=self.authors[0])
+        a1.save()
+        p_handler = ArticleHandler(a1)
+        p_handler.publish_article(topic)
+        a2 = Article(author=self.authors[0])
+        a2.save()
+
+        c_handler = ArticleHandler(a2)
+        c_handler.publish_as_child_article(a1)
+        self.assertEqual(a2, p_handler.get_child_article())

@@ -579,7 +579,10 @@ class ArticleHandler:
         # Article.objects.create does not consistently make CategoryItem
         a = Article(author=user)
         a.save()
-        return ArticleHandler(a)
+        return a
+        # TODO
+        # returning handler is misleading
+        # return ArticleHandler(a)
 
     @staticmethod
     def get_user_published_articles(user: User):

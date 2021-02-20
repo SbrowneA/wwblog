@@ -46,8 +46,8 @@ def index(request):
 @login_required
 @minimum_role_required(min_role_name='member')
 def create_new_article(request):
-    handler = ArticleHandler.create_new_article(request.user)
-    return redirect('wwapp:edit_article', article_id=handler.article.article_id)
+    article = ArticleHandler.create_new_article(request.user)
+    return redirect('wwapp:edit_article', article_id=article.article_id)
 
 
 def open_article(request, article_id):

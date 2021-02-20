@@ -60,8 +60,9 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
-db.sqlite3-journal
+# DONT ingnore for Heroku
+# db.sqlite3
+# db.sqlite3-journal
 
 # Flask stuff:
 instance/
@@ -136,10 +137,11 @@ dmypy.json
 
 # Ignore Django Migrations in Development if you are working on team
 
-# Only for Development!
-# **/migrations/**
-# !**/migrations
-# !**/migrations/__init__.py
+# Only for Development! 
+# keep if on Heroku https://help.heroku.com/GDQ74SU2/django-migrations
+# ** /migrations/**
+# !** /migrations
+# !** /migrations/__init__.py
 
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
@@ -196,5 +198,3 @@ crashlytics-build.properties
 fabric.properties
 
 /wwblog/wwapp/media/posts
-/wwblog/account/migrations
-/wwblog/wwapp/migrations
