@@ -27,7 +27,7 @@ SECRET_KEY = os.environ['WWBLOG_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -91,6 +91,16 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.environ['WWBLOG_DB_NAME'],
+#         'USER': os.environ['WWBLOG_DB_USER'],
+#         'PASSWORD': os.environ['WWBLOG_DB_PASSWORD'],
+#         'HOST': os.environ['WWBLOG_DB_HOST'],
+#         'PORT': os.environ['WWBLOG_DB_PORT'],
+#     }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
