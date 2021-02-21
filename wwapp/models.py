@@ -1,4 +1,4 @@
-import django
+# import django
 from django.core import exceptions
 # from django.shortcuts import get_object_or_404
 from django.utils import timezone

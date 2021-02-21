@@ -1,13 +1,15 @@
 import os
 import hashlib
-from django.db import models, IntegrityError
+from django.db import (
+    # models, \
+    IntegrityError)
 from django.core import exceptions
 from .models import (Article, ArticleEditor, ArticleVersion,
                      Category, CategoryEditor, CategoryItem,
                      CategoryItemAssignation)
 from wwblog.settings import POSTS_ROOT
 from django.contrib.auth import get_user_model
-from account.role_validator import is_moderator_or_admin
+# from account.role_validator import is_moderator_or_admin
 
 User = get_user_model()
 

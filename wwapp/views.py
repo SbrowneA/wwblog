@@ -1,22 +1,27 @@
-import os
+# import os
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import user_passes_test
+# from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import (
+    # Http404,
+    HttpResponse,
+    # HttpResponseRedirect
+)
 from . import forms
-from django.utils.translation import gettext as _
-from account.decorators import (authentication_required,
-                                unauthenticated_user,
-                                allowed_user_roles,
-                                active_user,
-                                minimum_role_required,
-                                article_edit_privilege,
-                                article_author_or_moderator,
-                                category_edit_privilege,
-                                category_creator_or_moderator,
-                                )
+# from django.utils.translation import gettext as _
+from account.decorators import (
+    # authentication_required,
+    # unauthenticated_user,
+    # allowed_user_roles,
+    # active_user,
+    minimum_role_required,
+    article_edit_privilege,
+    article_author_or_moderator,
+    category_edit_privilege,
+    category_creator_or_moderator,
+)
 from .handlers import ArticleHandler, CategoryHandler
 # , create_new_article as new_article_handler
 from django.db import IntegrityError
@@ -126,8 +131,8 @@ def edit_article(request, article_id):
         # elif request.POST.get("draft"):
         #     a_handler.draft_article()
         # elif request.POST.get("save"):
-            # code to save already excecuted
-            # print("save")
+        # code to save already executed
+        # print("save")
     # values['form'] = form
     return render(request, "wwapp/edit_article.html", values)
 
@@ -139,6 +144,7 @@ def draft_article(request, article_id):
     if a.published:
         ArticleHandler(a).draft_article()
     return redirect('wwapp:edit_article', article_id)
+
 
 @login_required
 @article_author_or_moderator
@@ -185,10 +191,12 @@ def edit_category(request, category_id):
                         values["child_categories"] = c_handler.get_child_categories()
                     else:
                         form.add_error("new_category_name",
-                                   f"This {c_handler.get_child_category_type().lower().capitalize()} name is invalid")
+                                       f"This {c_handler.get_child_category_type().lower().capitalize()}"
+                                       f" name is invalid")
                 except IntegrityError:
                     form.add_error("new_category_name",
-                                   f"The {c_handler.get_child_category_type().lower().capitalize()} name must be unique globally")
+                                   f"The {c_handler.get_child_category_type().lower().capitalize()}"
+                                   f" name must be unique globally")
             if request.POST.get("save"):
                 try:
                     cat_name = form.cleaned_data.get("category_name")
@@ -230,11 +238,12 @@ def delete_category(request, category_id: int):
 @category_creator_or_moderator
 def delete_child_category(request, parent_id: int, child_id: int):
     child_cat = get_object_or_404(Category, category_id=child_id)
-    parent_cat = get_object_or_404(Category, category_id=parent_id)
-    handler = CategoryHandler.delete_category(child_cat)
+    # parent_cat = get_object_or_404(Category, category_id=parent_id)
+    CategoryHandler.delete_category(child_cat)
     return redirect(edit_category, parent_id)
     # path = request.path()
     # path = path.split("/")
+
 
 """
 @login_required
@@ -254,6 +263,7 @@ def create_sub_category(request, parent_id):
     # pass
 
 """
+
 
 @login_required
 # @allowed_users(allowed_roles=['moderator'])
@@ -311,6 +321,7 @@ def browse_users(request):
 
 def browse_categories(request):
     return HttpResponse(f"categories")
+
 
 #
 # def user_details(request, user_id):
@@ -373,7 +384,6 @@ def image_upload_test(request):
     # if request.POST
 
     return render(request, 'wwapp/upload_image_test.html', values)
-
 
 # def upload_test2(request):
 #     values = {}

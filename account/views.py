@@ -71,7 +71,7 @@ def register_user(request):
             if qs1 == 0 and qs2 == 0:
                 user = User.objects.create_user(username=username, password=password, email=email)
                 request.session['successfully_registered'] = 1
-                # TODO
+                # TODO add groups to new database before registering
                 group = Group.objects.get(name='member')
                 user.groups.add(group)
                 return redirect("wwapp:register_success", permanent=True)
