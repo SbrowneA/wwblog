@@ -27,7 +27,7 @@ SECRET_KEY = os.environ['WWBLOG_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["wwblog-test2.herokuapp"]
+ALLOWED_HOSTS = ["wwblog-test2", "wwblogs", "127.0.0.1"]
 
 # Application definition
 
