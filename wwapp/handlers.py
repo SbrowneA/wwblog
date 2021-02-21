@@ -359,10 +359,7 @@ class CategoryHandler:
         topics = CategoryHandler.get_user_topics(user)
         subtopics = CategoryHandler.get_user_subtopics(user)
         articles = ArticleHandler.get_user_published_articles(user)
-        print("topics", topics)
-        print("subtopics", subtopics)
         # articles = sorted(articles, key=lambda article: article.article_title)
-        print("articles", articles)
         list(articles).sort(key=lambda article: article.article_title)
         # TODO get editor topics and articles
         # not recommended to load the whole query set in to memory (i.e list()) and only load required variables instead
@@ -384,7 +381,7 @@ class CategoryHandler:
         # get the last id of all Category objects
         try:
             cats = Category.objects.all().order_by('category_id')
-            print(cats)
+            # print(cats)
             if len(cats) > 0:
                 # negative indexing is not supported again? (i.e. cats[-1])
                 last_cat = cats[len(cats) - 1]
@@ -415,8 +412,10 @@ class CategoryHandler:
 
 
 class ArticleHandler:
+
     def __init__(self, article):
         self.article = article
+        self.__name__ = "ArticleHandler"
 
     def get_category_item(self) -> CategoryItem:
         return CategoryItem.objects.get(item_article_id=self.article.article_id)
@@ -614,10 +613,15 @@ class ArticleHandler:
 
     # must return T or F!!
     def save_article_content(self, new_content) -> bool:
-        file_dir = self.__get_latest_file_dir()
-        with open(file_dir, 'w') as file:
-            file.write(new_content)
-        return True
+        # TODO check for success and notify on front end
+        try:
+            file_dir = self.__get_latest_file_dir()
+            with open(file_dir, 'w') as file:
+                file.write(new_content)
+            return True
+        except FileNotFoundError:
+            print(f"{self.__name__}.{self.save_article_content.__name__} -> FileNotFoundError was thrown")
+            return False
 
     def get_article_content(self) -> str:
         file_dir = self.__get_latest_file_dir()
@@ -627,7 +631,8 @@ class ArticleHandler:
                 print("article content loaded")
             return str(content)
         except FileNotFoundError:
-            print("FileNotFoundError was thrown: article content NOT found")
+            print(f"ArticleHandler.{self.get_article_content.__name__}"
+                  f" -> FileNotFoundError was thrown: article content NOT found")
             return ""
 
     def __remove_latest_file(self):
@@ -647,7 +652,8 @@ class ArticleHandler:
             if os.path.exists(file_dir):
                 os.remove(file_dir)
             else:
-                print("This article version has no corresponding file")
+                print(f"{self.__remove_all_article_files().__name__}This article version "
+                      f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
                 # raise FileNotFoundError("File for the latest version of this article could not be found")
 
     def delete_article(self):

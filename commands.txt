@@ -97,3 +97,14 @@ deactivate
 https://django-tinymce.readthedocs.io/en/latest/installation.html
 # add to requirements.txt
 django-tinymce==3.2.0
+
+
+# HEROKU CLI
+# show logs for a specific app
+heroku logs --app=app-name
+
+# check how many dynos are running
+heroku ps
+
+# scale dynos (1=on or 0=off)
+heroku ps:scale web=0

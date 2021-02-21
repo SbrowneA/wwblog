@@ -31,7 +31,6 @@ User = get_user_model()
 def index(request):
     latest_articles = ArticleHandler.get_latest_published_articles(count=5)
     # projects = Category.get_root_categories()
-
     values = {
         "latest_articles_list": latest_articles,
         # "categories": projects,
@@ -179,7 +178,7 @@ def edit_category(request, category_id):
             if request.POST.get("add"):
                 try:
                     new_cat_name = form.cleaned_data.get("new_category_name")
-                    print(f"Name: {new_cat_name}")
+                    # print(f"Name: {new_cat_name}")
                     if new_cat_name != "":
                         new_cat = Category.objects.create(category_name=new_cat_name, category_creator=request.user)
                         c_handler.add_child_category(new_cat)
@@ -220,9 +219,10 @@ def delete_category(request, category_id: int):
     parent_id = request.session.get("parent_category_return") or None
     if parent_id is not None:
         request.session.delete('parent_category_return')
-        print("redirecting to parent")
+        # TODO test
+        # print("redirecting to parent")
         return redirect(edit_category, parent_id)
-    print("redirecting to manage page")
+    # print("redirecting to manage page")
     return redirect('wwapp:manage_own_content')
 
 
@@ -266,8 +266,8 @@ def upload_test(request):
         file_name = fs.save(new_file.name, new_file)
         url = fs.url(file_name)
         values['image_url'] = url
-        print(f"File name: {new_file.name}")
-        print(f"File size: {new_file.size}")
+        # print(f"File name: {new_file.name}")
+        # print(f"File size: {new_file.size}")
     return render(request, 'wwapp/upload_test.html', values)
 
 
