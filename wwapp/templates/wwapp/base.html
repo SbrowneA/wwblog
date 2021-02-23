@@ -11,6 +11,7 @@
     <script src="{% static 'wwapp/js/main.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/fonts.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/style.css' %}">
+    <link rel="shortcut icon" type="image/jpg" href="{% static 'media/images/icon.jpg' %}"/>
     <title>WWBLogs - {% block title %}{% endblock %}</title>
 </head>
 
@@ -24,18 +25,20 @@
             </div>
             {% if request.user.is_authenticated %}
                 <button class="btn btn-primary h-100 mt-2" id="logout-btn"
-                        onclick="location.href = '{% url 'wwapp:logout' %}'">Logout</button>
+                        onclick="location.href = '{% url 'wwapp:logout' %}'">Logout
+                </button>
             {% else %}
                 <button class="btn btn-primary h-100 mt-2" id="login-btn"
-                        onclick="location.href = '{% url 'wwapp:login' %}'">Login</button>
+                        onclick="location.href = '{% url 'wwapp:login' %}'">Login
+                </button>
             {% endif %}
         </div>
 
         <div class="row banner__nav">
             <a href="{% url 'wwapp:index' %}">Home</a>
-            {#            <a href="{% url 'wwapp:browse_users' %}">Authors</a>#}
-            {#            <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>#}
-            {#            <a href="{% url 'wwapp:browse_categories' %}">Projects</a>#}
+{#            <a href="{% url 'wwapp:browse_users' %}">Authors</a>#}
+{#            <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>#}
+{#            <a href="{% url 'wwapp:browse_categories' %}">Projects</a>#}
             <div class="input-group- mb3">
                 <div class="input-group-prepend pb-50">
                     <input type="text" name="search" placeholder="Search..">
@@ -52,7 +55,7 @@
 
     <div class="nav col-3 ">
         {% block left_nav %}
-            <h1 class="mx-auto">Nav div</h1>
+{#            <h1 class="mx-auto"></h1>#}
         {% endblock %}
     </div>
 

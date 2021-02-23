@@ -2,6 +2,7 @@
 /* NORMAL */
 @font-face {
     font-family: 'WorkSans';
+    /*src: url('/fonts/work-sans/WorkSans-Regular.otf') format('opentype');*/
     src: url('fonts/work-sans/WorkSans-Regular.otf') format('opentype');
     font-weight: normal;
 }

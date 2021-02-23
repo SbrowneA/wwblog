@@ -66,6 +66,7 @@ html {
 }
 
 h1, h2, h3, h4 {
+    /*font-family: WorkSans, sans-serif;*/
     font-family: WorkSans, serif;
 }
 
