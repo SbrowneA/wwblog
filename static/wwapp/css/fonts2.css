@@ -1,0 +1,120 @@
+@charset "utf-8";
+/* NORMAL */
+@font-face {
+    font-family: 'WorkSans';
+    /*src: url('/fonts/work-sans2/WorkSans-Regular.ttf') format('truetype');*/
+    src: url('fonts/work-sans2/WorkSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans2/WorkSans-Italic.ttf') format('truetype');
+    font-style: italic;
+    font-weight: normal;
+}
+
+/* REGULAR */
+@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans2/WorkSans-Medium.ttf') format('truetype');
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans2/WorkSans-MediumItalic.ttf') format('truetype');
+    font-style: italic;
+    font-weight: 500;
+}
+
+/* BOLD */
+@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans2/WorkSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans2/WorkSans-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* SEMI-BOLD */
+@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans2/WorkSans-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans2/WorkSans-SemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+}
+
+/* LIGHT */
+@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans2/WorkSans-Light.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans2/WorkSans-LightItalic.ttf') format('truetype');
+    font-style: italic;
+    font-weight: 200;
+}
+
+/* THIN */
+@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans2/WorkSans-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans2/WorkSans-ThinItalic.ttf') format('truetype');
+    font-style: italic;
+    font-weight: 100;
+}
+
+/*Alternate font*/
+@font-face {
+    font-family: 'Alta';
+    src: url('fonts/alata/alata-regular.ttf') format('truetype');
+    font-style: italic;
+    font-weight: 100;
+}
+
+/*Testing looks by id*/
+/*#normal {*/
+/*    font-style: italic;*/
+/*    font-weight: 100;*/
+/*    color: lightgreen;*/
+/*}*/
+
+/*#light {*/
+/*    !* font-style: italic; *!*/
+/*    !* font-weight: 200; *!*/
+/*    font-weight: 100;*/
+/*    font-style: normal;*/
+/*    color: lightblue;*/
+/*}*/
+
+/*#bold {*/
+/*    !* font-style: bold; *!*/
+/*    !* font-style: italic; *!*/
+/*    font-weight: bold;*/
+/*    color: wheat;*/
+/*}*/
+
