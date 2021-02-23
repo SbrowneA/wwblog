@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['WWBLOG_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["wwblog-test2.herokuapp.com", "wwblog.herokuapp.com", "127.0.0.1"]
 ADMINS = [("Admin", "wwblog.manage@gmail.com"), ]
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
     # - aws
-    # 'storages',
+    'storages',
     # my apps
     'wwapp.apps.WwappConfig',
     'account.apps.AccountConfig',
@@ -140,27 +140,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-# STATIC_URL = '/static/'
 # STATICFILES_DIRS = (
 #     os.path.join(BASE_DIR, "static"),
 #     os.path.join(Path(__file__).resolve().parent.parent.parent, 'static', 'wwapp')
 # )
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
-# making SITE_ROOT because it does not allow the use of STATIC_ROOT
-# SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
-# STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'wwapp', 'media')
-# MEDIA_ROOT = Path(__file__).resolve().parent.parent / 'wwapp/media/'
-# MEDIA_ROOT = Path(__file__).resolve().parent.parent.parent / 'media/'
 
 # TINYMCE_JS_URL = os.path.join(STATIC_URL, "path/to/tiny_mce/tiny_mce.js")
 # TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
@@ -168,14 +160,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
 POSTS_ROOT = os.path.join(MEDIA_ROOT, 'wwapp', 'posts')
 
 #S3 BUCKETS CONFIG
-# AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
-# AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
-# AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
-# AWS_S3_FILE_OVERWRITE = True
-# AWS_DEFAULT_ACL = None
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# can be local istead
-# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+AWS_S3_FILE_OVERWRITE = True
+AWS_DEFAULT_ACL = None
+# can be local instead (static folder)
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
 #SMTP Configuration

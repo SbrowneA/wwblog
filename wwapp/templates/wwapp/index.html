@@ -1,8 +1,8 @@
-{% extends 'wwapp/base.html'%}
+{% extends 'wwapp/base.html' %}
 {% block title %}
-   Home
+    Home
 {% endblock %}
-
+{% load static %}
 {% block right_nav %}
     {% if request.user.is_authenticated %}
         <h2>Hello, {{ request.user.username }}</h2>
@@ -13,6 +13,11 @@
 {% endblock %}
 
 {% block content %}
+    <img src="{% static 'img.jpg' %}" alt="an image"><br/>
+    <img src="{% static '/img.jpg' %}" alt="an image"><br/>
+    <img src="{% static 'static/img.jpg' %}" alt="an image"><br/>
+    <img src="{% static '/static/img.jpg' %}" alt="an image"><br/>
+    <p>An image is meant to go here</p>
     <h3>Latest articles</h3>
     {% if latest_articles_list %}
         <ul title="Latest articles">
@@ -29,19 +34,19 @@
     {% if categories %}
         {% for cat in categories %}
             <li>
-                <a href="{%  url 'wwapp:open_category' cat.category_id %}">{{ cat.category_name }}</a>
+                <a href="{% url 'wwapp:open_category' cat.category_id %}">{{ cat.category_name }}</a>
             </li>
         {% endfor %}
     {% else %}
         <p>There are no projects.</p>
     {% endif %}
-{#    <br>#}
-{#    <h1 style="text-decoration: overline;">#}
-{#        H1 goes here some titlez</h1>#}
-{#    <h2>H2 goes here some titlezxygj</h2>#}
-{#    <h3>H3 goes here some titlezxygj</h3>#}
-{#    <h4>H4 goes here some titlezxygj</h4>#}
-{#    <p>p goes here some titlezxygj</p>#}
-{#    <i>i goes here some titlezxygj</i> <br>#}
-{#    <b>b goes here some titlezxygj</b>#}
+    {#    <br>#}
+    {#    <h1 style="text-decoration: overline;">#}
+    {#        H1 goes here some titlez</h1>#}
+    {#    <h2>H2 goes here some titlezxygj</h2>#}
+    {#    <h3>H3 goes here some titlezxygj</h3>#}
+    {#    <h4>H4 goes here some titlezxygj</h4>#}
+    {#    <p>p goes here some titlezxygj</p>#}
+    {#    <i>i goes here some titlezxygj</i> <br>#}
+    {#    <b>b goes here some titlezxygj</b>#}
 {% endblock %}
