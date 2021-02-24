@@ -11,6 +11,7 @@ from django.http import (
     HttpResponse,
     # HttpResponseRedirect
 )
+from wwblog import settings
 from . import forms
 # from django.utils.translation import gettext as _
 from account.decorators import (
@@ -36,6 +37,9 @@ User = get_user_model()
 
 
 def index(request):
+    print("STATICFILES_STORAGE", settings.STATICFILES_STORAGE)
+    print("DIRS", settings.STATICFILES_DIRS)
+    print("MEDIA", settings.MEDIA_ROOT)
     latest_articles = ArticleHandler.get_latest_published_articles(count=5)
     # projects = Category.get_root_categories()
     values = {

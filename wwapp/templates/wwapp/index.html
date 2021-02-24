@@ -14,9 +14,9 @@
 
 {% block content %}
     <img src="{% static 'img.jpg' %}" alt="an image"><br/>
-    <img src="{% static '/img.jpg' %}" alt="an image"><br/>
-    <img src="{% static 'static/img.jpg' %}" alt="an image"><br/>
-    <img src="{% static '/static/img.jpg' %}" alt="an image"><br/>
+{#    <img src="{% static '/img.jpg' %}" alt="an image"><br/>#}
+{#    <img src="{% static 'static/img.jpg' %}" alt="an image"><br/>#}
+{#    <img src="{% static '/static/img.jpg' %}" alt="an image"><br/>#}
     <p>An image is meant to go here</p>
     <h3>Latest articles</h3>
     {% if latest_articles_list %}
