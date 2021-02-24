@@ -2,8 +2,8 @@ from django.urls import path
 from . import views
 from account import views as account_views
 
-# from django.conf.urls.static import static
-# from django.conf import settings
+from django.conf.urls.static import static
+from django.conf import settings
 
 app_name = 'wwapp'
 
@@ -31,10 +31,12 @@ urlpatterns = [
     path('category/<int:category_id>/delete/<int:child_id>', views.delete_child_category, name='add_sub_category'),
     path('category/createproject', views.create_project, name='new_project'),
     # path('test', views.image_upload_test, name='upload_test'),
+    path('test', views.upload_test, name='upload_test'),
     # path('edit', views.editor_test, name='editor_test'),
 ]
-# if settings.DEBUG:
-#     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 """
 the following urls cannot bee changed without making adjustments to dependent code

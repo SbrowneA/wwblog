@@ -1,4 +1,6 @@
 # import os
+import os
+
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -266,22 +268,6 @@ def create_sub_category(request, parent_id):
 
 
 @login_required
-# @allowed_users(allowed_roles=['moderator'])
-def upload_test(request):
-    values = {}
-    if request.method == "POST":
-        # name of input 'document'
-        new_file = request.FILES['document']
-        fs = FileSystemStorage()
-        file_name = fs.save(new_file.name, new_file)
-        url = fs.url(file_name)
-        values['image_url'] = url
-        # print(f"File name: {new_file.name}")
-        # print(f"File size: {new_file.size}")
-    return render(request, 'wwapp/upload_test.html', values)
-
-
-@login_required
 def manage_own_content(request):
     drafted_articles = ArticleHandler.get_user_drafted_articles(request.user)
     published_articles = ArticleHandler.get_user_published_articles(request.user)
@@ -384,6 +370,24 @@ def image_upload_test(request):
     # if request.POST
 
     return render(request, 'wwapp/upload_image_test.html', values)
+
+
+# @login_required
+# @allowed_users(allowed_roles=['moderator'])
+def upload_test(request):
+    values = {}
+    if request.method == "POST":
+        # name of input 'document'
+        new_file = request.FILES['document']
+        fs = FileSystemStorage()
+        file_dir = os.path.join("images", new_file.name)
+        file_name = fs.save(file_dir, new_file)
+        url = fs.url(file_name)
+        values['image_url'] = url
+        # print(f"File name: {new_file.name}")
+        # print(f"File size: {new_file.size}")
+    return render(request, 'wwapp/upload_test.html', values)
+
 
 # def upload_test2(request):
 #     values = {}
