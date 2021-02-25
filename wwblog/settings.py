@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -146,37 +147,36 @@ USE_TZ = True
 # )
 
 
-STATIC_URL = '/static/'
-
-# if DEBUG:
-#     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_URL = '/static/' # dev only
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static') # dev only
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # for collect static command
+# STATICFILES_DIRS = (os.path.join("static"),) # dev only
 
 MEDIA_URL = '/media/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # TINYMCE_JS_URL = os.path.join(STATIC_URL, "path/to/tiny_mce/tiny_mce.js")
 # TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
 
 POSTS_ROOT = os.path.join(MEDIA_ROOT, 'wwapp', 'posts')
 
-#S3 BUCKETS CONFIG
+# S3 BUCKETS CONFIG
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
-AWS_S3_FILE_OVERWRITE = True
-AWS_DEFAULT_ACL = False
-# AWS_DEFAULT_ACL = 'public-read'
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_LOCATION = 'static'
-# AWS_DEFAULT_ACL = 'public-read'
+AWS_DEFAULT_ACL = 'public-read'
+# AWS_DEFAULT_ACL = False
+
+AWS_S3_FILE_OVERWRITE = True
 # can be local instead (static folder)
 # if not DEBUG:
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-
-#SMTP Configuration
+DEFAULT_FILE_STORAGE = 'wwblog.storages.MediaStore'
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+# SMTP Configuration
 """
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -185,7 +185,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = '*********'
 EMAIL_HOST_PASSWORD = '*********'
 """
-
 
 TINYMCE_DEFAULT_CONFIG = {
     "min-height": "1000px",
@@ -209,15 +208,10 @@ TINYMCE_DEFAULT_CONFIG = {
 AUTH_USER_MODEL = 'account.User'
 
 # CSRF_COOKIE_SECURE = True
-
 # SESSION_COOKIE_SECURE = True
-
 # SECURE_SSL_REDIRECT = True
-
 # SECURE_HSTS_SECONDS =
 
 LOGIN_URL = "/login"
-
 LOGIN_REDIRECT_URL = "/"
-
 LOGOUT_REDIRECT_URL = "/"

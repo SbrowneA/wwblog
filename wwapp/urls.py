@@ -34,9 +34,9 @@ urlpatterns = [
     path('test', views.upload_test, name='upload_test'),
     # path('edit', views.editor_test, name='editor_test'),
 ]
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-#     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 """
 the following urls cannot bee changed without making adjustments to dependent code

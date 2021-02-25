@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 # from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import (
+    JsonResponse,
     # Http404,
     HttpResponse,
     # HttpResponseRedirect
@@ -32,14 +33,14 @@ import logging
 from . import imgur
 from .models import (Article,
                      Category)
-
+from wwblog.storages import MediaStorage
 User = get_user_model()
 
 
 def index(request):
     print("STATICFILES_STORAGE", settings.STATICFILES_STORAGE)
-    print("DIRS", settings.STATICFILES_DIRS)
-    print("MEDIA", settings.MEDIA_ROOT)
+    # print("DIRS", settings.STATICFILES_DIRS)
+    # print("MEDIA", settings.MEDIA_ROOT)
     latest_articles = ArticleHandler.get_latest_published_articles(count=5)
     # projects = Category.get_root_categories()
     values = {
@@ -380,18 +381,41 @@ def image_upload_test(request):
 # @allowed_users(allowed_roles=['moderator'])
 def upload_test(request):
     values = {}
-    if request.method == "POST":
-        # name of input 'document'
+    # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#storage
+    if request.POST:
         new_file = request.FILES['document']
-        fs = FileSystemStorage()
-        file_dir = os.path.join("images", new_file.name)
-        file_name = fs.save(file_dir, new_file)
-        url = fs.url(file_name)
-        values['image_url'] = url
-        # print(f"File name: {new_file.name}")
-        # print(f"File size: {new_file.size}")
-    return render(request, 'wwapp/upload_test.html', values)
+        # dir_in_bucket = f"posts/{request.user.id}"
+        dir_in_bucket = f"posts"
+        dir_in_bucket = os.path.join(dir_in_bucket, new_file.name)
+        media_storage = MediaStorage()
+        if not media_storage.exists(dir_in_bucket):
+            media_storage.save(dir_in_bucket, new_file)
+            file_url = media_storage.url(dir_in_bucket)
+            # return JsonResponse({
+            #     'message': 'OK', 'fileUrl': file_url
+            # })
+            values['image_url'] = file_url
+        # else:
+        #     values['image_url'] = None
+            # return JsonResponse({
+            #     'message': 'Error: file {filename} already exists at {file_directory} in bucket {bucket_name}'.format(
+            #         filename=new_file.name,
+            #         file_directory=dir_in_bucket,
+            #         bucket_name=media_storage.bucket_name
+            #     ),
+            # }, status=400)
 
+    # if request.method == "POST":
+    #     # name of input 'document'
+    #     new_file = request.FILES['document']
+    #     fs = FileSystemStorage()
+    #     # file_dir = os.path.join("images", new_file.name)
+    #     # file_name = fs.save(file_dir, new_file)
+    #     # url = fs.url(file_name)
+    #     # values['image_url'] = url
+    #     # print(f"File name: {new_file.name}")
+    #     # print(f"File size: {new_file.size}")
+    return render(request, 'wwapp/upload_test.html', values)
 
 # def upload_test2(request):
 #     values = {}

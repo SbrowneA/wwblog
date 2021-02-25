@@ -8,7 +8,12 @@
         <input type="file" name="document">
         <button type="submit">Upload File</button>
     </form>
-    <p>{{ image_url }}
+    {% if image_url %}
+            <p>{{ image_url  }}</p>
     <img src="{{ image_url }}" alt="uploaded image">
-    </p>
+    {% else %}
+        <p>Error could not upload image</p>
+    {% endif %}
+
+
 {% endblock %}
