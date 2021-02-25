@@ -85,8 +85,6 @@ class Category(models.Model):
 
 class Article(models.Model):
     article_id = models.AutoField(primary_key=True)
-    # TODO make id for table and article_no for reference
-    # article_no = models.IntegerField(default=0)
     article_title = models.CharField(max_length=45)
     pub_date = models.DateTimeField(blank=True, null=True)
     author = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -163,6 +161,7 @@ class ArticleVersion(models.Model):
     def save(self, *args, **kwargs):
         # TODO for later: make new version when saving instead of only keeping the first
         #  ** only new versions should be saved. old versions should not be overridden
+        #  for now: Only one version will be stored (Version 1) and overridden
         # try:
         #     # self.file_name = f'{self.article_id}_{self.version}'
         #     versions = ArticleVersion.objects.filter(article_id=self.article_id).order_by('version')

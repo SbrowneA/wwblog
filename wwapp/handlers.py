@@ -109,6 +109,7 @@ class CategoryHandler:
         return articles
 
     def get_category_editors(self):
+        # TODO test
         try:
             editors = CategoryEditor.objects.filter(category_id=self.category.category_id)
             if len(editors) != 0:
@@ -124,7 +125,8 @@ class CategoryHandler:
             last_pos = 0
 
         try:
-            # TODO get parent cat handler remove child item and add to self
+            # TODO **BUG TO FIX HERE **
+            #  get parent cat handler remove child item and add to self
             a = CategoryItemAssignation.objects.get(item_id=new_child_item.item_id)
             if a.parent_category_id == self.category.category_id:
                 raise ValueError("This item has already been assigned to the parent category, try moving it instead")
@@ -135,10 +137,11 @@ class CategoryHandler:
                 a.save()
 
         except exceptions.ObjectDoesNotExist:
+            pass
             # make new assignation with parent as self
-            a = CategoryItemAssignation(parent_category_id=self.category.category_id, item=new_child_item,
+        assignation = CategoryItemAssignation(parent_category_id=self.category.category_id, item=new_child_item,
                                         position=last_pos)
-            a.save()
+        assignation.save()
 
     def add_child_article(self, article: Article):
         if self.category.category_type == Category.CategoryType.TOPIC or \
@@ -187,7 +190,8 @@ class CategoryHandler:
         """
         assignations = self.get_child_assignations()
         if new_pos > len(assignations) or new_pos <= 0:
-            raise ValueError("Position new must be greater than 0")
+            raise ValueError("Position new must be greater than 0 "
+                             "and within the assignation range i.e. len(assignations)")
         moving_a = _CategoryItemHandler(child_item).get_assignation()
         old_pos = moving_a.position
         new_pos -= 1
@@ -210,8 +214,8 @@ class CategoryHandler:
 
     def _delete_child_item_assignation(self, child_item: CategoryItem):
         """
-        method only used to assign a child of a category item and re adjust the preceding assignation
-        positions accordingly. This method is only to be used my other methods such as ArticleHandler.draft_article
+        method only used to assign a child of a category item and re-adjust the succeeding assignations'
+        position accordingly. This method is only to be used by other methods such as ArticleHandler.draft_article
         or CategoryHandler.delete_category which handle cases such as article groups or categories with children.
         :param child_item:
         :return:
@@ -232,6 +236,7 @@ class CategoryHandler:
         child_items = del_handler.get_child_items()
         if child_items is not None and len(child_items) != 0:
             # delete child items of del_cat
+            # TODO test
             del_handler.draft_child_articles()
             del_handler.delete_child_categories()
 
@@ -239,6 +244,7 @@ class CategoryHandler:
         try:
             parent = del_handler.get_parent_category()
         except exceptions.ObjectDoesNotExist:
+            # TODO test (delete a project)
             parent = None
         if parent is not None:
             parent_handler = CategoryHandler(parent)
@@ -246,12 +252,14 @@ class CategoryHandler:
         del_cat.delete()
 
     def delete_child_categories(self):
+        # TODO test (with delete_category() that has child categories)
         categories = self.get_child_categories()
         for cat in categories:
             CategoryHandler.delete_category(cat)
             # self.delete_child_category(cat)
 
     def draft_child_articles(self):
+        # TODO test (with delete_category() that has child categories)
         articles = self.get_child_articles()
         for a in articles:
             a_handler = ArticleHandler(a)
@@ -262,7 +270,7 @@ class CategoryHandler:
         return CategoryItem.objects.get(item_category_id=self.category.category_id)
 
     def transfer_child_items(self, destination_category):
-        # TODO
+        # TODO incomplete method
         self.get_child_assignations()
         destination_category = CategoryHandler(destination_category)
         # destination_category._add_child_item()
@@ -272,6 +280,7 @@ class CategoryHandler:
         pass
 
     def get_child_category_type(self):
+        # TODO test
         if self.category.category_type == Category.CategoryType.PROJECT:
             return Category.CategoryType.TOPIC
         elif self.category.category_type == Category.CategoryType.TOPIC:
@@ -363,7 +372,7 @@ class CategoryHandler:
         articles = ArticleHandler.get_user_published_articles(user)
         # articles = sorted(articles, key=lambda article: article.article_title)
         list(articles).sort(key=lambda article: article.article_title)
-        # TODO get editor topics and articles
+        # TODO get editor topics and articles (not just authored)
         # not recommended to load the whole query set in to memory (i.e list()) and only load required variables instead
         topics = list(topics) + list(subtopics)
         choices = CategoryHandler.convert_topics_to_choice(topics)
@@ -581,9 +590,7 @@ class ArticleHandler:
         a = Article(author=user)
         a.save()
         return a
-        # TODO
-        # returning handler is misleading
-        # return ArticleHandler(a)
+
 
     @staticmethod
     def get_user_published_articles(user: User):
@@ -642,7 +649,7 @@ class ArticleHandler:
         if os.path.exists(file_dir):
             os.remove(file_dir)
         else:
-            # TODO make sure this is not a security risk
+            # TODO make sure this is not a security risk (printing dir)
             # raise FileNotFoundError(f"file could not be found at {file_dir}")
             raise FileNotFoundError("File for the latest version of this article could not be found")
 
