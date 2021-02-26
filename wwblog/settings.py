@@ -158,7 +158,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # TINYMCE_JS_URL = os.path.join(STATIC_URL, "path/to/tiny_mce/tiny_mce.js")
 # TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
 
-POSTS_ROOT = os.path.join(MEDIA_ROOT, 'wwapp', 'posts')
+POSTS_LOCATION = 'posts'
 
 # S3 BUCKETS CONFIG
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
@@ -174,7 +174,7 @@ AWS_S3_FILE_OVERWRITE = True
 # can be local instead (static folder)
 # if not DEBUG:
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-DEFAULT_FILE_STORAGE = 'wwblog.storages.MediaStore'
+DEFAULT_FILE_STORAGE = 'wwblog.storages.MediaStorage'
 STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
 # SMTP Configuration
 """
