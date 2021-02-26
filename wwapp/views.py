@@ -38,7 +38,7 @@ User = get_user_model()
 
 
 def index(request):
-    print("STATICFILES_STORAGE", settings.STATICFILES_STORAGE)
+    # print("STATICFILES_STORAGE", settings.STATICFILES_STORAGE)
     # print("DIRS", settings.STATICFILES_DIRS)
     # print("MEDIA", settings.MEDIA_ROOT)
     latest_articles = ArticleHandler.get_latest_published_articles(count=5)
@@ -388,7 +388,20 @@ def upload_test(request):
         dir_in_bucket = f"posts"
         dir_in_bucket = os.path.join(dir_in_bucket, new_file.name)
         media_storage = MediaStorage()
+        # if not media_storage.exists('post'):
+        #     print("posts does exists")
+        # if not media_storage.exists('post/'):
+        #     print("posts/ does not exists")
+        if media_storage.exists(dir_in_bucket):
+            print("already exists")
+            dir_in_bucket = os.path.join(dir_in_bucket, (new_file.name+"1"))
+
         if not media_storage.exists(dir_in_bucket):
+
+            file = media_storage.open("posts/test.txt", "w")
+            file.write("POOP")
+            file.close()
+
             media_storage.save(dir_in_bucket, new_file)
             file_url = media_storage.url(dir_in_bucket)
             # return JsonResponse({
