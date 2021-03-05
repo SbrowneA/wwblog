@@ -108,3 +108,12 @@ heroku ps
 
 # scale dynos (1=on or 0=off)
 heroku ps:scale web=0
+
+
+
+## AWS CLI COMMANDS
+aws s3 cp C:/users/sam/documents/github/wwblog/static/img.jpg s3://wwblog-storage/
+# prints when successful - upload: static\img.jpg to s3://wwblog-storage/img.jpg
+
+aws s3 cp s3://wwblog-storage/img.jpg C:/users/sam/documents/github/wwblog/media/
+# prints when successful - download: s3://wwblog-storage/img.jpg to media\img.jpg

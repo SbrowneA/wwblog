@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['WWBLOG_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["wwblog-test2.herokuapp.com", "wwblog.herokuapp.com", "127.0.0.1"]
 ADMINS = [("Admin", "wwblog.manage@gmail.com"), ]
@@ -141,10 +141,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, "static"),
-#     os.path.join(Path(__file__).resolve().parent.parent.parent, 'static', 'wwapp')
-# )
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
 
 
 # STATIC_URL = '/static/' # dev only
@@ -167,7 +166,8 @@ AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_LOCATION = 'static'
-AWS_DEFAULT_ACL = 'public-read'
+AWS_DEFAULT_ACL = None
+# AWS_DEFAULT_ACL = 'public-read'
 # AWS_DEFAULT_ACL = False
 
 AWS_S3_FILE_OVERWRITE = True

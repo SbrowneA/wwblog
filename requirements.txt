@@ -1,10 +1,12 @@
 asgiref==3.3.1
+boto3==1.17.13
 certifi==2020.12.5
 chardet==4.0.0
 coverage==5.3.1
 Django==3.1.5
 django-crispy-forms==1.10.0
 django-tinymce==3.2.0
+django-storages==1.11.1
 gunicorn==20.0.4
 idna==2.10
 imgurpython==1.1.7
@@ -16,5 +18,3 @@ requests==2.25.1
 sqlparse==0.4.1
 urllib3==1.26.2
 django-heroku==0.3.1
-
-boto3==1.17.13
