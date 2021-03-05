@@ -1,5 +1,6 @@
 # import os
 import os
+import traceback
 
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
@@ -383,31 +384,31 @@ def upload_test(request):
     values = {}
     # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#storage
     if request.POST:
-        new_file = request.FILES['document']
-        # dir_in_bucket = f"posts/{request.user.id}"
-        dir_in_bucket = f"posts"
-        dir_in_bucket = os.path.join(dir_in_bucket, new_file.name)
+        # new_file = request.FILES['document']
+        dir_in_bucket = os.path.join('posts', 'text.txt')
+
         media_storage = MediaStorage()
-        # if not media_storage.exists('post'):
-        #     print("posts does exists")
-        # if not media_storage.exists('post/'):
-        #     print("posts/ does not exists")
+        while media_storage.exists(dir_in_bucket):
+            dir_in_bucket = os.path.join(dir_in_bucket, '1')
         if media_storage.exists(dir_in_bucket):
             print("already exists")
-            dir_in_bucket = os.path.join(dir_in_bucket, (new_file.name+"1"))
+            # dir_in_bucket = os.path.join(dir_in_bucket, (new_file.name+"1"))
 
         if not media_storage.exists(dir_in_bucket):
+            try:
+                file = media_storage.open("posts/test.txt", "w")
+                file.write("test file")
+                file.close()
+            except Exception as ex :
+                # logging.error("Upload failed\n")
+                print(f"Upload failed\n{traceback.print_exc()}")
 
-            file = media_storage.open("posts/test.txt", "w")
-            file.write("POOP")
-            file.close()
-
-            media_storage.save(dir_in_bucket, new_file)
-            file_url = media_storage.url(dir_in_bucket)
+            # media_storage.save(dir_in_bucket, new_file)
+            # file_url = media_storage.url(dir_in_bucket)
             # return JsonResponse({
             #     'message': 'OK', 'fileUrl': file_url
             # })
-            values['image_url'] = file_url
+            # values['image_url'] = file_url
         # else:
         #     values['image_url'] = None
             # return JsonResponse({
@@ -418,16 +419,6 @@ def upload_test(request):
             #     ),
             # }, status=400)
 
-    # if request.method == "POST":
-    #     # name of input 'document'
-    #     new_file = request.FILES['document']
-    #     fs = FileSystemStorage()
-    #     # file_dir = os.path.join("images", new_file.name)
-    #     # file_name = fs.save(file_dir, new_file)
-    #     # url = fs.url(file_name)
-    #     # values['image_url'] = url
-    #     # print(f"File name: {new_file.name}")
-    #     # print(f"File size: {new_file.size}")
     return render(request, 'wwapp/upload_test.html', values)
 
 # def upload_test2(request):
