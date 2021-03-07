@@ -399,7 +399,7 @@ def upload_test(request):
                 file = media_storage.open("posts/test.txt", "w")
                 file.write("test file")
                 file.close()
-            except Exception as ex :
+            except Exception as ex:
                 # logging.error("Upload failed\n")
                 print(f"Upload failed\n{traceback.print_exc()}")
 
