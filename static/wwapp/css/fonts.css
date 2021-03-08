@@ -2,14 +2,14 @@
 /* NORMAL */
 @font-face {
     font-family: 'WorkSans';
-    /*src: url('/fonts/work-sans2/WorkSans-Regular.ttf') format('truetype');*/
-    src: url('fonts/work-sans2/WorkSans-Regular.ttf') format('truetype');
+    /*src: url('/fonts/work-sans/WorkSans-Regular.ttf') format('truetype');*/
+    src: url('fonts/work-sans/WorkSans-Regular.ttf') format('truetype');
     font-weight: normal;
 }
 
 @font-face {
     font-family: 'WorkSans';
-    src: url('fonts/work-sans2/WorkSans-Italic.ttf') format('truetype');
+    src: url('fonts/work-sans/WorkSans-Italic.ttf') format('truetype');
     font-style: italic;
     font-weight: normal;
 }
@@ -17,13 +17,13 @@
 /* REGULAR */
 @font-face {
     font-family: 'WorkSans';
-    src: url('fonts/work-sans2/WorkSans-Medium.ttf') format('truetype');
+    src: url('fonts/work-sans/WorkSans-Medium.ttf') format('truetype');
     font-weight: 500;
 }
 
 @font-face {
     font-family: 'WorkSans';
-    src: url('fonts/work-sans2/WorkSans-MediumItalic.ttf') format('truetype');
+    src: url('fonts/work-sans/WorkSans-MediumItalic.ttf') format('truetype');
     font-style: italic;
     font-weight: 500;
 }
@@ -31,14 +31,14 @@
 /* BOLD */
 @font-face {
     font-family: 'WorkSans';
-    src: url('fonts/work-sans2/WorkSans-Bold.ttf') format('truetype');
+    src: url('fonts/work-sans/WorkSans-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'WorkSans';
-    src: url('fonts/work-sans2/WorkSans-BoldItalic.ttf') format('truetype');
+    src: url('fonts/work-sans/WorkSans-BoldItalic.ttf') format('truetype');
     font-weight: bold;
     font-style: italic;
 }
@@ -46,14 +46,14 @@
 /* SEMI-BOLD */
 @font-face {
     font-family: 'WorkSans';
-    src: url('fonts/work-sans2/WorkSans-SemiBold.ttf') format('truetype');
+    src: url('fonts/work-sans/WorkSans-SemiBold.ttf') format('truetype');
     font-weight: 600;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'WorkSans';
-    src: url('fonts/work-sans2/WorkSans-SemiBoldItalic.ttf') format('truetype');
+    src: url('fonts/work-sans/WorkSans-SemiBoldItalic.ttf') format('truetype');
     font-weight: 600;
     font-style: italic;
 }
@@ -61,14 +61,14 @@
 /* LIGHT */
 @font-face {
     font-family: 'WorkSans';
-    src: url('fonts/work-sans2/WorkSans-Light.ttf') format('truetype');
+    src: url('fonts/work-sans/WorkSans-Light.ttf') format('truetype');
     font-weight: 200;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'WorkSans';
-    src: url('fonts/work-sans2/WorkSans-LightItalic.ttf') format('truetype');
+    src: url('fonts/work-sans/WorkSans-LightItalic.ttf') format('truetype');
     font-style: italic;
     font-weight: 200;
 }
@@ -76,14 +76,14 @@
 /* THIN */
 @font-face {
     font-family: 'WorkSans';
-    src: url('fonts/work-sans2/WorkSans-Thin.ttf') format('truetype');
+    src: url('fonts/work-sans/WorkSans-Thin.ttf') format('truetype');
     font-weight: 100;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'WorkSans';
-    src: url('fonts/work-sans2/WorkSans-ThinItalic.ttf') format('truetype');
+    src: url('fonts/work-sans/WorkSans-ThinItalic.ttf') format('truetype');
     font-style: italic;
     font-weight: 100;
 }
