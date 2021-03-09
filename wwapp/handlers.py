@@ -11,7 +11,7 @@ from .context_processors import create_presigned_url
 from .models import (Article, ArticleEditor, ArticleVersion,
                      Category, CategoryEditor, CategoryItem,
                      CategoryItemAssignation)
-from wwblog.settings import POSTS_LOCATION
+from wwblog.settings import POSTS_ROOT
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
 from wwblog.storages import MediaStorage
@@ -635,8 +635,8 @@ class ArticleHandler:
         file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
         # format media/posts/user_id/article_id"-"article_version
         # return f"posts/{self.article.author_id}/{file_name}"
-        return os.path.join(POSTS_LOCATION, str(self.article.author_id), file_name)
-        # return f"{POSTS_LOCATION}/{self.article.author_id}/{file_name}"
+        return os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
+        # return f"{POSTS_ROOT}/{self.article.author_id}/{file_name}"
 
     def save_article_content(self, new_content) -> bool:
         # TODO check for success and notify on front end
@@ -689,7 +689,7 @@ class ArticleHandler:
         for ver in all_ver:
             file_name = f"{self.article.article_id}-{ver.version}.html"
             # TODO check if people other than the author can make child articles of an article
-            file_dir = os.path.join(POSTS_LOCATION, str(self.article.author_id), file_name)
+            file_dir = os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
             storage = MediaStorage()
             if storage.exists(file_dir):
                 storage.delete(file_dir)

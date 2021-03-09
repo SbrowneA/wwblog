@@ -15,7 +15,6 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -148,8 +147,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
 
-
-# STATIC_URL = '/static/' # dev only
+STATIC_URL = '/static/'  # dev only
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static') # dev only
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # for collect static command
 # STATICFILES_DIRS = (os.path.join("static"),) # dev only
