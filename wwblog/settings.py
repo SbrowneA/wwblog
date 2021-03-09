@@ -14,9 +14,6 @@ from pathlib import Path
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -140,7 +137,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-# STATIC_URL = '/static/'
 # STATICFILES_DIRS = (
 #     os.path.join(BASE_DIR, "static"),
 #     os.path.join(Path(__file__).resolve().parent.parent.parent, 'static', 'wwapp')
@@ -157,15 +153,12 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'wwapp', 'media')
-# MEDIA_ROOT = Path(__file__).resolve().parent.parent / 'wwapp/media/'
-# MEDIA_ROOT = Path(__file__).resolve().parent.parent.parent / 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # TINYMCE_JS_URL = os.path.join(STATIC_URL, "path/to/tiny_mce/tiny_mce.js")
 # TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
 
-POSTS_ROOT = os.path.join(MEDIA_ROOT, 'wwapp', 'posts')
+POSTS_ROOT = os.path.join(MEDIA_ROOT, 'posts')
 
 #S3 BUCKETS CONFIG
 # AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
@@ -210,16 +203,12 @@ TINYMCE_DEFAULT_CONFIG = {
 
 AUTH_USER_MODEL = 'account.User'
 
+# ONLY for production
 # CSRF_COOKIE_SECURE = True
-
 # SESSION_COOKIE_SECURE = True
-
 # SECURE_SSL_REDIRECT = True
-
 # SECURE_HSTS_SECONDS =
 
 LOGIN_URL = "/login"
-
 LOGIN_REDIRECT_URL = "/"
-
 LOGOUT_REDIRECT_URL = "/"
