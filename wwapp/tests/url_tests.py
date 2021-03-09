@@ -12,6 +12,7 @@ class URLTests(TestCase):
         cls.authors = setup_authors()
         cls.superuser = setup_superuser()
 
+    @skip
     def test_home_page(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
