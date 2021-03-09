@@ -149,7 +149,7 @@ STATICFILES_DIRS = [
 ]
 
 
-# STATIC_URL = '/static/' # dev only
+STATIC_URL = '/static/'  # dev only
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static') # dev only
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # for collect static command
 # STATICFILES_DIRS = (os.path.join("static"),) # dev only
@@ -220,3 +220,7 @@ AUTH_USER_MODEL = 'account.User'
 LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+
+def POSTS_LOCATION():
+    return None
