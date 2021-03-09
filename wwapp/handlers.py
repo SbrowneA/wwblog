@@ -6,6 +6,8 @@ from django.db import (
     # models, \
     IntegrityError)
 from django.core import exceptions
+
+from .context_processors import create_presigned_url
 from .models import (Article, ArticleEditor, ArticleVersion,
                      Category, CategoryEditor, CategoryItem,
                      CategoryItemAssignation)
@@ -619,6 +621,11 @@ class ArticleHandler:
         versions = self.get_all_versions()
         ver = versions[len(versions) - 1]
         return ver
+
+    def get_latest_version_url(self) -> str:
+        # need to replace \ with / to prevent NoSuchKey error
+        key = os.path.join("media", self.__get_latest_version_dir()).replace("\\", "/")
+        return create_presigned_url(key, 300)
 
     # def __get_latest_version_dir_local(self) -> str:
     #     file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"

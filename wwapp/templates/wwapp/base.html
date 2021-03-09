@@ -9,10 +9,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="{% static 'wwapp/js/main.js' %}"></script>
-{#    <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/../../../temp/fonts.css' %}">#}
-    <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/fonts2.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/fonts.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/style.css' %}">
-{#    <link rel="shortcut icon" type="image/jpg" href="{% static '../../../media/images/icon.jpg' %}"/>#}
     <title>WWBLogs - {% block title %}{% endblock %}</title>
 </head>
 
@@ -21,7 +19,9 @@
     <div class="banner col-12  pb-2" id="banner">
         <div class="row col-12">
             <div class="banner__title col-11">
-                <h1 class="mx-auto" onclick="location.href = '{% url 'wwapp:index' %}'">W&W blog Banner</h1>
+                <div class="mx-auto">
+                    <h1 onclick="location.href = '{% url 'wwapp:index' %}'">w&amp;wblogs</h1>
+                </div>
             </div>
             {% if request.user.is_authenticated %}
                 <button class="btn btn-primary h-100 mt-2" id="logout-btn"
@@ -35,16 +35,16 @@
         </div>
 
         <div class="row banner__nav">
-            <a href="{% url 'wwapp:index' %}">Home</a>
+            <a href="{% url 'wwapp:index' %}" class="ml-3">Home</a>
 {#            <a href="{% url 'wwapp:browse_users' %}">Authors</a>#}
 {#            <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>#}
 {#            <a href="{% url 'wwapp:browse_categories' %}">Projects</a>#}
-            <div class="input-group- mb3">
-                <div class="input-group-prepend pb-50">
-                    <input type="text" name="search" placeholder="Search..">
-                    <button type="submit" name="search_btn" value="search_text" class="btn btn-dark">Search</button>
-                </div>
-            </div>
+{#            <div class="input-group- mb3">#}
+{#                <div class="input-group-prepend pb-50">#}
+{#                    <input type="text" name="search" placeholder="Search..">#}
+{#                    <button type="submit" name="search_btn" value="search_text" class="btn btn-dark">Search</button>#}
+{#                </div>#}
+{#            </div>#}
         </div>
 
     </div>

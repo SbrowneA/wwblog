@@ -13,13 +13,17 @@
     {% endif %}
 
     <div>
-        {{ content }}
+        <embed type="text/html" src="{{ article_url }}" class="article-content text-light">
+        {#        {{ content }}#}
     </div>
 {% endblock %}
 
 {% block right_nav %}
     {% if article.published %}
-        <button>Draft</button>
+
+        <button class="btn btn-primary" onclick="location.href='{% url "wwapp:edit_article" article.article_id %}'">
+            Edit
+        </button>
     {% else %}
         <button>Publish</button>
     {% endif %}

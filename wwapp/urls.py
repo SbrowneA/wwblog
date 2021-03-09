@@ -31,7 +31,7 @@ urlpatterns = [
     path('category/<int:category_id>/delete/<int:child_id>', views.delete_child_category, name='add_sub_category'),
     path('category/createproject', views.create_project, name='new_project'),
     # path('test', views.image_upload_test, name='upload_test'),
-    path('test', views.upload_test, name='upload_test'),
+    # path('test', views.upload_test, name='upload_test'),
     # path('edit', views.editor_test, name='editor_test'),
 ]
 if settings.DEBUG:
