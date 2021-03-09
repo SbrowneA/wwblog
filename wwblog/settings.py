@@ -15,9 +15,6 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -26,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['WWBLOG_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["wwblog-test2.herokuapp.com", "wwblog.herokuapp.com", "127.0.0.1"]
 ADMINS = [("Admin", "wwblog.manage@gmail.com"), ]
@@ -47,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
     # - aws
-    'storages',
+    # 'storages',
     # my apps
     'wwapp.apps.WwappConfig',
     'account.apps.AccountConfig',
@@ -89,23 +86,23 @@ WSGI_APPLICATION = 'wwblog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ['DATABASE_NAME'],
-        'USER': os.environ['DATABASE_USER'],
-        'PASSWORD': os.environ['DATABASE_PASSWORD'],
-        'HOST': os.environ['DATABASE_HOST'],
-        'PORT': os.environ['DATABASE_PORT'],
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.environ['DATABASE_NAME'],
+#         'USER': os.environ['DATABASE_USER'],
+#         'PASSWORD': os.environ['DATABASE_PASSWORD'],
+#         'HOST': os.environ['DATABASE_HOST'],
+#         'PORT': os.environ['DATABASE_PORT'],
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -142,6 +139,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, "static"),
+#     os.path.join(Path(__file__).resolve().parent.parent.parent, 'static', 'wwapp')
+# )
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
@@ -158,8 +160,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # TINYMCE_JS_URL = os.path.join(STATIC_URL, "path/to/tiny_mce/tiny_mce.js")
 # TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
 
-POSTS_LOCATION = 'posts'
-
+# POSTS_LOCATION = 'posts'
+POSTS_ROOT = os.path.join(MEDIA_ROOT, 'posts')
+"""
 # S3 BUCKETS CONFIG
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
@@ -168,8 +171,6 @@ AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_LOCATION = 'static'
 AWS_DEFAULT_ACL = None
-# AWS_DEFAULT_ACL = 'public-read'
-# AWS_DEFAULT_ACL = False
 
 AWS_S3_FILE_OVERWRITE = True
 # can be local instead (static folder)
@@ -177,6 +178,8 @@ AWS_S3_FILE_OVERWRITE = True
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DEFAULT_FILE_STORAGE = 'wwblog.storages.MediaStorage'
 STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+"""
+
 # SMTP Configuration
 """
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -208,11 +211,11 @@ TINYMCE_DEFAULT_CONFIG = {
 
 AUTH_USER_MODEL = 'account.User'
 
-# turn on for Deployment
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
-SECURE_HSTS_SECONDS = True
+# ONLY for Production
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+# SECURE_SSL_REDIRECT = True
+# SECURE_HSTS_SECONDS =
 
 LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/"

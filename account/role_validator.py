@@ -2,13 +2,15 @@ from enum import Enum
 
 # lower index is superior
 role_hierarchy = ['admin', 'moderator', 'member', 'general']
+# role_hierarchy = ['admin', 'moderator', 'member', 'suspended', 'banned']
 
 
 class Role(Enum):
     ADMIN = 0
     MODERATOR = 1
     MEMBER = 2
-    GENERAL = 3
+    # SUSPENDED = 3
+    # BANNED = 4
     # TODO
     #   use enums instead of list
 
