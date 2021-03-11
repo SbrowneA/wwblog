@@ -12,6 +12,7 @@ from .setups import setup_authors, setup_superuser, get_micro_time
 User = get_user_model()
 
 
+# noinspection DuplicatedCode
 class CategoryHandlerTests(TestCase):
 
     @classmethod
@@ -110,13 +111,55 @@ class CategoryHandlerTests(TestCase):
         self.assertEqual(a.parent_category_id, self.prj.category_id)
         self.assertIsInstance(a, CategoryItemAssignation)
 
+    @skip("TODO feature not implemented yet")
+    def test_assign_parent_project_to_project(self):
+        proj1 = CategoryHandler.create_project(self.authors[0])
+        proj2 = CategoryHandler.create_project(self.authors[0])
+        topic = CategoryHandler.create_project(self.authors[0])
+        h_proj1 = CategoryHandler(proj1)
+        h_proj2 = CategoryHandler(proj2)
+
+        h_proj1.add_child_category(topic)
+        h_proj2.add_child_category(proj1)
+        self.assertEqual(Category.CategoryType.TOPIC, proj1.category_type)
+        self.assertEqual(Category.CategoryType.SUBTOPIC, topic.category_type)
+
+    def test_assign_parent_project_to_project_in_decreasing_order(self):
+        proj1 = CategoryHandler.create_project(self.authors[0])
+        proj2 = CategoryHandler.create_project(self.authors[0])
+        topic = CategoryHandler.create_project(self.authors[0])
+        h_proj1 = CategoryHandler(proj1)
+        h_proj2 = CategoryHandler(proj2)
+
+        h_proj2.add_child_category(proj1)
+        h_proj1.add_child_category(topic)
+        self.assertEqual(Category.CategoryType.TOPIC, proj1.category_type)
+        self.assertEqual(Category.CategoryType.SUBTOPIC, topic.category_type)
+
+    @skip("TODO feature not implemented yet")
+    def test_assign_parent_project_to_topic(self):
+        proj1 = CategoryHandler.create_project(self.authors[0])
+        proj2 = CategoryHandler.create_project(self.authors[0])
+        topic = CategoryHandler.create_project(self.authors[0])
+        sub_topic = CategoryHandler.create_project(self.authors[0])
+        h_proj1 = CategoryHandler(proj1)
+        h_proj2 = CategoryHandler(proj2)
+        h_topic = CategoryHandler(topic)
+
+        h_topic.add_child_category(sub_topic)
+        h_proj1.add_child_category(topic)
+        # with self.assertRaises(ValueError):
+        #     h_proj2.add_child_category(proj1)
+        # self.assertEqual(Category.CategoryType.TOPIC, proj1.category_type)
+        # self.assertEqual(Category.CategoryType.SUBTOPIC, topic.category_type)
+
     def test_get_child_assignations(self):
         print(f"\nTEST START:{self._testMethodName}")
         # make multiple child items and assign them
         handler = CategoryHandler(self.prj)
         num_child = 10
         for i in range(num_child):
-            topic_name = f"test_subtopic-{get_micro_time()}"
+            topic_name = f"test_subtopic-{i}"
             child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
             handler.add_child_category(child_prj)
 
@@ -131,7 +174,7 @@ class CategoryHandlerTests(TestCase):
         handler = CategoryHandler(self.prj)
         num_child = 10
         for i in range(num_child):
-            topic_name = f"test_subtopic-{get_micro_time()}"
+            topic_name = f"test_subtopic-{i}"
             child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
             handler.add_child_category(child_prj)
 
@@ -161,11 +204,11 @@ class CategoryHandlerTests(TestCase):
         all_a = handler.get_child_assignations()
         child_items = handler.get_child_items()
         # print(all_a)
-        new_i = child_items[new_pos-1]
+        new_i = child_items[new_pos - 1]
         new_a = CategoryItemAssignation.objects.get(item_id=new_i.item_id)
-        self.assertEqual(move_a_id,  new_a.item_assignation_id)
+        self.assertEqual(move_a_id, new_a.item_assignation_id)
         self.assertEqual(len(all_a), num_child)
-        self.assertEqual(new_a.position, new_pos-1)  # -1 because positions are 0 indexed
+        self.assertEqual(new_a.position, new_pos - 1)  # -1 because positions are 0 indexed
         all_a = handler.get_child_assignations()
         for i in range(len(all_a)):
             self.assertIsInstance(all_a[i], CategoryItemAssignation)
@@ -256,14 +299,14 @@ class CategoryHandlerTests(TestCase):
         child_items = handler.get_child_items()
         move_i = child_items[4]
         with self.assertRaises(ValueError):
-            handler.move_child_item(child_item=move_i, new_pos=num_child+1)
+            handler.move_child_item(child_item=move_i, new_pos=num_child + 1)
 
     def test_delete_child_category(self):
         print(f"\nTEST START:{self._testMethodName}")
         handler = CategoryHandler(self.prj)
         num_child = 10
         for i in range(num_child):
-            topic_name = f"test_subtopic-{get_micro_time()}"
+            topic_name = f"test_subtopic-{i}"
             print(topic_name)
             child_prj = Category.objects.create(category_creator=self.authors[0], category_name=topic_name)
             handler.add_child_category(child_prj)
@@ -275,6 +318,39 @@ class CategoryHandlerTests(TestCase):
         # check all positions were adjusted correctly
         for i in range(0, len(assignations)):
             self.assertEqual(i, assignations[i].position)
+
+
+    @skip("TODO feature not implemented yet")
+    def test_add_existing__parent_topic_to_new_project(self):
+        # make 3 topics
+        proj1 = CategoryHandler.create_project(self.authors[0])
+        proj2 = CategoryHandler.create_project(self.authors[0])
+        topic = CategoryHandler.create_project(self.authors[0])
+        sub_topic = CategoryHandler.create_project(self.authors[0])
+
+        # add sub
+        h_proj1 = CategoryHandler(proj1)
+        h_proj2 = CategoryHandler(proj2)
+        h_topic = CategoryHandler(topic)
+        h_sub_topic = CategoryHandler(sub_topic)
+
+        h_topic.add_child_category(sub_topic)
+        h_proj1.add_child_category(topic)
+        num_assignations1 = len(CategoryItemAssignation.objects.all())
+        self.assertIsNone(h_proj2.get_child_items())
+        self.assertEqual(1, len(h_topic.get_child_items()))
+        self.assertEqual(1, len(h_proj1.get_child_items()))
+        self.assertEqual(h_sub_topic.get_parent_category().category_id, topic.category_id)
+        self.assertEqual(h_topic.get_parent_category().category_id, proj1.category_id)
+        # add sub to new topics FAILS HERE
+        h_proj2.add_child_category(topic)
+        num_assignations2 = len(CategoryItemAssignation.objects.all())
+        self.assertEqual(num_assignations1, num_assignations2)
+        self.assertIsNone(h_proj1.get_child_items())
+        self.assertEqual(1, len(h_topic.get_child_items()))
+        self.assertEqual(1, len(h_proj2.get_child_items()))
+        self.assertEqual(h_sub_topic.get_parent_category().category_id, topic.category_id)
+        self.assertEqual(h_topic.get_parent_category().category_id, proj2.category_id)
 
 
 class ArticleHandlerTests(TestCase):
@@ -458,3 +534,11 @@ class ArticleHandlerTests(TestCase):
         c_handler = ArticleHandler(a2)
         c_handler.publish_as_child_article(a1)
         self.assertEqual(a2, p_handler.get_child_article())
+
+    @skip("TODO feature not implemented yet")
+    def test_publish_public_article_to_new_topic(self):
+        pass
+
+    @skip("TODO feature not implemented yet")
+    def test_publish_parent_article_to_new_topic_and_children_are_updated(self):
+        pass

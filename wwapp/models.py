@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db import models, IntegrityError
 # from django.contrib.auth import get_user_model
 from django.conf import settings
-from tinymce import models as tinymce_models
+# from tinymce import models as tinymce_models
 
 # get the auth user_model and assign it
 User = settings.AUTH_USER_MODEL
@@ -30,8 +30,8 @@ class Category(models.Model):
             models.Index(fields=['category_name']),
         ]
 
-    def is_project(self):
-        return self.category_type == self.CategoryType.PROJECT
+    # def is_project(self):
+    #     return self.category_type == self.CategoryType.PROJECT
 
     #
     #     # TODO use manager class instead
@@ -67,7 +67,7 @@ class Category(models.Model):
         # super().save(*args, **kwargs)
 
     def __str__(self):
-        parent_cat_name = "Null"
+        # parent_cat_name = "Null"
         try:
             i = CategoryItem.objects.get(item_category_id=self.category_id)
             a = CategoryItemAssignation.objects.get(item_id=i.item_id)
