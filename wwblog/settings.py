@@ -59,6 +59,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+# X FRMAME MIDDLEWARE OPTIONS ARE DEV ONLY REMOVE IN DEPLOYMENT
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 ROOT_URLCONF = 'wwblog.urls'
 
