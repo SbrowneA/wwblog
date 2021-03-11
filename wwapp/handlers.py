@@ -630,7 +630,7 @@ class ArticleHandler:
 
     def get_latest_version_url_local(self):
         file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
-        print(f"LOCATED AT: /media/posts/{file_name}")
+        # print(f"LOCATED AT: /media/posts/{file_name}")
         return f"/media/posts/{file_name}"
         # return self.__get_latest_version_dir_local().replace("\\", "/")
 
