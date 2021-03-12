@@ -65,11 +65,8 @@ html {
     font-size: 100%;
 }
 
-h1, h2, h3, h4 {
-    /*font-family: WorkSans, sans-serif;*/
-
-    font-family: "Colonna MT", sans-serif; /*According to docs? */
-    /*font-family: WorkSans, serif;*/
+h1, h2, h3, h4, h5, h6 {
+    font-family: RobotoSlab, sans-serif;
 }
 
 h1 {

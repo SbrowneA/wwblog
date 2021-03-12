@@ -1,4 +1,5 @@
 @charset "utf-8";
+/* BODY FONT WorkSans */
 /* NORMAL */
 @font-face {
     font-family: 'WorkSans';
@@ -88,33 +89,92 @@
     font-weight: 100;
 }
 
-/*Alternate font*/
+
+/* HEADINGS FONT RobotoSlab */
+/* NORMAL */
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('fonts/roboto-slab/RobotoSlab-Regular.ttf') format('truetype');
+    font-weight: normal;
+}
+
+/*@font-face {
+    font-family: 'WorkSans';
+    src: url('fonts/work-sans/WorkSans-Italic.ttf') format('truetype');
+    font-style: italic;
+    font-weight: normal;
+}*/
+
+/* MEDIUM */
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('fonts/roboto-slab/RobotoSlab-Medium.ttf') format('truetype');
+    font-weight: 500;
+}
+
+
+/* BOLD */
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('fonts/roboto-slab/RobotoSlab-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+
+/* SEMI-BOLD */
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('fonts/roboto-slab/RobotoSlab-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+
+/* LIGHT */
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('fonts/roboto-slab/RobotoSlab-Light.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+/* THIN */
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('fonts/roboto-slab/RobotoSlab-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+
+/* Alternate font for login page? */
 @font-face {
     font-family: 'Alta';
     src: url('fonts/alata/alata-regular.ttf') format('truetype');
-    font-style: italic;
+    font-style: normal;
     font-weight: 100;
 }
 
-/*Testing looks by id*/
-/*#normal {*/
-/*    font-style: italic;*/
-/*    font-weight: 100;*/
-/*    color: lightgreen;*/
-/*}*/
+/*Testing looks by id
+#normal {
+    font-style: italic;
+    font-weight: 100;
+    color: lightgreen;
+}
 
-/*#light {*/
-/*    !* font-style: italic; *!*/
-/*    !* font-weight: 200; *!*/
-/*    font-weight: 100;*/
-/*    font-style: normal;*/
-/*    color: lightblue;*/
-/*}*/
+#light {
+    !* font-style: italic; *!
+    !* font-weight: 200; *!
+    font-weight: 100;
+    font-style: normal;
+    color: lightblue;
+}
 
-/*#bold {*/
-/*    !* font-style: bold; *!*/
-/*    !* font-style: italic; *!*/
-/*    font-weight: bold;*/
-/*    color: wheat;*/
-/*}*/
+#bold {
+    !* font-style: bold; *!
+    !* font-style: italic; *!
+    font-weight: bold;
+    color: wheat;
+}*/
 
