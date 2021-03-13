@@ -19,7 +19,7 @@
 {% block content %}
     <h3>Latest articles</h3>
     {% if latest_articles_list %}
-        <ul title="Latest articles">
+        <ul id="latest-articles-list">
             {% for article in latest_articles_list %}
                 <li>
                     <a href="{% url 'wwapp:open_article' article.article_id %}">{{ article.article_title }}</a>
@@ -30,12 +30,14 @@
         <p>There are no published articles.</p>
     {% endif %}
     <h3>Browse Projects</h3>
-    {% if categories %}
-        {% for cat in categories %}
-            <li>
-                <a href="{% url 'wwapp:open_category' cat.category_id %}">{{ cat.category_name }}</a>
-            </li>
-        {% endfor %}
+    {% if active_projects %}
+        <ul id="active-projects-list">
+            {% for cat in active_projects %}
+                <li>
+                    <a href="{% url 'wwapp:open_category' cat.category_id %}">{{ cat.category_name }}</a> - {{ cat.category_creator.username     }}
+                </li>
+            {% endfor %}
+        </ul>
     {% else %}
         <p>There are no projects.</p>
     {% endif %}

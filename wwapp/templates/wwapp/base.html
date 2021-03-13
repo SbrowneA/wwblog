@@ -11,17 +11,21 @@
     <script src="{% static 'wwapp/js/main.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/fonts.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/style.css' %}">
-{#    <link rel="shortcut icon" type="image/jpg" href="{% static 'media/images/icon.jpg' %}"/>#}
+    <link rel="shortcut icon" type="image/jpg" href="{% static 'wwapp/images/icon.jpg' %}"/>
     <title>WWBLogs - {% block title %}{% endblock %}</title>
 </head>
 
 <body class="container-fluid h-100">
+<noscript>
+    You do not have javascript enabled! some features may not work.
+</noscript>
 <div class="row max-width pb-2" id="banner_container">
     <div class="banner col-12  pb-2" id="banner">
         <div class="row col-12">
             <div class="banner__title col-11">
                 <div class="mx-auto">
-                    <h1 onclick="location.href = '{% url 'wwapp:index' %}'">w&amp;wblogs</h1>
+{#                    <h1 onclick="location.href = '{% url 'wwapp:index' %}'">w&amp;wblogs</h1>#}
+                    <h1>w&amp;wblogs</h1>
                 </div>
             </div>
             {% if request.user.is_authenticated %}
@@ -37,37 +41,38 @@
 
         <div class="row banner__nav">
             <a href="{% url 'wwapp:index' %}" class="ml-3">Home</a>
-{#            <a href="{% url 'wwapp:browse_users' %}">Authors</a>#}
-{#            <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>#}
-{#            <a href="{% url 'wwapp:browse_categories' %}">Projects</a>#}
-{#            <div class="input-group- mb3">#}
-{#                <div class="input-group-prepend pb-50">#}
-{#                    <input type="text" name="search" placeholder="Search..">#}
-{#                    <button type="submit" name="search_btn" value="search_text" class="btn btn-dark">Search</button>#}
-{#                </div>#}
-{#            </div>#}
+{% comment %}            <a href="{% url 'wwapp:browse_users' %}">Authors</a>
+            <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>
+            <a href="{% url 'wwapp:browse_categories' %}">Projects</a>
+            <div class="input-group- mb3">
+                <div class="input-group-prepend pb-50">
+                    <input type="text" name="search" placeholder="Search..">
+                    <button type="submit" name="search_btn" value="search_text" class="btn btn-dark">Search</button>
+                </div>
+            </div>{% endcomment %}
         </div>
 
     </div>
 </div>
 
 
-<div class="row max-width h-100">
+<div class="row max-width h-100 content_row">
 
-    <div class="nav col-3 ">
+    <div class="nav col-3">
         {% block left_nav %}
 {#            <h1 class="mx-auto"></h1>#}
         {% endblock %}
     </div>
 
-    <div class="content col-6" , id="content" ,>
-        <div class="p-3 mb-2 bg-dark text-whit">
+    <div class="content_container col-6" , id="content_container" >
+        <div class="content p-3 mb-2 bg-dark text-whit">
             {% block content %}
             {% endblock %}
         </div>
+{#        <div content="filler"></div>#}
     </div>
 
-    <div class="aside col-3">
+    <div class="right-nav col-3">
         {% block right_nav %}
             <h1>Nav div</h1>
         {% endblock %}

@@ -1,5 +1,6 @@
 .banner {
     background: #5E5694;
+    min-height: 10vh;
     /*padding-bottom: 5em;*/
     /*padding-left: 8em;*/
     /*width: 99%;*/
@@ -28,6 +29,7 @@
 }
 
 body {
+    min-height: 100vh;
     background: #222222;
     color: white;
     /*font-family: "Times New Roman", serif;*/
@@ -39,13 +41,19 @@ body {
 footer {
     background: #333333;
     color: #888888;
+    margin-top: 1vh;
+    min-height: 8vh;
+}
+
+.content_row{
+    min-height: 80vh;
 }
 
 .content {
-    min-height: 90vh;
-    /*background-color: red;*/
-    /*border: dashed #00dd00;*/
-    border-radius: 4%;
+    /*min-height: 85vh;*/
+    background-color: #343A40;
+    /*height: auto;*/
+    font-family:'WorkSans', serif;
 }
 
 
@@ -56,7 +64,7 @@ footer {
 
 /*remove bullets from ul elements*/
 .no-bullet {
-  list-style-type: none;
+    list-style-type: none;
 }
 
 /*FONT CONFIGURATION*/
@@ -67,6 +75,7 @@ html {
 
 h1, h2, h3, h4, h5, h6 {
     font-family: RobotoSlab, sans-serif;
+    /*font-family: RobotoSlab, serif;*/
 }
 
 h1 {
@@ -98,6 +107,78 @@ h1, h2 {
 h3, h4 {
     font-weight: 600;
 }
+
+/*BANNER LINKS*/
+.banner a:link{
+    color: #c4c2d4;
+    padding: .1em .2em;
+    font-family: RobotoSlab, serif;
+}
+
+.banner a:visited{
+    /*color: #45426b;*/
+    /*color: #aea2d7;*/
+    /*color: #bdb6d7;*/
+    color: #c4c2d4;
+}
+
+.banner a:hover{
+    background-color: #aea2d7;
+    color: #2c264a;
+    font-style: normal;
+    text-decoration: none;
+}
+
+
+/*CONTENT LINKS */
+.content a:link {
+    /*background-color: #67647a;*/
+    /*padding-left: .3em;*/
+    /*padding-right: .3em;*/
+    color: #9CDCFE;
+}
+
+.content a:visited {
+    color: #9CDCFE;
+}
+
+.content a:hover {
+    /*color: #9cdcfe;*/
+    background-color: #5d8181;
+    text-decoration: none;
+    /*background-color: lightgreen;*/
+}
+
+.content a:active {
+    background-color: #927c83;
+}
+
+
+/*RIGHT NAV LINKS*/
+.right-nav a:link {
+    background-color: #67647a;
+    padding-left: .3em;
+    padding-right: .3em;
+    color: #9CDCFE;
+}
+
+.right-nav a:visited {
+    color: #9CDCFE;
+}
+
+.right-nav a:hover {
+    /*color: #9cdcfe;*/
+    background-color: #5d8181;
+    text-underline: none;
+    text-decoration: none;
+    /*background-color: lightgreen;*/
+}
+
+.right-nav a:active {
+    background-color: #927c83;
+}
+
+
 
 /*dropzone customisation*/
 .dz-custom {
