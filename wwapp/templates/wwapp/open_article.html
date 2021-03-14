@@ -1,25 +1,59 @@
 {% extends 'wwapp/base.html' %}
-{% block title %}
-    {{ article.article_title }}
+{% block title %}{{ article.article_title }}
+{% endblock %}
+
+{% block head %}
     {% load static %}
+    {% comment %}    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>{% endcomment %}
 {% endblock %}
 
 {% block content %}
-    <h3>{{ article.article_title }}</h3>
-    {% if has_editor_privelage %}
-        <div>
-            {{ hidden_notes }}
-        </div>
-    {% endif %}
+    <div class="article-heading">
+        <div class="article-heading__article-details">
+            {% comment %}            <span class="article-date">
+            It is {% now "SHORT_DATETIME_FORMAT" %}<br/>
+            created: {{ article.creation_date }} <br/>
+            published: {{ article.pub_date }}
+            {{ article.pub_date }}
+            </span>{% endcomment %}
 
-    <div>
-        <embed type="text/html" src="{{ article_url }}" class="article-content text-light">
-        {#        {{ content }}#}
+            <span class="article-date">
+                {{ article.pub_date }}
+            </span>
+            <br/>
+            {#            <a href="{% url "wwapp:view_profile" article.author_id %}"></a>#}
+            <span class="article-category">from <a class="article-category"
+               href="{% url "wwapp:open_category" article.author_id %}">{{ article_category.category_name }}</a></span>
+            <span class="article-author"> - post by {{ article.author.username }}</span>
+            {#            <span></span>#}
+        </div>
+
+        <h2>{{ article.article_title }}</h2>
+    </div>
+    <div class="article-container">
+        {% if has_editor_privilege and secret_note != None %}
+            <div class="article-secret">
+                <span id="hidden-notes-label">hidden notes</span><br>
+                {#                <span id="hidden-notes-label">hidden notes</span>&nbsp;#}
+                {#                <span id="hidden-notes-label-info"><sup data-toggle="tooltip" title="Hooray!">&#9432;</sup>#}
+                {#                </span>#}
+                {#            <div>#}
+                {{ secret_note }}
+            </div>
+        {% endif %}
+        {#        </div>#}
+        {#        <p>{{ article_text|safe }}</p>#}
+        {{ article_text|safe }}
+        {#        <iframe src="{{ article_url }}" class="article-content" title="{{ article.article_title }}"></iframe>#}
     </div>
 {% endblock %}
 
 {% block right_nav %}
-    {% if article.published %}
+    {% if user %}
 
         <button class="btn btn-primary" onclick="location.href='{% url "wwapp:edit_article" article.article_id %}'">
             Edit

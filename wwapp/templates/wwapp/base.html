@@ -12,7 +12,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/fonts.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/style.css' %}">
     <link rel="shortcut icon" type="image/jpg" href="{% static 'wwapp/images/icon.jpg' %}"/>
-    <title>WWBLogs - {% block title %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
 </head>
 
 <body class="container-fluid h-100">
@@ -56,7 +56,7 @@
 </div>
 
 
-<div class="row max-width h-100 content_row">
+<div class="row max-width h-100 content-row">
 
     <div class="nav col-3">
         {% block left_nav %}

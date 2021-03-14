@@ -9,6 +9,7 @@
 {% block right_nav %}
     {% if request.user.is_authenticated %}
         {#        <h2>Hello, {{ request.user.username }}</h2>#}
+        <h4><a href="{% url 'wwapp:index' %}">Home</a></h4>
         <h4><a href="{% url 'wwapp:new_article' %}">New post</a></h4>
         <h4><a href="{% url 'wwapp:new_project' %}">New Project</a></h4>
         {#        <h4><a href="{% url 'wwapp:manage_own_content' %}">Browse My Posts</a></h4>#}
@@ -34,7 +35,7 @@
             {% endfor %}
         </ul>
     {% else %}
-        <p><i>You have no published articles.<br>Publish one of your drafts or make new post <a href="{% url 'wwapp:new_article' %}">here</a></i></p>
+        <p><i>You have no published posts.<br>Publish one of your drafts or make new post <a href="{% url 'wwapp:new_article' %}">here</a></i></p>
     {% endif %}
 
     <h4>Drafts</h4>
@@ -65,32 +66,31 @@
     {% else %}
         <p>You have no projects yet. Start a new project <a href="{% url 'wwapp:new_project' %}">here</a></p>
     {% endif %}
-    {#TODO figure out data structure#}
-    {#    <ul>#}
-    {#        {% for proj in user_projects %}#}
-    {#            <li>#}
-    {#                {% if proj.topics  %}#}
-    {#                    <ul>#}
-    {#                        {% for t in topics %}#}
-    {#                            <li>#}
-    {#                                <a href="{% url 'wwapp:open_category' t.category_id %}">t.category_name</a>#}
-    {#                                {% if sup_topics %}#}
-    {#                                    {% for st in sub_topics %}#}
-    {#                                        <a href="{% url 'wwapp:open_category' st.category_id %}">st.category_name</a>#}
-    {#                                    {% endfor %}#}
-    {#                                {% else %}#}
-    {#                                    <p><i>No topics in this project</i></p>#}
-    {#                                {% endif %}#}
-    {#                            </li>#}
-    {#                        {% endfor %}#}
-    {#                    </ul>#}
-    {#                {% else %}#}
-    {#                    <i>No topics in this project</i>#}
-    {#                {% endif %}#}
-    {#            </li>#}
-    {#        {% endfor %}#}
-    {#    </ul>#}
-
+    {% comment %}TODO figure out data structure
+        <ul>
+            {% for proj in user_projects %}
+                <li>
+                    {% if proj.topics  %}
+                        <ul>
+                            {% for t in topics %}
+                                <li>
+                                    <a href="{% url 'wwapp:open_category' t.category_id %}">t.category_name</a>
+                                    {% if sup_topics %}
+                                        {% for st in sub_topics %}
+                                            <a href="{% url 'wwapp:open_category' st.category_id %}">st.category_name</a>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p><i>No topics in this project</i></p>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <i>No topics in this project</i>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>{% endcomment %}
 
     <h3>Shared with me</h3>
     <p>Coming soon..</p>

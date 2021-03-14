@@ -45,7 +45,7 @@ class CategoryEdit(forms.Form):
 
 class ArticleEdit(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}))
-    placeholder = 'place any secret notes here..\n WARNING: the author, and all the editors on this post,' \
+    placeholder = 'place any secret notes here..\n WARNING: the author, all the editors on this post,' \
                   ' and moderators can read this '
     secret_note = forms.CharField(label='secret notes', required=False, widget=forms.Textarea(
         attrs={'class': 'form-control', 'placeholder': placeholder, }))

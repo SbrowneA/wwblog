@@ -32,7 +32,6 @@ from .models import (Article,
                      Category)
 from wwblog.storages import MediaStorage
 
-
 User = get_user_model()
 
 
@@ -60,13 +59,24 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 @xframe_options_exempt
 def open_article(request, article_id):
     article = get_object_or_404(Article, article_id=article_id)
+    a_handler = ArticleHandler(article)
+    article_text = a_handler.get_article_content()
+
     values = {
         'article': article,
-        'article_text': article.__str__()
+        'article_text': article_text,
+        'secret_note': None
     }
-    article_url = ArticleHandler(article).get_latest_version_url()
-    if article_url is not None:
-        values['article_url'] = article_url
+    if article.published:
+        values['article_category'] = a_handler.get_parent_category()
+    if request.user.is_authenticated:
+        values['has_editor_privilege'] = a_handler.has_editor_privilege(request.user)
+        secret = a_handler.get_latest_version().secret_note
+        values['secret_note'] = secret
+    print("date", str(article.creation_date))
+    # article_url = a_handler.get_latest_version_url()
+    # if article_url is not None:
+    #     values['article_url'] = article_url
 
     return render(request, "wwapp/open_article.html", values)
 
@@ -109,7 +119,11 @@ def edit_article(request, article_id):
         # save
         article.article_title = form.cleaned_data.get("title")
         ver = a_handler.get_latest_version()
-        ver.hidden_notes = form.cleaned_data.get("secret_note")
+        secret_note = form.cleaned_data.get("secret_note")
+        # secret_note = ""
+        ver.secret_note = None if secret_note == "" else secret_note
+        # result = 'is  none' if secret_note == '' else 'has something'
+        # print(result)
         ver.save()
         article.save()
         content = form.cleaned_data.get("content")

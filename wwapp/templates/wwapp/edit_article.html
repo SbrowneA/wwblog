@@ -17,6 +17,17 @@
                 return false;
             }
         }
+
+        function viewArticle(the_id) {
+            if (confirm("All unsaved changes will be lost.\nwould yo like to continue?")) {
+                var url = "/post/" + the_id.toString() + "/view";
+                window.location.replace(url);
+            } else {
+                return false;
+            }
+        }
+
+
     </script>
     {{ form.media }}
 {% endblock %}
@@ -56,23 +67,25 @@
         <form method="post" class="TinyEditor" id="formTinyM">
             {#        {{ form.categories_select }}#}
             {% csrf_token %}
-            {{ form.title.label }}
-            {{ form.title }}
-            {{ form.secret_note.label }}
-            {{ form.secret_note }}
-            {{ form.content }}
-            <p>
+            <div>
+                {{ form.title.label }}
+                {{ form.title }}
+                {{ form.secret_note.label }}
+                {{ form.secret_note }}
+                {{ form.content }}
+            </div>
+            <div>
                 {% for error in form.non_field_errors %}
                     <div class="alert alert-danger">
                         <strong>{{ error|escape }}</strong>
                     </div>
                 {% endfor %}
-            </p>
+            </div>
             <button type="submit" class="btn btn-success">Save</button>
 
             {% if article.author_id == request.user.id %}
                 {% if article.published %}
-{#                    <button class="btn btn-primary" onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft</button>#}
+                    {#                    <button class="btn btn-primary" onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft</button>#}
                     <p>Currently public in: {{ parent_category }}</p>
 
                 {% else %}
@@ -92,11 +105,16 @@
 
         </form>
         {% if article.author_id == request.user.id %}
-                {% if article.published %}
-                    <button class="btn btn-primary" onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft</button>
-{#                    <p>Currently public in: {{ parent_category }}</p>#}
-                {% endif %}
+            {% if article.published %}
+                <button class="btn btn-primary"
+                        onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft
+                </button>
+                <button class="btn btn-primary"
+                        onclick="viewArticle({{ article.article_id }})"> View
+                </button>
+                {#                    <p>Currently public in: {{ parent_category }}</p>#}
             {% endif %}
+        {% endif %}
     </div>
 
 

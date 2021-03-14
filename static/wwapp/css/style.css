@@ -45,7 +45,7 @@ footer {
     min-height: 8vh;
 }
 
-.content_row{
+.content-row {
     min-height: 80vh;
 }
 
@@ -53,9 +53,74 @@ footer {
     /*min-height: 85vh;*/
     background-color: #343A40;
     /*height: auto;*/
-    font-family:'WorkSans', serif;
+    font-family: 'WorkSans', serif;
 }
 
+
+.content .article-heading {
+    margin-left: 8%;
+    margin-top: 0.2em;
+}
+
+
+.content .article-container {
+    width: 84%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1.5em;
+    min-height: fit-content;
+    word-wrap: break-word;
+}
+
+.content .article-content {
+    /*width: 100%;*/
+    min-height: fit-content;
+    font-family: 'WorkSans', serif;
+
+    /*color: white;*/
+    /*background-color: #569456;*/
+}
+
+.content .article-details {
+    /*font-size: 0.7em;*/
+    color: #bababa;
+    /*line-height: 5px;*/
+}
+.content .article-date {
+    color: #bababa;
+    font-size: .9em;
+}
+.content .article-author {
+    color: #bababa;
+    line-height: 10%;
+    font-size: .9em;
+}
+
+.content .article-category {
+    color: #bababa;
+    line-height: 10%;
+}
+
+
+
+.content .article-secret {
+    color: #bababa;
+    /*background-color: #5E5694;*/
+    margin: 1em 0;
+    /*font-size: 200px;*/
+    /*font-style: italic;*/
+}
+
+#hidden-notes-label {
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+#hidden-notes-label-info {
+    font-weight: 600;
+    vertical-align: super;
+    /*font-size: smaller;*/
+}
 
 /*to remove asterisks from required fields on crispy forms */
 .asteriskField {
@@ -109,20 +174,20 @@ h3, h4 {
 }
 
 /*BANNER LINKS*/
-.banner a:link{
+.banner a:link {
     color: #c4c2d4;
     padding: .1em .2em;
     font-family: RobotoSlab, serif;
 }
 
-.banner a:visited{
+.banner a:visited {
     /*color: #45426b;*/
     /*color: #aea2d7;*/
     /*color: #bdb6d7;*/
     color: #c4c2d4;
 }
 
-.banner a:hover{
+.banner a:hover {
     background-color: #aea2d7;
     color: #2c264a;
     font-style: normal;
@@ -177,7 +242,6 @@ h3, h4 {
 .right-nav a:active {
     background-color: #927c83;
 }
-
 
 
 /*dropzone customisation*/

@@ -15,8 +15,9 @@ from wwblog.settings import POSTS_ROOT
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
 from wwblog.storages import MediaStorage
+from django.utils import timezone
 
-# from account.role_validator import is_moderator_or_admin
+from account.role_validator import is_moderator_or_admin
 
 User = get_user_model()
 
@@ -435,6 +436,13 @@ class ArticleHandler:
         self.article = article
         self.__name__ = "ArticleHandler"
 
+    def has_editor_privilege(self, user: User) -> bool:
+        if is_moderator_or_admin(user):
+            return True
+        if user in self.get_editors():
+            return True
+        return False
+
     def get_category_item(self) -> CategoryItem:
         return CategoryItem.objects.get(item_article_id=self.article.article_id)
 
@@ -504,6 +512,7 @@ class ArticleHandler:
         cat_handler = CategoryHandler(category)
         cat_handler.add_child_article(self.article)
         self.article.published = True
+        self.article.pub_date = timezone.now()
         self.article.save()
 
     def add_editor(self, user):
