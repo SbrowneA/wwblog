@@ -86,10 +86,12 @@ footer {
     color: #bababa;
     /*line-height: 5px;*/
 }
+
 .content .article-date {
     color: #bababa;
     font-size: .9em;
 }
+
 .content .article-author {
     color: #bababa;
     line-height: 10%;
@@ -100,7 +102,6 @@ footer {
     color: #bababa;
     line-height: 10%;
 }
-
 
 
 .content .article-secret {
@@ -197,6 +198,7 @@ h3, h4 {
 
 /*CONTENT LINKS */
 .content a:link {
+    font-weight: 500;
     /*background-color: #67647a;*/
     /*padding-left: .3em;*/
     /*padding-right: .3em;*/
@@ -209,13 +211,13 @@ h3, h4 {
 
 .content a:hover {
     /*color: #9cdcfe;*/
-    background-color: #5d8181;
+    color: white;
+    /*background-color: #3a5353;*/
     text-decoration: none;
     /*background-color: lightgreen;*/
 }
 
 .content a:active {
-    background-color: #927c83;
 }
 
 
@@ -233,7 +235,8 @@ h3, h4 {
 
 .right-nav a:hover {
     /*color: #9cdcfe;*/
-    background-color: #5d8181;
+    background-color: #42404f;
+    /*background-color: #5d8181;*/
     text-underline: none;
     text-decoration: none;
     /*background-color: lightgreen;*/
@@ -243,6 +246,18 @@ h3, h4 {
     background-color: #927c83;
 }
 
+.delete-link {
+    color: #9CDCFE;
+    font-weight: 500;
+}
+
+.delete-link:hover {
+    color: #ff7878;
+}
+
+.delete-link:active {
+    color: #e70000;
+}
 
 /*dropzone customisation*/
 .dz-custom {

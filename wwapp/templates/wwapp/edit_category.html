@@ -3,13 +3,23 @@
     <script type="text/javascript">
         function deleteCategory(the_id) {
             if (confirm("Are you sure you want to delete this {{ category_type }} ({{ category.category_name }})?"
-                + "\nAll child {{ child_category_type }}s will be deleted, and all articles will be drafted")) {
+                + "\nAll child {{ child_category_type }}s will be deleted, and all posts will be drafted")) {
                 var url = "/category/" + the_id.toString() + "/delete";
                 window.location.replace(url);
             } else {
                 return false;
             }
         }
+
+        function deleteChildCategory(cat_id, cat_name) {
+            if (confirm('Are you sure you want to delete' + cat_name + '?\nAll ' + cat_name + '\'s categories will be deleted, and it\'s posts drafted')) {
+                var url = '/category/' + cat_id.toString() + '/delete';
+                window.location.replace(url.toString());
+            } else {
+                return false;
+            }
+        }
+
     </script>
 {% endblock %}
 {% block title %}
@@ -31,14 +41,14 @@
         {% csrf_token %}
         <div>
             {{ form.category_name }}
-            <p>
+            <div>
                 {% for error in form.category_name.errors %}
                     <div class="alert alert-danger">
                         <strong>{{ error|escape }}</strong>
                     </div>
                 {% endfor %}
-            </p>
-            <button class="btn btn-success" value="save" name="save" type="submit">Save</button>
+            </div>
+            <button class="btn btn-success" value="save" name="save" type="submit">Update</button>
         </div>
         {% if child_category_type %}
             <h3>{{ child_category_type }}s</h3>
@@ -46,11 +56,16 @@
                 <ul>
                     {% for cat in child_categories %}
                         <li>
-                            {{ cat.category_name }}
-                            {#                                                    <a href="{% url 'wwapp:open_category' c.category_id %}">c.category_name</a>#}
-                            <a href="{% url 'wwapp:edit_category' cat.category_id %}">edit</a>
-                            {#                                                    TODO add comfirmatino#}
-                            <a href="{% url 'wwapp:delete_category' cat.category_id %}">delete</a>
+                            <a href="{% url 'wwapp:open_category' cat.category_id %}">{{ cat.category_name }}</a>
+                             - <a href="{% url 'wwapp:edit_category' cat.category_id %}">edit</a>
+                             - <span onclick="deleteChildCategory({{ cat.category_id }}, {{ cat.category_name }})" class="delete-link">delete</span>
+{#                             - <a onclick="deleteChildCategory({{ cat.category_id }}, {{ cat.category_name }})" class="delete-link">delete</a>#}
+{#                            <button type="button" class="btn btn-primary h-100 edit-btn"#}
+{#                                    onclick="location.href = '{% url 'wwapp:edit_category' cat.category_id %}'"><i#}
+{#                                    class="bi bi-pencil-square edit-icon"></i></button>#}
+{#                            <button type="button" class="btn btn-danger h-100 delete-btn"#}
+{#                                    onclick="deleteChildCategory({{ cat.category_id }}, {{ cat.category_name }})"><i#}
+{#                                    class="bi bi-trash-fill delete-icon"></i></button>#}
                         </li>
                     {% endfor %}
                 </ul>

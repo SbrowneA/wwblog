@@ -1,21 +1,40 @@
 {% extends "wwapp/base.html" %}
-
+{% load static %}
 {% block title %}
     {{ category.category_name }}
 {% endblock %}
 
+{% block right_nav %}
+    {% if request.user.is_authenticated %}
+        <h4><a href="{% url 'wwapp:manage_own_content' %}">My Posts & Projects</a></h4>
+        <h4><a href="{% url 'wwapp:new_article' %}">New Post</a></h4>
+        <h4><a href="{% url 'wwapp:new_project' %}">New Project</a></h4>
+        {% if has_editor_privilege %}
+            <button class="btn btn-primary"
+                    onclick="location.href='{% url "wwapp:edit_category" category.category_id %}'">
+                Edit
+            </button>
+        {% endif %}{% endif %}
+{% endblock %}
+
+
 {% block content %}
+
     <h2>{{ category.category_name }}</h2>
-    <h3>Sub-Categories:</h3>
-    {% if child_categories == 0 %}
-        {% for c in child_categories %}
-            <a href="{% url 'wwapp:open_category' c.category_id  %}">c.category_name</a>
-        {% endfor %}
-    {% else %}
-        <p><i>No Articles</i></p>
+    {% if child_category_type %}
+        <h3>{{ child_category_type }}s</h3>
+        {% if child_categories %}
+            <ul>
+                {% for cat in child_categories %}
+                    <li><a href="{% url 'wwapp:open_category' cat.category_id %}">{{ cat.category_name }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p><i>No {{ child_category_type }}s in this {{ category_type }}</i></p>
+        {% endif %}
     {% endif %}
 
-    <h3>Articles:</h3>
+    <h3>Posts:</h3>
     {% if child_articles %}
         <ul>
             {% for a in child_articles %}
@@ -25,15 +44,17 @@
             {% endfor %}
         </ul>
     {% else %}
-        <p><i>No Articles</i></p>
+        <p><i>No Posts in this {{ category_type }}</i></p>
     {% endif %}
 
 
     <h3>Editors:</h3>
-    <a href="{% url 'wwapp:user_details' category_creator.user_id %}">{{ category_creator.username }} - Creator of category</a>
+    {#    <a href="{% url 'wwapp:user_details' category_creator.user_id %}">{{ category_creator.username }} - Creator of category</a>#}
+    <p>{{ category_creator.username }} - Creator of category</p>
     {% if editors %}
         {% for u in editors %}
-            <a href="{% url 'wwapp:user_details' u.user_id %}">{{ u.username }}</a>
+            {#            <a href="{% url 'wwapp:user_details' u.user_id %}">{{ u.username }}</a>#}
+            <p>{{ u.username }}</p>
         {% endfor %}
     {% else %}
         <p><i>No Other Editors</i></p>

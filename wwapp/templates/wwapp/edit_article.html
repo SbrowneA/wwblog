@@ -92,13 +92,13 @@
                     <div>
                         Publish to:&nbsp{{ form.publish_to_select }}
                         <button type="submit" value="publish" name="publish" class="btn btn-primary">Publish</button>
-                        <p>
+                        <div>
                             {% for error in form.publish_to_select.errors %}
                                 <div class="alert alert-danger">
                                     <strong>{{ error|escape }}</strong>
                                 </div>
                             {% endfor %}
-                        </p>
+                        </div>
                     </div>
                 {% endif %}
             {% endif %}

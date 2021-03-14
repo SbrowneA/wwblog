@@ -60,6 +60,16 @@ class CategoryHandler:
     def __init__(self, parent):
         self.category = parent
 
+    def has_editor_privilege(self, user: User) -> bool:
+        # TODO use 'or' instead of separate statements, this is just for testing
+        if is_moderator_or_admin(user):
+            return True
+        elif user in self.get_category_editors():
+            return True
+        elif user.id == self.category.category_creator_id:
+            return True
+        return False
+
     def get_parent_category(self):
         try:
             i = CategoryItem.objects.get(item_category_id=self.category.category_id)
@@ -439,7 +449,9 @@ class ArticleHandler:
     def has_editor_privilege(self, user: User) -> bool:
         if is_moderator_or_admin(user):
             return True
-        if user in self.get_editors():
+        elif user in self.get_editors():
+            return True
+        elif user.id == self.article.author_id:
             return True
         return False
 

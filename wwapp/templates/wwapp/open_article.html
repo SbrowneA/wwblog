@@ -27,7 +27,7 @@
             <br/>
             {#            <a href="{% url "wwapp:view_profile" article.author_id %}"></a>#}
             <span class="article-category">from <a class="article-category"
-               href="{% url "wwapp:open_category" article.author_id %}">{{ article_category.category_name }}</a></span>
+                                                   href="{% url "wwapp:open_category" article_category.category_id %}">{{ article_category.category_name }}</a></span>
             <span class="article-author"> - post by {{ article.author.username }}</span>
             {#            <span></span>#}
         </div>
@@ -53,12 +53,15 @@
 {% endblock %}
 
 {% block right_nav %}
-    {% if user %}
-
-        <button class="btn btn-primary" onclick="location.href='{% url "wwapp:edit_article" article.article_id %}'">
-            Edit
-        </button>
-    {% else %}
-        <button>Publish</button>
+    {% if request.user.is_authenticated %}
+        <h4><a href="{% url 'wwapp:manage_own_content' %}">My Posts & Projects</a></h4>
+        <h4><a href="{% url 'wwapp:new_article' %}">New Post</a></h4>
+        <h4><a href="{% url 'wwapp:new_project' %}">New Project</a></h4>
+        {% if has_editor_privilege %}
+            <button class="btn btn-primary" onclick="location.href='{% url "wwapp:edit_article" article.article_id %}'">
+                Edit
+            </button>
+        {% endif %}
     {% endif %}
+
 {% endblock %}

@@ -337,25 +337,23 @@ def browse_categories(request):
 
 def open_category(request, category_id):
     category = Category.objects.get(category_id=category_id)
-    creator = category.category_creator
-    # sub_cats = category.get_child_categories()
-    # sub_cats_count = len(sub_cats)
-    # articles = category.get_child_articles()
-    # articles_count = len(articles)
+    c_handler = CategoryHandler(category)
+    # c_handler.
     # editors = category.get_category_editors()
     # editors_count = len(editors)
 
     values = {
         'category': category,
-        'category_creator': creator,
-        # 'child_categories': sub_cats,
-        # 'child_categories_count': sub_cats_count,
-        # 'child_articles': articles,
-        # 'child_articles_count': articles_count,
+        'child_categories': c_handler.get_child_categories(),
+        'child_articles': c_handler.get_child_articles(),
+        'category_type': category.category_type.lower().capitalize(),
         # 'editors': editors,
         # 'editors_count': editors_count,
     }
-
+    if request.user.is_authenticated:
+        values['has_editor_privilege'] = c_handler.has_editor_privilege(request.user)
+    if c_handler.get_child_category_type() is not None:
+        values["child_category_type"] = c_handler.get_child_category_type().lower().capitalize()
     return render(request, 'wwapp/open_category.html', values)
 
 

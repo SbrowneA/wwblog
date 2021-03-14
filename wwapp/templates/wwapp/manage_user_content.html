@@ -30,7 +30,7 @@
             {% for article in published_articles %}
                 <li>
                     <a href="{% url 'wwapp:open_article' article.article_id %}">{{ article.article_title }}</a>
-                    <a href="{% url 'wwapp:edit_article' article.article_id %}">edit</a>
+                     - <a href="{% url 'wwapp:edit_article' article.article_id %}">edit</a>
                 </li>
             {% endfor %}
         </ul>
@@ -45,7 +45,7 @@
                 <li>
                     {{ article.article_title }}
                     {#                    <a href="{% url 'wwapp:open_article' article.article_id %}">{{ article.article_title }}</a>#}
-                    <a href="{% url 'wwapp:edit_article' article.article_id %}">edit</a>
+                    - <a href="{% url 'wwapp:edit_article' article.article_id %}">edit</a>
                 </li>
             {% endfor %}
         </ul>
@@ -58,8 +58,8 @@
         <ul title="drafts_list">
             {% for project in user_projects %}
                 <li>
-                    {{ project.category_name }}
-                    <a href="{% url 'wwapp:edit_category' project.category_id %}">edit</a>
+                    <a href="{% url 'wwapp:open_category' project.category_id %}">{{ project.category_name }}</a>
+                     - <a href="{% url 'wwapp:edit_category' project.category_id %}">edit</a>
                 </li>
             {% endfor %}
         </ul>
