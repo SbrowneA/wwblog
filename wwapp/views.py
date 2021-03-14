@@ -52,11 +52,11 @@ def create_new_article(request):
     return redirect('wwapp:edit_article', article_id=article.article_id)
 
 
-# dev only remove for deployment
-from django.views.decorators.clickjacking import xframe_options_exempt
+# dev only remove for production
+# from django.views.decorators.clickjacking import xframe_options_exempt
 
 
-@xframe_options_exempt
+# @xframe_options_exempt
 def open_article(request, article_id):
     article = get_object_or_404(Article, article_id=article_id)
     a_handler = ArticleHandler(article)

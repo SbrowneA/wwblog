@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['WWBLOG_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["wwblog-test2.herokuapp.com", "wwblog.herokuapp.com", "127.0.0.1"]
 ADMINS = [("Admin", "wwblog.manage@gmail.com"), ]
@@ -59,8 +59,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-# X FRMAME MIDDLEWARE OPTIONS ARE DEV ONLY REMOVE IN DEPLOYMENT
-X_FRAME_OPTIONS = 'SAMEORIGIN'
+# X FRMAME MIDDLEWARE OPTIONS ARE DEV ONLY REMOVE IN PRODUCTION
+# X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 ROOT_URLCONF = 'wwblog.urls'
 
@@ -87,23 +87,23 @@ WSGI_APPLICATION = 'wwblog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': os.environ['DATABASE_NAME'],
-#         'USER': os.environ['DATABASE_USER'],
-#         'PASSWORD': os.environ['DATABASE_PASSWORD'],
-#         'HOST': os.environ['DATABASE_HOST'],
-#         'PORT': os.environ['DATABASE_PORT'],
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ['DATABASE_NAME'],
+        'USER': os.environ['DATABASE_USER'],
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],
+        'HOST': os.environ['DATABASE_HOST'],
+        'PORT': os.environ['DATABASE_PORT'],
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -149,7 +149,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
 
-STATIC_URL = '/static/'  # dev only
+# STATIC_URL = '/static/'  # dev only
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static') # dev only
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # for collect static command
 # STATICFILES_DIRS = (os.path.join("static"),) # dev only
@@ -160,9 +160,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # TINYMCE_JS_URL = os.path.join(STATIC_URL, "path/to/tiny_mce/tiny_mce.js")
 # TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
 
-# POSTS_LOCATION = 'posts'
+POSTS_LOCATION = 'posts'  # for Production
 POSTS_ROOT = os.path.join(MEDIA_ROOT, 'posts')
-"""
+
 # S3 BUCKETS CONFIG
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
@@ -178,7 +178,7 @@ AWS_S3_FILE_OVERWRITE = True
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DEFAULT_FILE_STORAGE = 'wwblog.storages.MediaStorage'
 STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
-"""
+
 
 # SMTP Configuration
 """
@@ -212,10 +212,12 @@ TINYMCE_DEFAULT_CONFIG = {
 AUTH_USER_MODEL = 'account.User'
 
 # ONLY for Production
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
-# SECURE_SSL_REDIRECT = True
-# SECURE_HSTS_SECONDS =
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
 LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/"

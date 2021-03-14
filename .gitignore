@@ -130,9 +130,9 @@ dmypy.json
 
 .DS_Store
 # inore for production!
-# *.sqlite3
-# media/
-# *.pyc
+ *.sqlite3
+ media/
+ *.pyc
 
 
 # Ignore Django Migrations in Development if you are working on team

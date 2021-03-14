@@ -11,7 +11,7 @@ from .context_processors import create_presigned_url
 from .models import (Article, ArticleEditor, ArticleVersion,
                      Category, CategoryEditor, CategoryItem,
                      CategoryItemAssignation)
-from wwblog.settings import POSTS_ROOT
+from wwblog.settings import POSTS_ROOT, POSTS_LOCATION
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
 from wwblog.storages import MediaStorage
@@ -644,87 +644,82 @@ class ArticleHandler:
         return ver
 
     def get_latest_version_url(self) -> str:
-        return self.get_latest_version_url_local()
+        # return self.get_latest_version_url_local()
         # need to replace \ with / to prevent NoSuchKey error
-        # key = os.path.join("media", self.__get_latest_version_dir()).replace("\\", "/")
-        # return create_presigned_url(key, 300)
-
-    def get_latest_version_url_local(self):
-        file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
-        # print(f"LOCATED AT: /media/posts/{file_name}")
-        return f"/media/posts/{file_name}"
-        # return self.__get_latest_version_dir_local().replace("\\", "/")
+        key = os.path.join("media", self.__get_latest_version_dir()).replace("\\", "/")
+        return create_presigned_url(key, 300)
 
     def __get_latest_version_dir(self) -> str:
-        # file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
+        file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
+        return os.path.join(POSTS_LOCATION, str(self.article.author_id), file_name)
         # format media/posts/user_id/article_id"-"article_version
         # return f"posts/{self.article.author_id}/{file_name}"
         # return os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
         # return f"{POSTS_ROOT}/{self.article.author_id}/{file_name}"
-        return self.__get_latest_version_dir_local()
+        # return self.__get_latest_version_dir_local()
 
     def save_article_content(self, new_content) -> bool:
-        return self.save_article_content_local(new_content)
+        # return self.save_article_content_local(new_content)
         # TODO check for success and notify on front end
-        # try:
-        #     storage = MediaStorage()
-        #     file_dir = self.__get_latest_version_dir()
-        #     if storage.exists(file_dir):
-        #         print(f"File will be overridden: {file_dir}")
-        #     else:
-        #         print(f"No file exists, new file was created: {file_dir}")
-        #     file = default_storage.open(file_dir, "w")
-        #     file.write(str(new_content))
-        #     file.close()
-        #     file_url = storage.url(file_dir)
-        #     print(f"saved to: {file_url}")
-        #     return True
-        #
-        # except FileNotFoundError:
-        #     print(f"{self.__name__}.{self.save_article_content.__name__} -> FileNotFoundError was thrown:\n"
-        #           f"{traceback.print_exc()}")
-        #     return False
-        # except ValueError:
-        #     print(f"{self.__name__}.{self.save_article_content.__name__} -> The 'posts' directory does not exist")
-        #     return False
+        try:
+            storage = MediaStorage()
+            file_dir = self.__get_latest_version_dir()
+            if storage.exists(file_dir):
+                print(f"File will be overridden: {file_dir}")
+            else:
+                print(f"No file exists, new file was created: {file_dir}")
+            file = default_storage.open(file_dir, "w")
+            file.write(str(new_content))
+            file.close()
+            file_url = storage.url(file_dir)
+            print(f"saved to: {file_url}")
+            return True
+
+        except FileNotFoundError:
+            print(f"{self.__name__}.{self.save_article_content.__name__} -> FileNotFoundError was thrown:\n"
+                  f"{traceback.print_exc()}")
+            return False
+        except ValueError:
+            print(f"{self.__name__}.{self.save_article_content.__name__} -> The 'posts' directory does not exist")
+            return False
 
     def get_article_content(self) -> str:
-        return self.get_article_content_local()
-        # file_dir = self.__get_latest_version_dir()
-        # try:
-        #     # file = default_storage.open(file_dir, "r")
-        #     # content = file.read()
-        #     # file.close()
-        #     storage = MediaStorage()
-        #     # with default_storage.open(file_dir, "r") as file:
-        #     print(f"trying to get file {file_dir}")
-        #     if storage.exists(file_dir):
-        #         with storage.open(file_dir, "r") as file:
-        #             content = file.read()
-        #             print("article content loaded successfully")
-        #         return str(content)
-        #     else:
-        #         return ""
-        # except FileNotFoundError:
-        #     print(f"ArticleHandler.{self.get_article_content.__name__}"
-        #           f" -> FileNotFoundError was thrown: article content NOT found\n"
-        #           f"{traceback.print_exc()}")
-        #     return ""
+        # return self.get_article_content_local()
+        file_dir = self.__get_latest_version_dir()
+        try:
+            # file = default_storage.open(file_dir, "r")
+            # content = file.read()
+            # file.close()
+            storage = MediaStorage()
+            # with default_storage.open(file_dir, "r") as file:
+            print(f"trying to get file {file_dir}")
+            if storage.exists(file_dir):
+                with storage.open(file_dir, "r") as file:
+                    content = file.read()
+                    print("article content loaded successfully")
+                return str(content)
+            else:
+                return ""
+        except FileNotFoundError:
+            print(f"ArticleHandler.{self.get_article_content.__name__}"
+                  f" -> FileNotFoundError was thrown: article content NOT found\n"
+                  f"{traceback.print_exc()}")
+            return ""
 
     def __remove_all_article_files(self):
-        self.__remove_all_article_files_local()
-        # all_ver = self.get_all_versions()
-        # for ver in all_ver:
-        #     file_name = f"{self.article.article_id}-{ver.version}.html"
-        #     # TODO check if people other than the author can make child articles of an article
-        #     file_dir = os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
-        #     storage = MediaStorage()
-        #     if storage.exists(file_dir):
-        #         storage.delete(file_dir)
-        #     else:
-        #         print(f"{self.__remove_all_article_files.__name__}This article version "
-        #               f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
-        #               raise FileNotFoundError("File for the latest version of this article could not be found")
+        # self.__remove_all_article_files_local()
+        all_ver = self.get_all_versions()
+        for ver in all_ver:
+            file_name = f"{self.article.article_id}-{ver.version}.html"
+            # TODO check if people other than the author can make child articles of an article
+            file_dir = os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
+            storage = MediaStorage()
+            if storage.exists(file_dir):
+                storage.delete(file_dir)
+            else:
+                print(f"{self.__remove_all_article_files.__name__}This article version "
+                      f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
+                      # raise FileNotFoundError("File for the latest version of this article could not be found")
 
     def delete_article(self):
         if self.article.published:
@@ -734,6 +729,14 @@ class ArticleHandler:
 
     # LOCAL VERSIONS
 
+
+"""
+    def get_latest_version_url_local(self):
+        file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
+        # print(f"LOCATED AT: /media/posts/{file_name}")
+        return f"/media/posts/{file_name}"
+        # return self.__get_latest_version_dir_local().replace("\\", "/")
+        
     # must return T or F!!
     def save_article_content_local(self, new_content) -> bool:
         # TODO check for success and notify on front end
@@ -782,6 +785,7 @@ class ArticleHandler:
                 print(f"{self.__remove_all_article_files_local().__name__}This article version "
                       f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
                 # raise FileNotFoundError("File for the latest version of this article could not be found")
+"""
 
 
 def _make_hash(value: str) -> str:
