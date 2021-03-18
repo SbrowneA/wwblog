@@ -387,14 +387,15 @@ class CategoryHandler:
         # else:
         topics = CategoryHandler.get_user_topics(user)
         subtopics = CategoryHandler.get_user_subtopics(user)
-        articles = ArticleHandler.get_user_published_articles(user)
-        # articles = sorted(articles, key=lambda article: article.article_title)
-        list(articles).sort(key=lambda article: article.article_title)
+        # TODO enable articles once parent article issue is fixed
+        # articles = ArticleHandler.get_user_published_articles(user)
+        # # articles = sorted(articles, key=lambda article: article.article_title)
+        # list(articles).sort(key=lambda article: article.article_title)
         # TODO get editor topics and articles (not just authored)
         # not recommended to load the whole query set in to memory (i.e list()) and only load required variables instead
         topics = list(topics) + list(subtopics)
         choices = CategoryHandler.convert_topics_to_choice(topics)
-        choices += CategoryHandler.convert_articles_to_choice(articles)
+        # choices += CategoryHandler.convert_articles_to_choice(articles)
 
         return choices
 
