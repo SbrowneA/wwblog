@@ -10,7 +10,7 @@ django-storages==1.11.1
 gunicorn==20.0.4
 idna==2.10
 imgurpython==1.1.7
-Pillow==8.1.0
+Pillow==8.1.1
 pip==21.0.1
 setuptools==51.3.3
 pytz==2020.5

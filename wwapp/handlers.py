@@ -18,6 +18,7 @@ from wwblog.storages import MediaStorage
 from django.utils import timezone
 
 from account.role_validator import is_moderator_or_admin
+from .decorators import time_task
 
 User = get_user_model()
 
@@ -387,14 +388,15 @@ class CategoryHandler:
         # else:
         topics = CategoryHandler.get_user_topics(user)
         subtopics = CategoryHandler.get_user_subtopics(user)
-        articles = ArticleHandler.get_user_published_articles(user)
-        # articles = sorted(articles, key=lambda article: article.article_title)
-        list(articles).sort(key=lambda article: article.article_title)
+        # TODO enable articles once parent article issue is fixed
+        # articles = ArticleHandler.get_user_published_articles(user)
+        # # articles = sorted(articles, key=lambda article: article.article_title)
+        # list(articles).sort(key=lambda article: article.article_title)
         # TODO get editor topics and articles (not just authored)
         # not recommended to load the whole query set in to memory (i.e list()) and only load required variables instead
         topics = list(topics) + list(subtopics)
         choices = CategoryHandler.convert_topics_to_choice(topics)
-        choices += CategoryHandler.convert_articles_to_choice(articles)
+        # choices += CategoryHandler.convert_articles_to_choice(articles)
 
         return choices
 
@@ -449,7 +451,7 @@ class ArticleHandler:
     def has_editor_privilege(self, user: User) -> bool:
         if is_moderator_or_admin(user):
             return True
-        elif user in self.get_editors():
+        elif self.get_editors() and user in self.get_editors():
             return True
         elif user.id == self.article.author_id:
             return True
@@ -652,13 +654,13 @@ class ArticleHandler:
     def __get_latest_version_dir(self) -> str:
         file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
         return os.path.join(POSTS_LOCATION, str(self.article.author_id), file_name)
-        # format media/posts/user_id/article_id"-"article_version
-        # return f"posts/{self.article.author_id}/{file_name}"
-        # return os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
         # return f"{POSTS_ROOT}/{self.article.author_id}/{file_name}"
         # return self.__get_latest_version_dir_local()
 
+    @time_task
     def save_article_content(self, new_content) -> bool:
+        if new_content == "":
+            return True
         # return self.save_article_content_local(new_content)
         # TODO check for success and notify on front end
         try:
@@ -683,6 +685,7 @@ class ArticleHandler:
             print(f"{self.__name__}.{self.save_article_content.__name__} -> The 'posts' directory does not exist")
             return False
 
+    @time_task
     def get_article_content(self) -> str:
         # return self.get_article_content_local()
         file_dir = self.__get_latest_version_dir()
@@ -754,7 +757,7 @@ class ArticleHandler:
         try:
             with open(file_dir, "r") as file:
                 content = file.read()
-                print("article content loaded")
+                # print("article content loaded")
             return str(content)
         except FileNotFoundError:
             print(f"ArticleHandler.{self.get_article_content_local.__name__}"

@@ -186,7 +186,7 @@ def _is_article_author(request, article_id):
 # CATEGORY CHECK METHODS
 def _is_category_creator(request, category_id):
     cat = get_object_or_404(Category, category_id=category_id)
-    if cat.category_creator == request.user.id:
+    if cat.category_creator.id == request.user.id:
         return True
     return False
 
