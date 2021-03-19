@@ -665,6 +665,8 @@ class ArticleHandler:
         return self.__get_latest_version_dir_local()
 
     def save_article_content(self, new_content) -> bool:
+        if new_content == "":
+            return True
         return self.save_article_content_local(new_content)
         # TODO check for success and notify on front end
         # try:
