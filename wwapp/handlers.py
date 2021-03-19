@@ -18,6 +18,7 @@ from wwblog.storages import MediaStorage
 from django.utils import timezone
 
 from account.role_validator import is_moderator_or_admin
+from .decorators import time_task
 
 User = get_user_model()
 
@@ -450,7 +451,7 @@ class ArticleHandler:
     def has_editor_privilege(self, user: User) -> bool:
         if is_moderator_or_admin(user):
             return True
-        elif user in self.get_editors():
+        elif self.get_editors() and user in self.get_editors():
             return True
         elif user.id == self.article.author_id:
             return True
@@ -664,6 +665,7 @@ class ArticleHandler:
         # return f"{POSTS_ROOT}/{self.article.author_id}/{file_name}"
         return self.__get_latest_version_dir_local()
 
+    @time_task
     def save_article_content(self, new_content) -> bool:
         if new_content == "":
             return True
@@ -691,6 +693,7 @@ class ArticleHandler:
         #     print(f"{self.__name__}.{self.save_article_content.__name__} -> The 'posts' directory does not exist")
         #     return False
 
+    @time_task
     def get_article_content(self) -> str:
         return self.get_article_content_local()
         # file_dir = self.__get_latest_version_dir()
