@@ -21,6 +21,9 @@
 {% block content %}
 
     <h2>{{ category.category_name }}</h2>
+    {% if category.category_description %}
+        <p>{{ category.category_description }}</p>
+    {% endif %}
     {% if child_category_type %}
         <h3>{{ child_category_type }}s</h3>
         {% if child_categories %}

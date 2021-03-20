@@ -48,6 +48,15 @@
                     </div>
                 {% endfor %}
             </div>
+            {{ form.category_description }}
+            <div>
+                {% for error in form.category_description.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            </div>
+
             <button class="btn btn-success" value="save" name="save" type="submit">Update</button>
         </div>
         {% if child_category_type %}

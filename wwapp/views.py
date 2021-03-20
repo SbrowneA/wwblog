@@ -223,6 +223,9 @@ def edit_category(request, category_id):
                 try:
                     cat_name = form.cleaned_data.get("category_name")
                     if cat_name != "" or None:
+                        cat_description = form.cleaned_data.get("category_description")
+                        if cat_description != "":
+                            c.category_description = cat_description
                         c.category_name = cat_name
                         c.save()
                         values["category"] = c
@@ -234,7 +237,8 @@ def edit_category(request, category_id):
                                    f"{c.category_type.lower().capitalize()} name must be unique")
     else:
         form = forms.CategoryEdit(
-            initial={"category_name": c.category_name, "new_category_name": ""}
+            initial={"category_name": c.category_name, "new_category_name": "",
+                     "category_description": c.category_description}
         )
     values["form"] = form
     return render(request, "wwapp/edit_category.html", values)
