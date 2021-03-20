@@ -65,8 +65,9 @@ class CategoryHandler:
         # TODO use 'or' instead of separate statements, this is just for testing
         if is_moderator_or_admin(user):
             return True
-        elif user in self.get_category_editors():
-            return True
+        elif self.get_category_editors():
+            if user in self.get_category_editors():
+                return True
         elif user.id == self.category.category_creator_id:
             return True
         return False
