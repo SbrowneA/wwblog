@@ -102,7 +102,7 @@
             </p>
         {% endif %}
 
-        <h3>Articles:</h3>
+        <h3>Articles</h3>
         {% if child_articles %}
             <ul>
                 {% for a in child_articles %}
@@ -117,7 +117,7 @@
 
     </form>
 
-    <h3>Category Editors:</h3>
+    <h3>Category Editors</h3>
     {#    <a href="{% url 'wwapp:user_details' category_creator.user_id %}">{{ category_creator.username }}#}
     <p>{{ category.category_creator.username }}
         - Creator of category</p>
