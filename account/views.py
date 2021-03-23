@@ -62,16 +62,12 @@ def register_user(request):
         if form.is_valid() is True:
             username = form.cleaned_data.get("username")
             email = form.cleaned_data.get("email")
-            # password = form.cleaned_data.get("password1")
-            # password2 = form.cleaned_data.get("password2")
             password = form.cleaned_data.get("password2")
             qs1 = User.objects.filter(username=username).count()
             qs2 = User.objects.filter(email=email).count()
-            # if password == password2 and qs1 == 0 and qs2 == 0:
             if qs1 == 0 and qs2 == 0:
                 user = User.objects.create_user(username=username, password=password, email=email)
                 request.session['successfully_registered'] = 1
-                # TODO add groups to new database before registering
                 group = Group.objects.get(name='member')
                 user.groups.add(group)
                 return redirect("wwapp:register_success", permanent=True)

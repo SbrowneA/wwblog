@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class="content" id="content">
-        <h1 style="font-family: Alta, serif">Register Account</h1>
+        <h1>Register Account</h1>
         {% load crispy_forms_tags %}
 
         <form method="post" style="font-family: WorkSans, serif">
@@ -21,7 +21,7 @@
                 </p>
             {% endfor %}
             <p style="font-weight: 400;">already have an account? <a href="{% url 'wwapp:login' %}">login</a></p>
-            <button type="submit" name="save" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
 {% endblock %}
