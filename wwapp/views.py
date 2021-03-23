@@ -31,6 +31,7 @@ from . import imgur
 from .models import (Article,
                      Category)
 from wwblog.storages import MediaStorage
+from django.core.mail import send_mail
 
 User = get_user_model()
 
@@ -381,6 +382,28 @@ def open_category(request, category_id):
 #     }
 #
 #     return render(request, 'wwapp/edit_category.html', values)
+from wwblog.settings import EMAIL_HOST_USER
+
+
+def send_email_test(request):
+    values = {}
+    form = forms.TestEmail(request.POST or None)
+
+    if request.POST:
+        print("posted")
+        if form.is_valid():
+            print("valid")
+            message = form.cleaned_data.get("body")
+            recipient = form.cleaned_data.get("recipient")
+            subject = form.cleaned_data.get("subject")
+            print(f"sending '{subject}' to {recipient}")
+            send_mail(subject=subject, message=message, recipient_list=[recipient], fail_silently=False,
+                      from_email=EMAIL_HOST_USER)
+            print("sent")
+            values['send_success'] = True
+
+    values['form'] = form
+    return render(request, 'wwapp/email_test.html', values)
 
 
 # def image_upload_test(request):

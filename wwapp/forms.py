@@ -1,6 +1,8 @@
 from django import forms
 # from django.contrib.flatpages.models import FlatPage
 from tinymce.widgets import TinyMCE
+
+
 # from .models import Category
 
 
@@ -30,7 +32,8 @@ class CategoryEdit(forms.Form):
             if num <= 300:
                 return category_description
             else:
-                raise forms.ValidationError(f"Description must be less than 300 characters (currently {num} characters long)")
+                raise forms.ValidationError(
+                    f"Description must be less than 300 characters (currently {num} characters long)")
 
     # def clean(self):
     #     super().clean()
@@ -44,8 +47,6 @@ class CategoryEdit(forms.Form):
     #     if len(cats) > 0 and new_category_name != "":
     #         raise forms.ValidationError("The title must be unique")
     #     return new_category_name
-
-
 
 
 class ArticleEdit(forms.Form):
@@ -72,10 +73,11 @@ class ArticleEdit(forms.Form):
     #
     #     if "publish_article" in form.data:
 
-# class TestArticle(forms.ModelForm):
-#     content = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30,
-#                                                     'class': 'tiny-mce-editor', 'id': 'tiny-mce'}))
-#
-#     class Meta:
-#         model = FlatPage
-#         fields = ['content']
+
+class TestEmail(forms.Form):
+    subject = forms.CharField(required=True,
+                              widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Subject'}))
+    recipient = forms.CharField(required=True,
+                                widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Recipient'}))
+    body = forms.CharField(required=True,
+                           widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'message'}))
