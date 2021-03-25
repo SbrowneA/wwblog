@@ -19,6 +19,7 @@
                 </div>
             {% endfor %}
             <p style="font-weight: 400;">don't have an account? <a href="{% url 'account:register' %}">register</a></p>
+            <p style="font-weight: 400;">Forgot your password? <a href="{% url 'account:password_reset' %}">reset password</a></p>
 {#            <p style="font-weight: 400;"><a href="{% url 'account:reset_password' %}">forgot password</a></p>#}
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
