@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class="content" id="content">
-        <h1>Login</h1>
+        <h1>Login</h1><br/>
         {% load crispy_forms_tags %}
 
         <form method="post" style="font-family: WorkSans, serif">
@@ -12,13 +12,11 @@
             {% for field in form %}
                 <label for="{{ field.id_for_label }}" class="label">{{ field.label }}</label>
                 {{ field }}
-                 <p>
-                    {% for error in field.errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ error|escape }}</strong>
-                        </div>
-                    {% endfor %}
-                </p>
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger mt-3">
+                    <strong>{{ error|escape }}</strong>
+                </div>
             {% endfor %}
             <p style="font-weight: 400;">don't have an account? <a href="{% url 'account:register' %}">register</a></p>
 {#            <p style="font-weight: 400;"><a href="{% url 'account:reset_password' %}">forgot password</a></p>#}

@@ -12,7 +12,7 @@ urlpatterns = [
     path('register/', views.register_user, name='register'),
     # path('reset-password/<str:key>/', views.reset_password, name='register'),
     # path('reset-password/recovery-email/', views.recovery_email, name='register'),
-    # path('change-password/', views.change_password, name='register'),
+    path('change-password/', views.change_password, name='change_password'),
     path('register/success/', views.register_success, name='register_success'),
     path('unverified/', views.unverified_user, name='unverified_user'),
 ]

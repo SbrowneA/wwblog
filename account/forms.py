@@ -52,34 +52,60 @@ class RegisterFrom(forms.Form):
         cleaned_data = super().clean()
         username = self.clean_username()
         email = self.clean_email()
-        password2 = self.clean_password2()
+        password2 = clean_password2(cleaned_data)
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        try:
-            # if is_blacklisted_domain(email):
-            #     raise ValueError
-            #     forms.ValidationError("blacklisted")
-            num = User.objects.filter(email=email).count()
-            if num == 0:
-                print("form - valid email")
-                return email
-            raise forms.ValidationError("This email is already in use")
-        except forms.ValidationError:
-            print("form - email is already in use")
-            raise forms.ValidationError("This email is already in use")
+        # try:
+        # if is_blacklisted_domain(email):
+        #     raise forms.ValidationError("Please enter a valid email")
+        num = User.objects.filter(email=email).count()
+        if num == 0:
+            return email
+        else:
+            raise forms.ValidationError("Please enter a valid email")
 
     def clean_username(self):
         username = self.cleaned_data.get("username")
-        # try:
         num = User.objects.filter(username=username).count()
         if num == 0:
             return username
         raise forms.ValidationError("Please enter a valid username")
 
-    def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-        if password1 != password2:
-            raise forms.ValidationError("Passwords do not match")
-        return password2
+
+class ResetPasswordForm(forms.Form):
+    password1 = forms.CharField(label="New Password",
+                                widget=forms.PasswordInput(attrs={"class": 'form-control'}))
+    password2 = forms.CharField(label="Confirm Password",
+                                widget=forms.PasswordInput(attrs={"class": 'form-control'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password2 = clean_password2(cleaned_data)
+
+
+class SendRecoveryEmailForm(forms.Form):
+    email = old_password = forms.EmailField(label="Old Password",
+                                            widget=forms.EmailInput(attrs={"class": 'form-control'}))
+
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(label="Old Password",
+                                   widget=forms.PasswordInput(attrs={"class": 'form-control'}))
+
+    password1 = forms.CharField(label="New Password",
+                                widget=forms.PasswordInput(attrs={"class": 'form-control'}))
+    password2 = forms.CharField(label="Confirm Password",
+                                widget=forms.PasswordInput(attrs={"class": 'form-control'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password2 = clean_password2(cleaned_data)
+
+
+def clean_password2(cleaned_data):
+    password1 = cleaned_data.get("password1")
+    password2 = cleaned_data.get("password2")
+    if password1 != password2:
+        raise forms.ValidationError("Passwords do not match")
+    return password2

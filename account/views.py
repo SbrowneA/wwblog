@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import (authenticate,
                                  login as auth_login,
@@ -19,7 +20,6 @@ def login_user(request):
     form = forms.LoginForm(request.POST or None)
     try:
         if form.is_valid():
-            # print("form is valid")
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
 
@@ -28,8 +28,7 @@ def login_user(request):
 
             active = User.objects.get(username=username).is_active
             if not active:
-                # print("exists but is not active ")
-                return redirect("wwapp:unverified_user")
+                return redirect("account:unverified_user")
 
             user = authenticate(request, username=username, password=password)
             if user is not None:
@@ -55,7 +54,7 @@ def logout_user(request):
 @unauthenticated_user
 def register_user(request):
     if request.session.get('successfully_registered') == 1:
-        return redirect("wwapp:register_success", permanent=True)
+        return redirect("account:register_success", permanent=True)
     form = forms.RegisterFrom(request.POST or None)
 
     try:
@@ -70,7 +69,7 @@ def register_user(request):
                 request.session['successfully_registered'] = 1
                 group = Group.objects.get(name='member')
                 user.groups.add(group)
-                return redirect("wwapp:register_success", permanent=True)
+                return redirect("account:register", permanent=True)
     except (exceptions.ValidationError, exceptions.ObjectDoesNotExist, IntegrityError):
         # form.add_error(form.fields['username'], "Something went wrong")
         # form.add_error(form.username, "Something went wrong")
@@ -93,3 +92,44 @@ def register_success(request):
 def unverified_user(request):
     request.session['successfully_registered'] = 1
     return render(request, "account/unactivated_account.html")
+
+
+@unauthenticated_user
+def recovery_email(request):
+    form = forms.SendRecoveryEmailForm()
+    values = {
+        'form': form
+    }
+    return render(request, "account/enter_recovery_email.html", values)
+
+
+@unauthenticated_user
+def reset_password(request):
+    form = forms.ResetPasswordForm()
+    values = {
+        'form': form
+    }
+    return render(request, "account/enter_recovery_email.html", values)
+
+
+@login_required
+def change_password(request):
+    values = {}
+
+    if request.method == 'POST':
+        form = forms.ChangePasswordForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data.get('old_password')
+            user = authenticate(request, username=request.user.username, password=password)
+            if user:
+                values['success'] = True
+                new_password = form.cleaned_data.get('password2')
+                user.set_password(new_password)
+                user.save()
+            else:
+                form.add_error("old_password", "This password is incorrect")
+    else:
+        form = forms.ChangePasswordForm()
+
+    values['form'] = form
+    return render(request, "account/change_password.html", values)

@@ -27,7 +27,7 @@ urlpatterns = [
     path('category/createproject', views.create_project, name='new_project'),
     # path('test', views.image_upload_test, name='upload_test'),
     # path('test', views.upload_test, name='upload_test'),
-    # path('test', views.send_email_test, name='email_test'),
+    path('test', views.send_email_test, name='email_test'),
     # path('edit', views.editor_test, name='editor_test'),
 ]
 if settings.DEBUG:
