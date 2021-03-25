@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.contrib.auth import (authenticate,
                                  login as auth_login,
@@ -11,11 +12,15 @@ from django.db import IntegrityError
 from django.contrib import messages
 from .decorators import *
 from django.contrib.auth.models import Group
+from django.views.decorators.cache import never_cache
+from django.views.decorators.debug import sensitive_post_parameters
 
 User = get_user_model()
 
 
 @unauthenticated_user
+@sensitive_post_parameters()
+@never_cache
 def login_user(request):
     form = forms.LoginForm(request.POST or None)
     try:
@@ -52,6 +57,8 @@ def logout_user(request):
 
 
 @unauthenticated_user
+@sensitive_post_parameters()
+@never_cache
 def register_user(request):
     if request.session.get('successfully_registered') == 1:
         return redirect("account:register_success", permanent=True)
@@ -94,25 +101,9 @@ def unverified_user(request):
     return render(request, "account/unactivated_account.html")
 
 
-@unauthenticated_user
-def recovery_email(request):
-    form = forms.SendRecoveryEmailForm()
-    values = {
-        'form': form
-    }
-    return render(request, "account/enter_recovery_email.html", values)
-
-
-@unauthenticated_user
-def reset_password(request):
-    form = forms.ResetPasswordForm()
-    values = {
-        'form': form
-    }
-    return render(request, "account/enter_recovery_email.html", values)
-
-
 @login_required
+@sensitive_post_parameters()
+@never_cache
 def change_password(request):
     values = {}
 
