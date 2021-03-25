@@ -9,6 +9,15 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/fonts.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/style.css' %}">
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+    {% block head %}
+    {% endblock %}
 </head>
 <body class="container fluid h-100 bg-dark text-white" style="font-family: WorkSans, serif">
 <div class="d-flex justify-content-center pt-5">
