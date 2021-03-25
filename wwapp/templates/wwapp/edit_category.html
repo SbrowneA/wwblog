@@ -48,6 +48,15 @@
                     </div>
                 {% endfor %}
             </div>
+            {{ form.category_description }}
+            <div>
+                {% for error in form.category_description.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            </div>
+
             <button class="btn btn-success" value="save" name="save" type="submit">Update</button>
         </div>
         {% if child_category_type %}
@@ -93,7 +102,7 @@
             </p>
         {% endif %}
 
-        <h3>Articles:</h3>
+        <h3>Articles</h3>
         {% if child_articles %}
             <ul>
                 {% for a in child_articles %}
@@ -108,7 +117,7 @@
 
     </form>
 
-    <h3>Category Editors:</h3>
+    <h3>Category Editors</h3>
     {#    <a href="{% url 'wwapp:user_details' category_creator.user_id %}">{{ category_creator.username }}#}
     <p>{{ category.category_creator.username }}
         - Creator of category</p>

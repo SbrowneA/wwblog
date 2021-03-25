@@ -2,28 +2,26 @@
 {% block title %} Login {% endblock %}
 
 {% block content %}
-    <div class="content col-4" id="content">
-        <h1 style="font-family: Alta, serif">Login</h1>
+    <div class="content" id="content">
+        <h1>Login</h1><br/>
         {% load crispy_forms_tags %}
 
-        <form method="post" class="col-12">
+        <form method="post" style="font-family: WorkSans, serif">
 
             {% csrf_token %}
             {% for field in form %}
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <label for="{{ field.id_for_label }}" class="label">{{ field.label }}</label>
                 {{ field }}
             {% endfor %}
-            <p style="font-weight: 400;">don't have an account? <a href="{% url 'wwapp:register' %}">register</a></p>
-            <button type="submit" name="save" class="btn btn-primary">Login</button>
-            <p>
-                {% if form.errors %}
-                    {% for error in form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ error|escape }}</strong>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </p>
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger mt-3">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+            <p style="font-weight: 400;">don't have an account? <a href="{% url 'account:register' %}">register</a></p>
+            <p style="font-weight: 400;">Forgot your password? <a href="{% url 'account:password_reset' %}">reset password</a></p>
+{#            <p style="font-weight: 400;"><a href="{% url 'account:reset_password' %}">forgot password</a></p>#}
+            <button type="submit" class="btn btn-primary">Login</button>
         </form>
     </div>
 {% endblock %}

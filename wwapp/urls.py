@@ -9,11 +9,6 @@ app_name = 'wwapp'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('login/', account_views.login_user, name='login'),
-    path('logout/', account_views.logout_user, name='logout'),
-    path('register/', account_views.register_user, name='register'),
-    path('register/success/', account_views.register_success, name='register_success'),
-    path('unverified/', account_views.unverified_user, name='unverified_user'),
     path('post/create/', views.create_new_article, name='new_article'),
     path('post/<int:article_id>/view/', views.open_article, name='open_article'),
     path('post/<int:article_id>/edit/', views.edit_article, name='edit_article'),
@@ -32,6 +27,7 @@ urlpatterns = [
     path('category/createproject', views.create_project, name='new_project'),
     # path('test', views.image_upload_test, name='upload_test'),
     # path('test', views.upload_test, name='upload_test'),
+    path('test', views.send_email_test, name='email_test'),
     # path('edit', views.editor_test, name='editor_test'),
 ]
 if settings.DEBUG:

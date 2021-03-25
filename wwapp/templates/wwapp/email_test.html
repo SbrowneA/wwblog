@@ -1,0 +1,52 @@
+{% extends 'wwapp/base.html' %}
+{% block title %} test send email {% endblock %}
+
+{% block content %}
+    <h2>Send an email</h2>
+    <form method="post" class="form-group">
+        {% csrf_token %}
+        {#        {{  }}#}
+        {{ form.recipient.label }}
+        {{ form.recipient }}
+        {{ form.subject.label }}
+        {{ form.subject }}
+        {{ form.body.label }}
+        {{ form.body }}
+        <div>
+            {% for error in form.recipient.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+            {% for error in form.subject.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+            {% for error in form.body.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        </div>
+
+        <input type="submit">
+    </form>
+
+    {% if send_success %}
+        <div class="alert alert-success">
+            <strong>mail was sent successfully</strong>
+        </div>
+    {% else %}
+        <div class="alert alert-danger">
+            <strong>Error could not send the email</strong>
+        </div>
+    {% endif %}
+
+
+{% endblock %}

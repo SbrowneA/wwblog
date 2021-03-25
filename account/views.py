@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.contrib.auth import (authenticate,
                                  login as auth_login,
@@ -10,16 +12,19 @@ from django.db import IntegrityError
 from django.contrib import messages
 from .decorators import *
 from django.contrib.auth.models import Group
+from django.views.decorators.cache import never_cache
+from django.views.decorators.debug import sensitive_post_parameters
 
 User = get_user_model()
 
 
 @unauthenticated_user
+@sensitive_post_parameters()
+@never_cache
 def login_user(request):
     form = forms.LoginForm(request.POST or None)
     try:
         if form.is_valid():
-            # print("form is valid")
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
 
@@ -28,8 +33,7 @@ def login_user(request):
 
             active = User.objects.get(username=username).is_active
             if not active:
-                # print("exists but is not active ")
-                return redirect("wwapp:unverified_user")
+                return redirect("account:unverified_user")
 
             user = authenticate(request, username=username, password=password)
             if user is not None:
@@ -53,28 +57,26 @@ def logout_user(request):
 
 
 @unauthenticated_user
+@sensitive_post_parameters()
+@never_cache
 def register_user(request):
     if request.session.get('successfully_registered') == 1:
-        return redirect("wwapp:register_success", permanent=True)
+        return redirect("account:register_success", permanent=True)
     form = forms.RegisterFrom(request.POST or None)
 
     try:
         if form.is_valid() is True:
             username = form.cleaned_data.get("username")
             email = form.cleaned_data.get("email")
-            # password = form.cleaned_data.get("password1")
-            # password2 = form.cleaned_data.get("password2")
             password = form.cleaned_data.get("password2")
             qs1 = User.objects.filter(username=username).count()
             qs2 = User.objects.filter(email=email).count()
-            # if password == password2 and qs1 == 0 and qs2 == 0:
             if qs1 == 0 and qs2 == 0:
                 user = User.objects.create_user(username=username, password=password, email=email)
                 request.session['successfully_registered'] = 1
-                # TODO add groups to new database before registering
                 group = Group.objects.get(name='member')
                 user.groups.add(group)
-                return redirect("wwapp:register_success", permanent=True)
+                return redirect("account:register", permanent=True)
     except (exceptions.ValidationError, exceptions.ObjectDoesNotExist, IntegrityError):
         # form.add_error(form.fields['username'], "Something went wrong")
         # form.add_error(form.username, "Something went wrong")
@@ -97,3 +99,28 @@ def register_success(request):
 def unverified_user(request):
     request.session['successfully_registered'] = 1
     return render(request, "account/unactivated_account.html")
+
+
+@login_required
+@sensitive_post_parameters()
+@never_cache
+def change_password(request):
+    values = {}
+
+    if request.method == 'POST':
+        form = forms.ChangePasswordForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data.get('old_password')
+            user = authenticate(request, username=request.user.username, password=password)
+            if user:
+                values['success'] = True
+                new_password = form.cleaned_data.get('password2')
+                user.set_password(new_password)
+                user.save()
+            else:
+                form.add_error("old_password", "This password is incorrect")
+    else:
+        form = forms.ChangePasswordForm()
+
+    values['form'] = form
+    return render(request, "account/change_password.html", values)
