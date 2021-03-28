@@ -56,6 +56,10 @@ class RegisterFrom(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
+        if email:
+            email = email.lower()
+        else:
+            raise forms.ValidationError("Please enter a valid email")
         # try:
         # if is_blacklisted_domain(email):
         #     raise forms.ValidationError("Please enter a valid email")
