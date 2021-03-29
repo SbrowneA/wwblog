@@ -97,10 +97,10 @@ WSGI_APPLICATION = 'wwblog.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ['DATABASE_NAME'],
-        'USER': os.environ['DATABASE_USER'],
-        'PASSWORD': os.environ['DATABASE_PASSWORD'],
-        'HOST': os.environ['DATABASE_HOST'],
+        'NAME': os.environ['DATABASE_NAME_TEST'],
+        'USER': os.environ['DATABASE_USER_TEST'],
+        'PASSWORD': os.environ['DATABASE_PASSWORD_TEST'],
+        'HOST': os.environ['DATABASE_HOST_TEST'],
         'PORT': os.environ['DATABASE_PORT'],
     }
 }
@@ -166,7 +166,8 @@ POSTS_ROOT = os.path.join(MEDIA_ROOT, 'posts')
 # S3 BUCKETS CONFIG
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
-AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+# AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME_TEST']
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_LOCATION = 'static'

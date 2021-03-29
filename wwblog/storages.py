@@ -6,4 +6,4 @@ import os
 class MediaStorage(S3Boto3Storage):
     location = 'media'
     file_overwrite = True
-    bucket_name = os.environ['AWS_STORAGE_BUCKET_NAME']
+    bucket_name = os.environ['AWS_STORAGE_BUCKET_NAME_TEST']
