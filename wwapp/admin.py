@@ -14,6 +14,7 @@ from .models import *
 admin.site.register(Article)
 admin.site.register(ArticleEditor)
 admin.site.register(ArticleVersion)
+admin.site.register(ImageLocal)
 admin.site.register(Image)
 admin.site.register(Category)
 admin.site.register(CategoryEditor)

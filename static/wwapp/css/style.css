@@ -270,3 +270,7 @@ h3, h4 {
 .dz-custom:hover {
     background-color: #aea2d7;
 }
+.dz-custom img{
+    background-color: red !important;;
+    border-radius: 50%;
+}

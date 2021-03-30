@@ -23,7 +23,7 @@ from account.decorators import (
     category_edit_privilege,
     category_creator_or_moderator,
 )
-from .handlers import ArticleHandler, CategoryHandler
+from .handlers import ArticleHandler, CategoryHandler, ImageHandler
 # , create_new_article as new_article_handler
 from django.db import IntegrityError
 import logging
@@ -472,3 +472,29 @@ def upload_test(request):
 #         print(f"File name: {new_file.name}")
 #         print(f"File size: {new_file.size}")
 #     return render(request, 'wwapp/upload_test.html', values)
+
+
+from django.views.generic import TemplateView
+import time
+
+# @login_required()
+# class UploadImage(TemplateView):
+#     template_name = 'wwapp/drag_and_drop_images.html'
+
+
+@login_required()
+def test(request):
+    return render(request, 'wwapp/drag_and_drop_images.html')
+
+
+@login_required()
+def upload_local_image(request):
+    if request.POST:
+        image = request.FILES.get('file')
+
+        name = f"image-{time.time()}"
+        print(request.user)
+        ImageHandler.upload_local_image(image, name, request.user)
+
+   # print(request.FILES)
+    return HttpResponse("uploaded")

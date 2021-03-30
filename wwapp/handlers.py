@@ -10,7 +10,7 @@ from django.core import exceptions
 from .context_processors import create_presigned_url
 from .models import (Article, ArticleEditor, ArticleVersion,
                      Category, CategoryEditor, CategoryItem,
-                     CategoryItemAssignation)
+                     CategoryItemAssignation, Image, ImageLocal)
 from wwblog.settings import POSTS_ROOT
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
@@ -789,6 +789,25 @@ class ArticleHandler:
                 print(f"{self.__remove_all_article_files_local().__name__}This article version "
                       f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
                 # raise FileNotFoundError("File for the latest version of this article could not be found")
+
+
+class ImageHandler:
+    @staticmethod
+    def upload_local_image(image, image_name, user):
+        if not user.is_authenticated:
+            raise ValueError("User must be logged in to upload")
+
+        if image_name is not None:
+            # image_name = f"img-{user.id}-" + _make_hash(f"{user.username}{time.time()}")
+            local_img = ImageLocal.objects.create(image_owner=user, location=image)
+            local_img.save()
+            img = Image.objects.create(local_image=local_img, description="testing")
+            img.save()
+
+    def get_user_images(self, user):
+        images = []
+        # Image.objects.filter()
+        return images
 
 
 def _make_hash(value: str) -> str:
