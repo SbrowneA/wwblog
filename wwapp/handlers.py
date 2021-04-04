@@ -10,7 +10,9 @@ from django.core import exceptions
 from .context_processors import create_presigned_url
 from .models import (Article, ArticleEditor, ArticleVersion,
                      Category, CategoryEditor, CategoryItem,
-                     CategoryItemAssignation)
+                     CategoryItemAssignation,
+    # Image, ImageLocal
+                     )
 from wwblog.settings import POSTS_ROOT, POSTS_LOCATION
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
@@ -723,7 +725,7 @@ class ArticleHandler:
             else:
                 print(f"{self.__remove_all_article_files.__name__}This article version "
                       f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
-                      # raise FileNotFoundError("File for the latest version of this article could not be found")
+                # raise FileNotFoundError("File for the latest version of this article could not be found")
 
     def delete_article(self):
         if self.article.published:

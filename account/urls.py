@@ -17,10 +17,9 @@ urlpatterns = [
     path('change-password/', views.change_password, name='change_password'),
 
     path('password_reset/',
-         auth_views.PasswordResetView.as_view(email_template_name="account/password_reset_email.html",
-                                              subject_template_name="account/password_reset_subject.txt",
-                                              template_name="account/reset_send_email.html",
-                                              success_url="sent/"),
+         auth_views.PasswordResetView.as_view(email_template_name="account/email_templates/password_reset_email.html",
+                                              subject_template_name="account/email_templates/password_reset_subject.txt",
+                                              template_name="account/reset_send_email.html", success_url="sent/"),
          name='password_reset'),
 
     path('password_reset/sent/',
@@ -33,7 +32,7 @@ urlpatterns = [
          name='password_reset_confirm'),
 
     path('reset-password/success',
-         auth_views.PasswordResetCompleteView.as_view( template_name="account/reset_password_success.html"),
+         auth_views.PasswordResetCompleteView.as_view(template_name="account/reset_password_success.html"),
          name='password_reset_complete'),
 ]
 

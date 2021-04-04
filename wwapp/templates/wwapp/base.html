@@ -75,7 +75,7 @@
 
     <div class="right-nav col-3">
         {% block right_nav %}
-            <h1>Nav div</h1>
+{#            <h1>Nav div</h1>#}
         {% endblock %}
     </div>
 
@@ -88,8 +88,9 @@
         <i>For support contact:<a href="mailto:someone@yoursite.com"> wwblogs.help@gmail.com</a></i>
     </div>
     <div class="col-4"></div>
+    {% block footer %}
+    {% endblock %}
 </footer>
-
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

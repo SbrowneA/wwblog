@@ -18,11 +18,11 @@
                     </div>
                 {% endfor %}
             {% endfor %}
-            {% for error in form.non_field_errors %}
-                <div class="alert alert-danger mt-3">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-            {% endfor %}
+{#            {% for error in form.non_field_errors %}#}
+{#                <div class="alert alert-danger mt-3">#}
+{#                    <strong>{{ error|escape }}</strong>#}
+{#                </div>#}
+{#            {% endfor %}#}
 
             <p style="font-weight: 400;">already have an account? <a href="{% url 'account:login' %}">login</a></p>
             <button type="submit" class="btn btn-primary">Submit</button>
