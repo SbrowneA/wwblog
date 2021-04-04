@@ -29,8 +29,8 @@ urlpatterns = [
     path('test', views.send_email_test, name='email_test'),
     # path('edit', views.editor_test, name='editor_test'),
     # path('upload', views.UploadImage.as_view(), name="upload_image"),
-    path('upload', views.test, name="upload_image"),
-    path('upload-local-image', views.upload_local_image, name="upload_local_image"),
+    # path('upload', views.test, name="upload_image"),
+    # path('upload-local-image', views.upload_local_image, name="upload_local_image"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

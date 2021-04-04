@@ -10,7 +10,9 @@ from django.core import exceptions
 from .context_processors import create_presigned_url
 from .models import (Article, ArticleEditor, ArticleVersion,
                      Category, CategoryEditor, CategoryItem,
-                     CategoryItemAssignation, Image, ImageLocal)
+                     CategoryItemAssignation,
+                     # Image, ImageLocal
+                     )
 from wwblog.settings import POSTS_ROOT
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
@@ -652,12 +654,6 @@ class ArticleHandler:
         # key = os.path.join("media", self.__get_latest_version_dir()).replace("\\", "/")
         # return create_presigned_url(key, 300)
 
-    def get_latest_version_url_local(self):
-        file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
-        # print(f"LOCATED AT: /media/posts/{file_name}")
-        return f"/media/posts/{file_name}"
-        # return self.__get_latest_version_dir_local().replace("\\", "/")
-
     def __get_latest_version_dir(self) -> str:
         # file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
         # format media/posts/user_id/article_id"-"article_version
@@ -740,6 +736,11 @@ class ArticleHandler:
         self.article.delete()
 
     # LOCAL VERSIONS
+    def get_latest_version_url_local(self):
+        file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
+        # print(f"LOCATED AT: /media/posts/{file_name}")
+        return f"/media/posts/{file_name}"
+        # return self.__get_latest_version_dir_local().replace("\\", "/")
 
     # must return T or F!!
     def save_article_content_local(self, new_content) -> bool:
@@ -790,7 +791,7 @@ class ArticleHandler:
                       f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
                 # raise FileNotFoundError("File for the latest version of this article could not be found")
 
-
+"""
 class ImageHandler:
     @staticmethod
     def upload_local_image(image, image_name, user):
@@ -808,6 +809,7 @@ class ImageHandler:
         images = []
         # Image.objects.filter()
         return images
+"""
 
 
 def _make_hash(value: str) -> str:

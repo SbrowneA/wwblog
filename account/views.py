@@ -28,7 +28,7 @@ def login_user(request):
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
 
-            if is_email(username):
+            if valid_email(username):
                 username = username.lower()
                 username = User.objects.get(email=username).username
 
@@ -66,12 +66,12 @@ def register_user(request):
     form = forms.RegisterFrom(request.POST or None)
 
     try:
-        if request.POST:
+        if request.method == "POST":
             if form.is_valid() is True:
                 username = form.cleaned_data.get("username")
                 email = form.cleaned_data.get("email")
                 # this is in case is_email() is stricter than the django forms email validation
-                if not is_email(email):
+                if not valid_email(email):
                     raise ValueError()
                 password = form.cleaned_data.get("password2")
                 qs1 = User.objects.filter(username=username).count()
@@ -134,8 +134,8 @@ def change_password(request):
     return render(request, "account/change_password.html", values)
 
 
-def is_email(value: str) -> bool:
-    valid_email = "^(\\w|\\.|\\_|\\-)+[@](\\w|\\_|\\-|\\.)+[.]\\w{2,3}$"
-    if re.search(valid_email, value):
+def valid_email(value: str) -> bool:
+    valid_email_format = "^(\\w|\\.|\\_|\\-)+[@](\\w|\\_|\\-|\\.)+[.]\\w{2,3}$"
+    if re.search(valid_email_format, value):
         return True
     return False
