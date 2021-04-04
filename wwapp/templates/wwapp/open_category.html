@@ -21,6 +21,9 @@
 {% block content %}
 
     <h2>{{ category.category_name }}</h2>
+    {% if category.category_description %}
+        <p>{{ category.category_description }}</p>
+    {% endif %}
     {% if child_category_type %}
         <h3>{{ child_category_type }}s</h3>
         {% if child_categories %}
@@ -34,7 +37,7 @@
         {% endif %}
     {% endif %}
 
-    <h3>Posts:</h3>
+    <h3>Posts</h3>
     {% if child_articles %}
         <ul>
             {% for a in child_articles %}
@@ -48,9 +51,9 @@
     {% endif %}
 
 
-    <h3>Editors:</h3>
+    <h3>Editors</h3>
     {#    <a href="{% url 'wwapp:user_details' category_creator.user_id %}">{{ category_creator.username }} - Creator of category</a>#}
-    <p>{{ category_creator.username }} - Creator of category</p>
+    <p>{{ category.category_creator.username }} - Creator of {{ category.category_type.lower.capitalize }}</p>
     {% if editors %}
         {% for u in editors %}
             {#            <a href="{% url 'wwapp:user_details' u.user_id %}">{{ u.username }}</a>#}

@@ -1,0 +1,59 @@
+{% extends 'account/base.html' %}
+{% block title %} Login {% endblock %}
+
+{% block head %}
+    <script type="text/javascript">
+        function backToLogin() {
+            var url = "/login/";
+            window.location.replace(url);
+        }
+
+        window.onload = function () {
+            styleFields()
+        }
+
+        function styleFields() {
+            var fields = document.forms['set-password-form'].getElementsByTagName('input');
+            console.log(fields)
+            for (var i = 0; i < fields.length; i++) {
+                fields[i].classList.add('form-control');
+            }
+            fields.forEach(setClass(field));
+        }
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="content" id="content">
+        <h1>Reset Password</h1>
+        {% load crispy_forms_tags %}
+
+        <form method="post" style="font-family: WorkSans, serif" name="set-password-form">
+            <p class="text-justify">Enter your account email here.</p>
+            <p>
+                {#                <br/>#}
+                You will receive an email with<br/>
+                instructions to reset your password. </p>
+            {% csrf_token %}
+            {% for field in form %}
+                {#                <label for="" class="label">{{ field.label }}</label>#}
+                {{ field }}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger mt-2">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            <br/>
+            <div>
+                {#                <button onclick="href.location='{% url 'account:login' %}'" type="button" class="btn btn-primary">Back#}
+                <button onclick="backToLogin()" type="button" class="btn btn-primary">Back
+                </button>
+                <button type="submit" class="btn btn-success float-right">Send Email</button>
+            </div>
+
+        </form>
+    </div>
+{% endblock %}

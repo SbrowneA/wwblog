@@ -23,7 +23,10 @@ from account.decorators import (
     category_edit_privilege,
     category_creator_or_moderator,
 )
-from .handlers import ArticleHandler, CategoryHandler
+from .handlers import (
+    ArticleHandler, CategoryHandler,
+    # ImageHandler
+)
 # , create_new_article as new_article_handler
 from django.db import IntegrityError
 import logging
@@ -31,6 +34,7 @@ from . import imgur
 from .models import (Article,
                      Category)
 from wwblog.storages import MediaStorage
+from django.core.mail import send_mail
 
 User = get_user_model()
 
@@ -113,41 +117,40 @@ def edit_article(request, article_id):
         choices += CategoryHandler.get_publish_to_choices_for_user(request.user)
         form.fields['publish_to_select'].choices = choices
     values['form'] = form
-    # if request.method == "POST":
-    #     print("Posted")
-    if form.is_valid():
-        # save
-        article.article_title = form.cleaned_data.get("title")
-        ver = a_handler.get_latest_version()
-        secret_note = form.cleaned_data.get("secret_note")
-        # secret_note = ""
-        ver.secret_note = None if secret_note == "" else secret_note
-        # result = 'is  none' if secret_note == '' else 'has something'
-        # print(result)
-        ver.save()
-        article.save()
-        content = form.cleaned_data.get("content")
-        if not a_handler.save_article_content(content):
-            form.add_error(None, "There was an error saving!")
-            logging.error(f"{edit_article.__name__} - save "
-                          f"-> ArticleHandler.save_article_content() failed to return True")
+    if request.method == "POST":
+        if form.is_valid():
+            # save
+            article.article_title = form.cleaned_data.get("title")
+            ver = a_handler.get_latest_version()
+            secret_note = form.cleaned_data.get("secret_note")
+            # secret_note = ""
+            ver.secret_note = None if secret_note == "" else secret_note
+            # result = 'is  none' if secret_note == '' else 'has something'
+            # print(result)
+            ver.save()
+            article.save()
+            content = form.cleaned_data.get("content")
+            if not a_handler.save_article_content(content):
+                form.add_error(None, "There was an error saving!")
+                logging.error(f"{edit_article.__name__} - save "
+                              f"-> ArticleHandler.save_article_content() failed to return True")
 
-        if request.POST.get("publish"):
-            value = str(request.POST["publish_to_select"])
-            if value == "" or None:
-                form.add_error("publish_to_select", "Please select an option to publish to")
-            else:
-                content_type, content_id = value.split("-")[0], value.split("-")[1]
-                if content_type == "article":
-                    article = get_object_or_404(Article, article_id=content_id)
-                    print(f"Publishing to {article}")
-                    a_handler.publish_as_child_article(article)
+            if request.POST.get("publish"):
+                value = str(request.POST["publish_to_select"])
+                if value == "" or None:
+                    form.add_error("publish_to_select", "Please select an option to publish to")
                 else:
-                    cat = get_object_or_404(Category, category_id=content_id)
-                    print(f"Publishing to {cat}")
-                    a_handler.publish_article(cat)
-            # redirect so that the html refreshes
-            return redirect("wwapp:edit_article", article_id)
+                    content_type, content_id = value.split("-")[0], value.split("-")[1]
+                    if content_type == "article":
+                        article = get_object_or_404(Article, article_id=content_id)
+                        print(f"Publishing to {article}")
+                        a_handler.publish_as_child_article(article)
+                    else:
+                        cat = get_object_or_404(Category, category_id=content_id)
+                        print(f"Publishing to {cat}")
+                        a_handler.publish_article(cat)
+                # redirect so that the html refreshes
+                return redirect("wwapp:edit_article", article_id)
             # save first
             # code to publish
         # elif request.POST.get("draft"):
@@ -223,6 +226,9 @@ def edit_category(request, category_id):
                 try:
                     cat_name = form.cleaned_data.get("category_name")
                     if cat_name != "" or None:
+                        cat_description = form.cleaned_data.get("category_description")
+                        if cat_description != "":
+                            c.category_description = cat_description
                         c.category_name = cat_name
                         c.save()
                         values["category"] = c
@@ -234,7 +240,8 @@ def edit_category(request, category_id):
                                    f"{c.category_type.lower().capitalize()} name must be unique")
     else:
         form = forms.CategoryEdit(
-            initial={"category_name": c.category_name, "new_category_name": ""}
+            initial={"category_name": c.category_name, "new_category_name": "",
+                     "category_description": c.category_description}
         )
     values["form"] = form
     return render(request, "wwapp/edit_category.html", values)
@@ -377,6 +384,28 @@ def open_category(request, category_id):
 #     }
 #
 #     return render(request, 'wwapp/edit_category.html', values)
+from wwblog.settings import EMAIL_HOST_USER
+
+
+def send_email_test(request):
+    values = {}
+    form = forms.TestEmail(request.POST or None)
+
+    if request.method == "POST":
+        print("posted")
+        if form.is_valid():
+            print("valid")
+            message = form.cleaned_data.get("body")
+            recipient = form.cleaned_data.get("recipient")
+            subject = form.cleaned_data.get("subject")
+            print(f"sending '{subject}' to {recipient}")
+            send_mail(subject=subject, message=message, recipient_list=[recipient], fail_silently=False,
+                      from_email=EMAIL_HOST_USER)
+            print("sent")
+            values['send_success'] = True
+
+    values['form'] = form
+    return render(request, 'wwapp/email_test.html', values)
 
 
 # def image_upload_test(request):
@@ -384,7 +413,7 @@ def open_category(request, category_id):
 #     values = {
 #         'image_items': items
 #     }
-#     # if request.POST
+
 #
 #     return render(request, 'wwapp/upload_image_test.html', values)
 
@@ -445,3 +474,29 @@ def upload_test(request):
 #         print(f"File name: {new_file.name}")
 #         print(f"File size: {new_file.size}")
 #     return render(request, 'wwapp/upload_test.html', values)
+
+
+from django.views.generic import TemplateView
+import time
+
+# @login_required()
+# class UploadImage(TemplateView):
+#     template_name = 'wwapp/drag_and_drop_images.html'
+
+#
+# @login_required()
+# def test(request):
+#     return render(request, 'wwapp/drag_and_drop_images.html')
+#
+#
+# @login_required()
+# def upload_local_image(request):
+#     if request.method == "POST":
+#         image = request.FILES.get('file')
+#
+#         name = f"image-{time.time()}"
+#         print(request.user)
+#         ImageHandler.upload_local_image(image, name, request.user)
+#
+#    # print(request.FILES)
+#     return HttpResponse("uploaded")

@@ -1,16 +1,40 @@
 from django import forms
-from django.contrib.flatpages.models import FlatPage
+# from django.contrib.flatpages.models import FlatPage
 from tinymce.widgets import TinyMCE
-from .models import Category
+
+
+# from .models import Category
 
 
 class CategoryEdit(forms.Form):
+    # TODO use init func to set initial instead of setting initial from view
+    # def __init__(self, name: str, description=""):
+    # category_name
+
     category_name = forms.CharField(required=True,
                                     widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}))
     new_category_name = forms.CharField(required=False, widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'New Title', 'initial': ''}))
+    category_description = forms.CharField(required=False,
+                                           widget=forms.Textarea(
+                                               attrs={'class': 'form-control', 'placeholder': 'Description (optional)',
+                                                      'initial': '', 'rows': '2'}))
     parent_category_select = forms.Select(choices=[])
-    #
+
+    def clean(self):
+        super().clean()
+        category_description = self.clean_category_description()
+
+    def clean_category_description(self):
+        category_description = self.cleaned_data.get('category_description')
+        if category_description:
+            num = len(category_description)
+            if num <= 300:
+                return category_description
+            else:
+                raise forms.ValidationError(
+                    f"Description must be less than 300 characters (currently {num} characters long)")
+
     # def clean(self):
     #     super().clean()
     #     category_name = self.cleaned_data.get('category_name')
@@ -23,24 +47,6 @@ class CategoryEdit(forms.Form):
     #     if len(cats) > 0 and new_category_name != "":
     #         raise forms.ValidationError("The title must be unique")
     #     return new_category_name
-
-
-# class ArticleForm(forms.ModelForm):
-#     content = forms.CharField(
-#         widget=TinyMCE(attrs={'cols': 100, 'rows': 60})
-#     )
-#
-#     class Meta:
-#         model = FlatPage
-#         # model = ArticleVersion
-#         # fields = ('title', 'author')
-#         #
-#         # widgets = {
-#         #     'title': forms.TextInput(attrs={'class': 'form-control'}),
-#         #     'author': forms.Select(attrs={'class': 'form-control'}),
-#         # }
-# class ArticlePublish(forms.Form):
-#     categories_select = forms.Select(choices=[])
 
 
 class ArticleEdit(forms.Form):
@@ -67,10 +73,11 @@ class ArticleEdit(forms.Form):
     #
     #     if "publish_article" in form.data:
 
-# class TestArticle(forms.ModelForm):
-#     content = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30,
-#                                                     'class': 'tiny-mce-editor', 'id': 'tiny-mce'}))
-#
-#     class Meta:
-#         model = FlatPage
-#         fields = ['content']
+
+class TestEmail(forms.Form):
+    subject = forms.CharField(required=True,
+                              widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Subject'}))
+    recipient = forms.CharField(required=True,
+                                widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Recipient'}))
+    body = forms.CharField(required=True,
+                           widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'message'}))

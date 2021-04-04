@@ -16,6 +16,7 @@ class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
     category_name = models.CharField(unique=True, max_length=45)
     category_creator = models.ForeignKey(User, on_delete=models.PROTECT)
+    category_description = models.CharField(null=True, max_length=300)
 
     class CategoryType(models.TextChoices):
         PROJECT = 'PROJECT', _('Project')
@@ -240,7 +241,11 @@ class ImageLocal(models.Model):
     """
     local_image_id = models.AutoField(primary_key=True)
     image_owner = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
-    location = models.ImageField(upload_to='images/local/')
+
+    def get_upload_path(instance, filename) -> str:
+        return f'images/uploads/{instance.image_owner.id}/{filename}'
+
+    location = models.ImageField(upload_to=get_upload_path)
 
     def __str__(self):
         return f"Uploaded by {self.image_owner.username}"

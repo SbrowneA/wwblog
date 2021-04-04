@@ -10,7 +10,9 @@ from django.core import exceptions
 from .context_processors import create_presigned_url
 from .models import (Article, ArticleEditor, ArticleVersion,
                      Category, CategoryEditor, CategoryItem,
-                     CategoryItemAssignation)
+                     CategoryItemAssignation,
+                     # Image, ImageLocal
+                     )
 from wwblog.settings import POSTS_ROOT, POSTS_LOCATION
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
@@ -65,8 +67,9 @@ class CategoryHandler:
         # TODO use 'or' instead of separate statements, this is just for testing
         if is_moderator_or_admin(user):
             return True
-        elif user in self.get_category_editors():
-            return True
+        elif self.get_category_editors():
+            if user in self.get_category_editors():
+                return True
         elif user.id == self.category.category_creator_id:
             return True
         return False

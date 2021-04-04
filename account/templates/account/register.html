@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class="content" id="content">
-        <h1 style="font-family: Alta, serif">Register Account</h1>
+        <h1>Register Account</h1>
         {% load crispy_forms_tags %}
 
         <form method="post" style="font-family: WorkSans, serif">
@@ -12,16 +12,20 @@
             {% for field in form %}
                 <label for="{{ field.id_for_label }}" class="label">{{ field.label }}</label>
                 {{ field }}
-                <p>
-                    {% for error in field.errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ error|escape }}</strong>
-                        </div>
-                    {% endfor %}
-                </p>
+                {% for error in field.errors %}
+                    <div class="alert alert-danger mt-3">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
             {% endfor %}
-            <p style="font-weight: 400;">already have an account? <a href="{% url 'wwapp:login' %}">login</a></p>
-            <button type="submit" name="save" class="btn btn-primary">Submit</button>
+{#            {% for error in form.non_field_errors %}#}
+{#                <div class="alert alert-danger mt-3">#}
+{#                    <strong>{{ error|escape }}</strong>#}
+{#                </div>#}
+{#            {% endfor %}#}
+
+            <p style="font-weight: 400;">already have an account? <a href="{% url 'account:login' %}">login</a></p>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
 {% endblock %}
