@@ -478,7 +478,6 @@ def upload_test(request):
 from django.views.generic import TemplateView
 import time
 
-
 # @login_required()
 # class UploadImage(TemplateView):
 #     template_name = 'wwapp/drag_and_drop_images.html'
