@@ -728,7 +728,7 @@ class ArticleHandler:
         for ver in all_ver:
             file_name = f"{self.article.article_id}-{ver.version}.html"
             # TODO check if people other than the author can make child articles of an article
-            file_dir = os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
+            file_dir = os.path.join(POSTS_LOCATION, str(self.article.author_id), file_name)
             storage = MediaStorage()
             if storage.exists(file_dir):
                 storage.delete(file_dir)
@@ -753,7 +753,7 @@ class ArticleHandler:
         # print(f"LOCATED AT: /media/posts/{file_name}")
         return f"/media/posts/{file_name}"
         # return self.__get_latest_version_dir_local().replace("\\", "/")
-        
+
     # must return T or F!!
     def save_article_content_local(self, new_content) -> bool:
         # TODO check for success and notify on front end
