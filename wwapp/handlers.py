@@ -768,7 +768,7 @@ class ArticleHandler:
 
     def __get_latest_version_dir_local(self) -> str:
         file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
-        return os.path.join(POSTS_ROOT, file_name)
+        return os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
 
     def __remove_latest_file_local(self):
         file_dir = self.__get_latest_version_dir()
@@ -783,13 +783,14 @@ class ArticleHandler:
         all_ver = self.get_all_versions()
         for ver in all_ver:
             file_name = f"{self.article.article_id}-{ver.version}.html"
-            file_dir = os.path.join(POSTS_ROOT, file_name)
+            file_dir = os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
             if os.path.exists(file_dir):
                 os.remove(file_dir)
             else:
                 print(f"{self.__remove_all_article_files_local().__name__}This article version "
                       f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
                 # raise FileNotFoundError("File for the latest version of this article could not be found")
+
 
 """
 class ImageHandler:
