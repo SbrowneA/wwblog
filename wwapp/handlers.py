@@ -13,7 +13,7 @@ from .models import (Article, ArticleEditor, ArticleVersion,
                      CategoryItemAssignation,
                      # Image, ImageLocal
                      )
-from wwblog.settings import POSTS_ROOT
+from wwblog.settings import POSTS_ROOT, POSTS_LOCATION
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
 from wwblog.storages import MediaStorage
