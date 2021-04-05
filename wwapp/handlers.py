@@ -13,7 +13,7 @@ from .models import (Article, ArticleEditor, ArticleVersion,
                      CategoryItemAssignation,
                      # Image, ImageLocal
                      )
-from wwblog.settings import POSTS_ROOT
+from wwblog.settings import POSTS_ROOT, POSTS_LOCATION
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
 from wwblog.storages import MediaStorage
@@ -656,9 +656,7 @@ class ArticleHandler:
 
     def __get_latest_version_dir(self) -> str:
         # file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
-        # format media/posts/user_id/article_id"-"article_version
-        # return f"posts/{self.article.author_id}/{file_name}"
-        # return os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
+        # return os.path.join(POSTS_LOCATION, str(self.article.author_id), file_name)
         # return f"{POSTS_ROOT}/{self.article.author_id}/{file_name}"
         return self.__get_latest_version_dir_local()
 
@@ -730,14 +728,14 @@ class ArticleHandler:
         # for ver in all_ver:
         #     file_name = f"{self.article.article_id}-{ver.version}.html"
         #     # TODO check if people other than the author can make child articles of an article
-        #     file_dir = os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
+        #     file_dir = os.path.join(POSTS_LOCATION, str(self.article.author_id), file_name)
         #     storage = MediaStorage()
         #     if storage.exists(file_dir):
         #         storage.delete(file_dir)
         #     else:
         #         print(f"{self.__remove_all_article_files.__name__}This article version "
         #               f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
-        #               raise FileNotFoundError("File for the latest version of this article could not be found")
+        #         # raise FileNotFoundError("File for the latest version of this article could not be found")
 
     @time_task
     def delete_article(self):
