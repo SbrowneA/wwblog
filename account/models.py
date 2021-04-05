@@ -1,7 +1,11 @@
 from django.db import models
-from django.utils.timezone import timezone
-from django.utils.translation import gettext_lazy as _
+# from django.utils.timezone import timezone
+# from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, Group
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
 
 
 class UserManager(BaseUserManager):
@@ -40,6 +44,20 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, username, password, **kwargs)
 
+    @staticmethod
+    def activate_user(user):
+        # activate user
+        user.is_active = True
+        user.save()
+
+        # send email
+        html_message = render_to_string('account/email_templates/user_account_activated_email.html')
+        plain_message = strip_tags(html_message)
+        subject = render_to_string("account/email_templates/user_account_activated_subject.txt")
+
+        send_mail(message=plain_message, recipient_list=[user.email], subject=subject, from_email=None,
+                  auth_password=None, html_message=html_message)
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
@@ -67,8 +85,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.username} {self.email}"
-
-    # def save(self, *args, **kwargs):
-    #     print("User.save()")
-        # super().save(self, *args, **kwargs)
-# class ModeratorGroup:
