@@ -665,12 +665,22 @@ class ArticleHandler:
     @time_task
     def save_article_content(self, new_content) -> bool:
         if new_content == "":
+            self.__remove_all_article_files_local()
             return True
         return self.save_article_content_local(new_content)
+
         # TODO check for success and notify on front end
+        # file_dir = self.__get_latest_version_dir()
+        # storage = MediaStorage()
+        # # try to delete file if new content is empty
+        # if new_content == "":
+        #     try:
+        #         if storage.exists(file_dir):
+        #             self.__remove_all_article_files()
+        #     except FileNotFoundError:
+        #         return False
+        #     return True
         # try:
-        #     storage = MediaStorage()
-        #     file_dir = self.__get_latest_version_dir()
         #     if storage.exists(file_dir):
         #         print(f"File will be overridden: {file_dir}")
         #     else:
@@ -729,6 +739,7 @@ class ArticleHandler:
         #               f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
         #               raise FileNotFoundError("File for the latest version of this article could not be found")
 
+    @time_task
     def delete_article(self):
         if self.article.published:
             self.draft_article()
