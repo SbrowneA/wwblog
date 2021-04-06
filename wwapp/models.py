@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy as _
 from django.db import models, IntegrityError
 # from django.contrib.auth import get_user_model
 from django.conf import settings
-# from tinymce import models as tinymce_models
 
 # get the auth user_model and assign it
 User = settings.AUTH_USER_MODEL
@@ -151,9 +150,6 @@ class ArticleVersion(models.Model):
     secret_note = models.TextField(null=True, blank=True)
     # secret_notes = models.BaseEncryptedField(null=True, blank=True)
 
-    # location = models.FileField(upload_to='posts/')
-    # content = tinymce_models.HTMLField(null=True, blank=True)
-
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['article', 'version'], name="article_version_unique", )
@@ -219,6 +215,71 @@ class CategoryItemAssignation(models.Model):
         return f"- Position: {self.position} " \
                f"- Parent Category: {self.parent_category.category_name} || " \
                f"- Item: {self.item.__str__()}"
+
+
+class Image(models.Model):
+    image_id = models.AutoField(primary_key=True)
+    image_name = models.CharField(max_length=45, unique=True)
+    description = models.CharField(max_length=100, null=True, blank=True)
+    upload_date = models.DateTimeField(auto_now_add=True)
+    image_owner = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    public = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.image_id} - {self.upload_date} - {self.image_name}  " \
+               f"Uploaded by {self.image_owner.username} - {self.description}"
+
+
+class ImgurImage(Image):
+    """
+    stores the details of images that are uploaded to imgur
+    *in future could include embedded images
+    """
+    imgur_image_id = models.AutoField(primary_key=True)
+    url = models.URLField(blank=False, null=False)
+
+    def __str__(self):
+        output = f" {self.imgur_image_id} - {super().__str__()}"
+        return output
+
+
+class S3Image(Image):
+    """
+    This class is used to store images that are accessed frequently
+    like site background and stored in S3 storage
+    """
+    s3_image_id = models.AutoField(primary_key=True)
+
+    def get_upload_path(instance, filename) -> str:
+        return f'images/uploads/{instance.image_owner.id}/{filename}'
+
+    location = models.ImageField(upload_to=get_upload_path)
+
+    def __str__(self):
+        output = f" {self.s3_image_id} - {super().__str__()}"
+        return output
+
+
+class ArticleImage(models.Model):
+    article_image_id = models.AutoField(primary_key=True)
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+    )
+    image = models.ForeignKey(
+        Image,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['article', 'image'], name="article_image_unique", )
+        ]
+
+    def __str__(self):
+        output = f" - Image {str(self.image)}" \
+                 f" - Used in article {str(self.article)}"
+        return output
 
 
 class CategoryEditor(models.Model):
