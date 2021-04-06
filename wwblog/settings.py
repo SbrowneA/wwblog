@@ -160,7 +160,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # TINYMCE_JS_URL = os.path.join(STATIC_URL, "path/to/tiny_mce/tiny_mce.js")
 # TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
 
-POSTS_LOCATION = 'posts'  # for Production
+POSTS_LOCATION = 'posts'
 POSTS_ROOT = os.path.join(MEDIA_ROOT, 'posts')
 
 # S3 BUCKETS CONFIG

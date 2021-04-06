@@ -662,13 +662,23 @@ class ArticleHandler:
 
     @time_task
     def save_article_content(self, new_content) -> bool:
-        if new_content == "":
-            return True
+        # if new_content == "":
+        #     self.__remove_all_article_files_local()
+        #     return True
         # return self.save_article_content_local(new_content)
+
         # TODO check for success and notify on front end
+        file_dir = self.__get_latest_version_dir()
+        storage = MediaStorage()
+        # try to delete file if new content is empty
+        if new_content == "":
+            try:
+                if storage.exists(file_dir):
+                    self.__remove_all_article_files()
+            except FileNotFoundError:
+                return False
+            return True
         try:
-            storage = MediaStorage()
-            file_dir = self.__get_latest_version_dir()
             if storage.exists(file_dir):
                 print(f"File will be overridden: {file_dir}")
             else:
@@ -718,15 +728,16 @@ class ArticleHandler:
         for ver in all_ver:
             file_name = f"{self.article.article_id}-{ver.version}.html"
             # TODO check if people other than the author can make child articles of an article
-            file_dir = os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
+            file_dir = os.path.join(POSTS_LOCATION, str(self.article.author_id), file_name)
             storage = MediaStorage()
             if storage.exists(file_dir):
                 storage.delete(file_dir)
             else:
                 print(f"{self.__remove_all_article_files.__name__}This article version "
                       f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
-                      # raise FileNotFoundError("File for the latest version of this article could not be found")
+                # raise FileNotFoundError("File for the latest version of this article could not be found")
 
+    @time_task
     def delete_article(self):
         if self.article.published:
             self.draft_article()
@@ -742,7 +753,7 @@ class ArticleHandler:
         # print(f"LOCATED AT: /media/posts/{file_name}")
         return f"/media/posts/{file_name}"
         # return self.__get_latest_version_dir_local().replace("\\", "/")
-        
+
     # must return T or F!!
     def save_article_content_local(self, new_content) -> bool:
         # TODO check for success and notify on front end
@@ -769,7 +780,7 @@ class ArticleHandler:
 
     def __get_latest_version_dir_local(self) -> str:
         file_name = f"{self.article.article_id}-{self.get_latest_version().version}.html"
-        return os.path.join(POSTS_ROOT, file_name)
+        return os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
 
     def __remove_latest_file_local(self):
         file_dir = self.__get_latest_version_dir()
@@ -784,13 +795,33 @@ class ArticleHandler:
         all_ver = self.get_all_versions()
         for ver in all_ver:
             file_name = f"{self.article.article_id}-{ver.version}.html"
-            file_dir = os.path.join(POSTS_ROOT, file_name)
+            file_dir = os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
             if os.path.exists(file_dir):
                 os.remove(file_dir)
             else:
                 print(f"{self.__remove_all_article_files_local().__name__}This article version "
                       f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
                 # raise FileNotFoundError("File for the latest version of this article could not be found")
+
+"""
+"""
+class ImageHandler:
+    @staticmethod
+    def upload_local_image(image, image_name, user):
+        if not user.is_authenticated:
+            raise ValueError("User must be logged in to upload")
+
+        if image_name is not None:
+            # image_name = f"img-{user.id}-" + _make_hash(f"{user.username}{time.time()}")
+            local_img = ImageLocal.objects.create(image_owner=user, location=image)
+            local_img.save()
+            img = Image.objects.create(local_image=local_img, description="testing")
+            img.save()
+
+    def get_user_images(self, user):
+        images = []
+        # Image.objects.filter()
+        return images
 """
 
 
