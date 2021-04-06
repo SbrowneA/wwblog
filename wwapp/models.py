@@ -260,28 +260,6 @@ class S3Image(Image):
         return output
 
 
-class ArticleImage(models.Model):
-    article_image_id = models.AutoField(primary_key=True)
-    article = models.ForeignKey(
-        Article,
-        on_delete=models.CASCADE,
-    )
-    image = models.ForeignKey(
-        Image,
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['article', 'image'], name="article_image_unique", )
-        ]
-
-    def __str__(self):
-        output = f" - Image {str(self.image)}" \
-                 f" - Used in article {str(self.article)}"
-        return output
-
-
 class CategoryEditor(models.Model):
     category_editor_id = models.AutoField(primary_key=True)
     category = models.ForeignKey(
