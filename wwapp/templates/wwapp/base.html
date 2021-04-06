@@ -42,7 +42,7 @@
 
         <div class="row banner__nav">
             <a href="{% url 'wwapp:index' %}" class="ml-3">Home</a>
-{% comment %}            <a href="{% url 'wwapp:browse_users' %}">Authors</a>
+            {% comment %}            <a href="{% url 'wwapp:browse_users' %}">Authors</a>
             <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>
             <a href="{% url 'wwapp:browse_categories' %}">Projects</a>
             <div class="input-group- mb3">
@@ -59,23 +59,21 @@
 
 <div class="row max-width h-100 content-row">
 
-    <div class="nav col-3">
+    <div class="left-nav col-lg-3 col-md-1 hidden-sm hidden-xs">
         {% block left_nav %}
-{#            <h1 class="mx-auto"></h1>#}
         {% endblock %}
     </div>
 
-    <div class="content_container col-6" , id="content_container" >
-        <div class="content p-3 mb-2 bg-dark text-whit">
+    <div class="content_container col-lg-6 col-md-8 co-sm-10 col-xs-12" id="content_container">
+        <div class="content p-3 mb-2 bg-dark text-white">
             {% block content %}
             {% endblock %}
         </div>
-{#        <div content="filler"></div>#}
+        {#        <div content="filler"></div>#}
     </div>
 
-    <div class="right-nav col-3">
+    <div class="right-nav col-lg-3 col-md-3 hidden-sm hidden-xs">
         {% block right_nav %}
-{#            <h1>Nav div</h1>#}
         {% endblock %}
     </div>
 
@@ -83,11 +81,11 @@
 
 
 <footer class="footer row max-width h-100">
-    <div class="col-4"></div>
-    <div class="container col-4 mt-4">
+    <div class="col-lg-4 hidden-xs"></div>
+    <div class="container col-4 col-xs-10 mt-4">
         <i>For support contact:<a href="mailto:someone@yoursite.com"> wwblogs.help@gmail.com</a></i>
     </div>
-    <div class="col-4"></div>
+    <div class="col-lg-4 hidden-xs"></div>
     {% block footer %}
     {% endblock %}
 </footer>

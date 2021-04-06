@@ -21,11 +21,11 @@
 }
 
 #logout-btn {
-    background: #6DDCBD;
+    background: #59b59b;
 }
 
 #login-btn, #logout-btn {
-    background: #6DDCBD;
+    background: #59b59b;
 }
 
 body {
@@ -271,6 +271,21 @@ h3, h4 {
     background-color: #aea2d7;
 }
 .dz-custom img{
-    background-color: red !important;;
+    background-color: red !important;
     border-radius: 50%;
 }
+
+
+
+/*!*Testing *!*/
+/*.right-nav{*/
+/*    background: #c100b7;*/
+/*}*/
+
+/*.content_container{*/
+/*    background: #56b595;*/
+/*}*/
+
+/*.left-nav{*/
+/*    background: #00b300;*/
+/*}*/
