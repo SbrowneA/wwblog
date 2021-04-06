@@ -16,6 +16,7 @@ class Category(models.Model):
     category_name = models.CharField(unique=True, max_length=45)
     category_creator = models.ForeignKey(User, on_delete=models.PROTECT)
     category_description = models.CharField(null=True, max_length=300)
+    # creation_date = models.DateTimeField(auto_now_add=True)
 
     class CategoryType(models.TextChoices):
         PROJECT = 'PROJECT', _('Project')
@@ -27,6 +28,8 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
         indexes = [
+            models.Index(fields=['category_creator_id', 'category_type', 'category_name']),
+            models.Index(fields=['category_type', 'category_name']),
             models.Index(fields=['category_name']),
         ]
 
@@ -104,6 +107,11 @@ class Article(models.Model):
         indexes = [
             models.Index(fields=['article_title']),
             models.Index(fields=['author']),
+            models.Index(fields=['author_id', 'published', '-pub_date']),
+            models.Index(fields=['published', '-pub_date']),
+            models.Index(fields=['published', 'pub_date']),
+            models.Index(fields=['author_id', 'published', '-creation_date']),
+            models.Index(fields=['author_id', 'published', 'creation_date']),
         ]
 
     def save(self, *args, **kwargs):
@@ -153,6 +161,9 @@ class ArticleVersion(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['article', 'version'], name="article_version_unique", )
+        ]
+        indexes = [
+            models.Index(fields=['article_id', 'version']),
         ]
 
     def save(self, *args, **kwargs):
@@ -209,6 +220,10 @@ class CategoryItemAssignation(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['parent_category', 'position'], name="parent_category_position_unique", )
+        ]
+        indexes = [
+            models.Index(fields=['position']),
+            models.Index(fields=['parent_category_id', 'position']),
         ]
 
     def __str__(self):
