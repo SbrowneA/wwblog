@@ -20,9 +20,9 @@
     /*height: 2vw;width: 100%;*/
 }
 
-#logout-btn {
-    background: #59b59b;
-}
+/*#logout-btn {*/
+/*    background: #59b59b;*/
+/*}*/
 
 #login-btn, #logout-btn {
     background: #59b59b;
@@ -43,6 +43,7 @@ footer {
     color: #888888;
     margin-top: 1vh;
     min-height: 8vh;
+    text-align: center;
 }
 
 .content-row {
@@ -277,15 +278,16 @@ h3, h4 {
 
 
 
-/*!*Testing *!*/
-/*.right-nav{*/
-/*    background: #c100b7;*/
-/*}*/
+/*
+!*Testing *!
+.right-nav{
+    background: #c100b7;
+}
 
-/*.content_container{*/
-/*    background: #56b595;*/
-/*}*/
+.content_container{
+    background: #56b595;
+}
 
-/*.left-nav{*/
-/*    background: #00b300;*/
-/*}*/
+.left-nav{
+    background: #00b300;
+}*/
