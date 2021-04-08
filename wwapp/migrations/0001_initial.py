@@ -48,32 +48,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='ImageRemote',
-            fields=[
-                ('remote_image_id', models.AutoField(primary_key=True, serialize=False)),
-                ('location', models.URLField()),
-                ('image_owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='ImageLocal',
-            fields=[
-                ('local_image_id', models.AutoField(primary_key=True, serialize=False)),
-                ('location', models.ImageField(upload_to='images/local/')),
-                ('image_owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Image',
-            fields=[
-                ('image_id', models.AutoField(primary_key=True, serialize=False)),
-                ('description', models.CharField(blank=True, max_length=45, null=True)),
-                ('upload_date', models.DateTimeField(auto_now_add=True)),
-                ('local_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='wwapp.imagelocal')),
-                ('remote_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='wwapp.imageremote')),
-            ],
-        ),
-        migrations.CreateModel(
             name='CategoryItemAssignation',
             fields=[
                 ('item_assignation_id', models.AutoField(primary_key=True, serialize=False)),
@@ -101,14 +75,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='ArticleImage',
-            fields=[
-                ('article_image_id', models.AutoField(primary_key=True, serialize=False)),
-                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='wwapp.article')),
-                ('image', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='wwapp.image')),
-            ],
-        ),
-        migrations.CreateModel(
             name='ArticleEditor',
             fields=[
                 ('article_editor_id', models.AutoField(primary_key=True, serialize=False)),
@@ -131,10 +97,6 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name='articleversion',
             constraint=models.UniqueConstraint(fields=('article', 'version'), name='article_version_unique'),
-        ),
-        migrations.AddConstraint(
-            model_name='articleimage',
-            constraint=models.UniqueConstraint(fields=('article', 'image'), name='article_image_unique'),
         ),
         migrations.AddConstraint(
             model_name='articleeditor',

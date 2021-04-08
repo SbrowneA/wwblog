@@ -21,36 +21,56 @@
     You do not have javascript enabled! some features may not work.
 </noscript>
 <div class="row max-width pb-2" id="banner_container">
-    <div class="banner col-12  pb-2" id="banner">
-        <div class="row col-12">
-            <div class="banner__title col-11">
-                <div class="mx-auto">
-{#                    <h1 onclick="location.href = '{% url 'wwapp:index' %}'">w&amp;wblogs</h1>#}
-                    <h1>w&amp;wblogs</h1>
-                </div>
+    <div class="banner col-12 pb-2" id="banner">
+
+        <div class="row">
+            {#            <div class="banner__title float-right col-lg-9 col-6-md col-6-md">#}
+            <div class="banner__title col-12">
+                <h1 class="d-inline">w&amp;wblogs</h1>
+                {% if request.user.is_authenticated %}
+                    <button class="btn btn-primary mt-2 float-right d-none d-md-inline" id="logout-btn"
+                            onclick="location.href = '{% url 'account:logout' %}'">Logout
+                    </button>
+                {% else %}
+                    <button class="btn btn-primary mt-2 float-right d-none d-md-inline" id="login-btn"
+                            onclick="location.href = '{% url 'account:login' %}'">Login
+                    </button>
+                {% endif %}
             </div>
-            {% if request.user.is_authenticated %}
-                <button class="btn btn-primary h-100 mt-2" id="logout-btn"
-                        onclick="location.href = '{% url 'account:logout' %}'">Logout
-                </button>
-            {% else %}
-                <button class="btn btn-primary h-100 mt-2" id="login-btn"
-                        onclick="location.href = '{% url 'account:login' %}'">Login
-                </button>
-            {% endif %}
+
         </div>
+{#        TODO enable when search functionality is enabled #}
+        {% comment %}        <div class="banner__search input-group- mb3">
+            <div class="input-group-prepend pb-50">
+                <input type="text" name="search" placeholder="Search..">
+                <button type="submit" name="search_btn" value="search_text" class="btn btn-dark">Search</button>
+            </div>
+        </div>{% endcomment %}
 
         <div class="row banner__nav">
-            <a href="{% url 'wwapp:index' %}" class="ml-3">Home</a>
-{% comment %}            <a href="{% url 'wwapp:browse_users' %}">Authors</a>
-            <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>
-            <a href="{% url 'wwapp:browse_categories' %}">Projects</a>
-            <div class="input-group- mb3">
-                <div class="input-group-prepend pb-50">
-                    <input type="text" name="search" placeholder="Search..">
-                    <button type="submit" name="search_btn" value="search_text" class="btn btn-dark">Search</button>
+            <div class="banner__nav-links d-none d-md-inline">
+                <a href="{% url 'wwapp:index' %}" class="ml-3">Home</a>
+                {#                        <a href="{% url 'wwapp:browse_users' %}">Authors</a>#}
+                {#            <a href="{% url 'wwapp:browse_articles' %}">All Posts</a>#}
+                {#            <a href="{% url 'wwapp:browse_categories' %}">Projects</a>#}
+            </div>
+            <div class="banner__nav-drop-menu d-md-none d-xs-inline ml-3 mt-2">
+                <div class="btn-group">
+                    <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <div class="dropdown-menu bg-dark">
+                        <a href="{% url 'wwapp:index' %}" class="ml-3 d-block">Home</a><br/>
+                        <a href="{% url 'wwapp:manage_own_content' %}" class="ml-3 d-block">My Posts & Projects</a><br/>
+                        {% if request.user.is_authenticated %}
+                            <a href="{% url 'account:logout' %}" class="ml-3 d-block">Logout</a>
+                        {% else %}
+                            <a href="{% url 'account:login' %}" class="ml-3 d-block">Login</a>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>{% endcomment %}
+            </div>
         </div>
 
     </div>
@@ -59,23 +79,21 @@
 
 <div class="row max-width h-100 content-row">
 
-    <div class="nav col-3">
+    <div class="left-nav col-lg-3  d-none d-lg-inline">
         {% block left_nav %}
-{#            <h1 class="mx-auto"></h1>#}
         {% endblock %}
     </div>
 
-    <div class="content_container col-6" , id="content_container" >
-        <div class="content p-3 mb-2 bg-dark text-whit">
+    <div class="content_container col-lg-6 col-md-9 co-sm-10 col-xs-12" id="content_container">
+        <div class="content p-3 mb-2 bg-dark text-white">
             {% block content %}
             {% endblock %}
         </div>
-{#        <div content="filler"></div>#}
+        {#        <div content="filler"></div>#}
     </div>
 
-    <div class="right-nav col-3">
+    <div class="right-nav col-lg-3 col-md-3 d-none d-md-inline">
         {% block right_nav %}
-{#            <h1>Nav div</h1>#}
         {% endblock %}
     </div>
 
@@ -83,13 +101,14 @@
 
 
 <footer class="footer row max-width h-100">
-    <div class="col-4"></div>
-    <div class="container col-4 mt-4">
-        <i>For support contact:<a href="mailto:someone@yoursite.com"> wwblogs.help@gmail.com</a></i>
+    {#    <div class="col-lg-4 d-none"></div>#}
+    <div class="container col-lg-4 col-md-8 col-xs-10 mt-4">
+        <i>For support contact: <a href="mailto:wwblogs.help@gmail.com">wwblogs.help@gmail.com</a></i>
+        {% block footer %}
+        {% endblock %}
     </div>
-    <div class="col-4"></div>
-    {% block footer %}
-    {% endblock %}
+    {#    <div class="col-lg-4 d-none"></div>#}
+
 </footer>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

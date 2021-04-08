@@ -499,3 +499,11 @@ import time
 #
 #    # print(request.FILES)
 #     return HttpResponse("uploaded")
+
+
+def activate_users(request):
+    # make user
+    u = User.objects.get(email="giwar97105@0pppp.com")
+    # activate
+    User.objects.activate_user(u)
+    return HttpResponse(request, "active")
