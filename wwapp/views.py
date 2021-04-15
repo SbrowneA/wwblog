@@ -1,8 +1,9 @@
 import os
-import traceback
+# import traceback
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 # from django.contrib.auth.decorators import user_passes_test
+from django.core import exceptions
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import (
     # Http404,
@@ -12,6 +13,7 @@ from django.http import (
 # from wwblog import settings
 from . import forms
 # from django.utils.translation import gettext as _
+from .decorators import time_task
 from account.decorators import (
     # authentication_required,
     # unauthenticated_user,
@@ -24,24 +26,29 @@ from account.decorators import (
     category_creator_or_moderator,
 )
 from .handlers import (
-    ArticleHandler, CategoryHandler,
+    ArticleHandler, CategoryHandler, ImageHandler, ImgurHandler,
     # ImageHandler
 )
 # , create_new_article as new_article_handler
 from django.db import IntegrityError
 import logging
-from . import imgur
-from .models import (Article,
-                     Category)
+from .models import (Article, Category, ImgurImage)
 from wwblog.storages import MediaStorage
 from django.core.mail import send_mail
 
-User = get_user_model()
+from django.contrib.sites.shortcuts import get_current_site
 
+User = get_user_model()
+# import hashlib
 
 def index(request):
     latest_articles = ArticleHandler.get_latest_published_articles(count=5)
     projects = CategoryHandler.get_all_projects()
+    # site = get_current_site(request)
+    # print(f"SITE DATA - Site:{site} - site.domain{site.domain}")
+    # print(
+    #     f"REQUEST DATA - HTTP_HOST: {request.META['HTTP_HOST']} - host: {request.get_host()}"
+    #     f" - uri: {request.get_raw_uri()} - port: {request.get_port()} - path: {request.get_full_path()}")
     values = {
         "latest_articles_list": latest_articles,
         "active_projects": projects
@@ -476,35 +483,77 @@ def upload_test(request):
 #     return render(request, 'wwapp/upload_test.html', values)
 
 
-from django.views.generic import TemplateView
-import time
+
+
+# def activate_users(request):
+#     # make user
+#     u = User.objects.get(email="giwar97105@0pppp.com")
+#     # activate
+#     User.objects.activate_user(u)
+#     return HttpResponse(request, "active")
+
+
+
+# from django.views.generic import TemplateView
 
 # @login_required()
 # class UploadImage(TemplateView):
 #     template_name = 'wwapp/drag_and_drop_images.html'
 
-#
-# @login_required()
-# def test(request):
-#     return render(request, 'wwapp/drag_and_drop_images.html')
-#
-#
-# @login_required()
-# def upload_local_image(request):
-#     if request.method == "POST":
-#         image = request.FILES.get('file')
-#
-#         name = f"image-{time.time()}"
-#         print(request.user)
-#         ImageHandler.upload_local_image(image, name, request.user)
-#
-#    # print(request.FILES)
-#     return HttpResponse("uploaded")
+@login_required
+def browse_own_images(request):
+    imgur_images = ImgurHandler.get_user_images(request.user)
+    i = imgur_images[0]
+    i = ImgurImage.objects.get(image_id=1)
+    # imgur_images = ImgurImage.objects.filter(image_owner_id=request.user.id)
+    values = {'imgur_images': imgur_images}
+    return render(request, "wwapp/browse_user_images.html", values)
 
 
-def activate_users(request):
-    # make user
-    u = User.objects.get(email="giwar97105@0pppp.com")
-    # activate
-    User.objects.activate_user(u)
-    return HttpResponse(request, "active")
+def view_user_public_images(request, user_id: int):
+    pass
+    # if mode go to view all user images
+
+def view_all_user_images(request, user_id: int):
+    pass
+
+@login_required
+def upload_image(request):
+    print(ImgurHandler().credits)
+    return render(request, 'wwapp/drag_and_drop_images.html')
+
+
+@login_required
+def upload_imgur_image(request):
+    if request.method == "POST":
+        image = request.FILES.get('file')
+        image_handler = request.session.get('imgur_image_handler') or None
+        print(f"image_handler is type: {type(image_handler)}")
+
+        # if image_handler is None:
+        imgur_handler = ImgurHandler()
+        status_code = imgur_handler.upload_image(image, request)
+        request.session['imgur_image_handler'] = image_handler
+        return HttpResponse(status=status_code)
+
+    elif request.method == "GET":
+        # todo redirect user to upload page
+        return HttpResponse("Uh oh, you shouldn't be here", status=403)
+
+
+# @image_creator_or_moderator #  TODO
+@login_required
+def delete_image(request, image_id):
+    if request.method == "DELETE":
+        try:
+            image = ImgurImage.objects.get(image_id=image_id)
+            status_code = ImgurHandler().delete_image(image, request)
+        except exceptions.ObjectDoesNotExist:
+            status_code = 404
+        # try other image type instead (s3Image)
+        return HttpResponse(status=status_code)
+        # if image_handler is None:
+
+    elif request.method == "GET":
+        # todo redirect user to image edit page
+        return HttpResponse(status=403)

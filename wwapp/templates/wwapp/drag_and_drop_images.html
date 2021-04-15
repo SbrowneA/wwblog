@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block content %}
-    <form action="/upload-local-image" id="image-dz" class="dropzone dz-custom" method="POST">
+    <form action="" id="image-dz" class="dropzone dz-custom" method="POST">
         {% csrf_token %}
         <div class="fallback" id="div-image-dz">
             <input name="file" type="file" multiple/>

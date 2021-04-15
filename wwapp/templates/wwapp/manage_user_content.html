@@ -69,6 +69,11 @@
     {% else %}
         <p>You have no projects yet. Start a new project <a href="{% url 'wwapp:new_project' %}">here</a></p>
     {% endif %}
+
+     <h3>My Images</h3>
+        <a href="{% url "wwapp:browse_own_images" %}">Go to my images</a>
+
+
     {% comment %}TODO figure out data structure
         <ul>
             {% for proj in user_projects %}

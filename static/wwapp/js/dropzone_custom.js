@@ -6,12 +6,14 @@ function initDz() {
     if (document.getElementById('image-dz')) {
         imgDz = new Dropzone("#image-dz",
             {
-                url: "/upload-local-image",
+                url: "/upload-to-imgur",
                 maxFiles: 4,
-                maxFilesize: 5,
-                acceptedFiles: '.png, .jpg, .gif, .svg, .webp',
-                dictDefaultMessage: "Drop images here to upload"
+                maxFilesize: 20,
+                // acceptedFiles: '.png, .jpg, .gif, .svg, .webp',
+                acceptedFiles: '.png, .jpg, .jpeg, .gif, .svg, .webp, .apng, .TIFF, .MP4, .MPEG, .AVI, .WEBM, .quicktime, .x-matroska, .x-flv, .x-msvideo, .x-ms-wm',
+                dictDefaultMessage: "Drop images or click here to upload",
                 // addRemoveLinks: true
+                timeout: 50000,
             });
     }
 }
