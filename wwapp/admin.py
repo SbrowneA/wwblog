@@ -18,6 +18,4 @@ admin.site.register(Category)
 admin.site.register(CategoryEditor)
 admin.site.register(CategoryItem)
 admin.site.register(CategoryItemAssignation)
-
-
-
+admin.site.register(ImgurImage)

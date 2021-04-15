@@ -266,6 +266,44 @@ class ImgurImage(Image):
     delete_hash = models.CharField(default=None, max_length=15)
     url = models.URLField(blank=False, null=False)
 
+    """ See 'Image thumbnails' https://api.imgur.com/models/image for details """
+
+    @property
+    def thumbnail_url_s(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 's')
+        return ''.join(li)
+
+    @property
+    def thumbnail_url_b(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 'b')
+        return ''.join(li)
+
+    @property
+    def thumbnail_url_t(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 't')
+        return ''.join(li)
+
+    @property
+    def thumbnail_url_m(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 'm')
+        return ''.join(li)
+
+    @property
+    def thumbnail_url_l(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 'l')
+        return ''.join(li)
+
+    @property
+    def thumbnail_url_h(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 'h')
+        return ''.join(li)
+
     def __str__(self):
         output = f" {self.imgur_image_id} - {super().__str__()}"
         return output
