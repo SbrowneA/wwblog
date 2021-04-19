@@ -61,8 +61,8 @@ def logout_user(request):
 @sensitive_post_parameters()
 @never_cache
 def register_user(request):
-    # if request.session.get('successfully_registered') == 1:
-    #     return redirect("account:register_success", permanent=True)
+    if request.session.get('successfully_registered') == 1:
+        return redirect("account:register_success", permanent=True)
     form = forms.RegisterFrom(request.POST or None)
 
     try:
