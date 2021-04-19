@@ -1,7 +1,7 @@
 # from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponseForbidden
-from wwapp.models import (Article, Category, )
+from wwapp.models import (Article, Category, Image)
 from wwapp.handlers import ArticleHandler, CategoryHandler
 # from django.core import exceptions
 from .role_validator import (is_moderator_or_admin, _get_user_groups,
@@ -198,3 +198,35 @@ def _is_category_editor(request, category_id):
         if request.user in editors:
             return True
     return False
+
+
+# IMAGE CHECK METHODS
+def _is_image_creator(request, image_id):
+    img = get_object_or_404(Image, image_id=image_id)
+    if img.image_owner_id == request.user.id:
+        return True
+    return False
+
+
+def _is_image_editor(request, image_id):
+    return False
+    # TODO once methods have been made in the ImageHandler
+    # c = get_object_or_404(Image, image_id=image_id)
+    # editors = ImageHandler(c).get_image_editors()
+    # if editors is not None:
+    #     if request.user in editors:
+    #         return True
+    # return False
+
+
+"""
+# TODO: make one method that applies to all
+#  - then one decorator can be made for all as well
+
+def _is_creator(request, item_id: int, item_class) -> bool:
+    # dont know if pk works
+    item = get_object_or_404(item_class, pk=item_id)
+    if request.user.id == item.pk:
+        return True
+    return False
+"""
