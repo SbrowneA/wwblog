@@ -44,4 +44,6 @@ def is_moderator_or_admin(user):
         max_role_name = get_max_role_name(groups)
         if max_role_name == "admin" or max_role_name == "moderator":
             return True
+    elif user.is_superuser:
+        return True
     return False
