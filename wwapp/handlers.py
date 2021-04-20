@@ -17,7 +17,7 @@ from django.core.files.storage import default_storage
 from wwblog.storages import MediaStorage
 from django.utils import timezone
 
-from account.role_validator import is_moderator_or_admin
+from account.role_validation import is_moderator_or_admin
 from .decorators import time_task
 
 from imgurpython import ImgurClient
