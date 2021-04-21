@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import (authenticate,
                                  login as auth_login,
@@ -7,6 +8,7 @@ from django.contrib.auth import (authenticate,
                                  get_user_model)
 from django.core import exceptions
 from . import forms
+from django.forms import Form
 from django.db import IntegrityError
 # from django.contrib import messages
 from .decorators import *
@@ -14,6 +16,10 @@ from django.contrib.auth.models import Group
 from django.views.decorators.cache import never_cache
 from django.views.decorators.debug import sensitive_post_parameters
 import re
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from smtplib import SMTPException
 
 User = get_user_model()
 
@@ -139,3 +145,84 @@ def valid_email(value: str) -> bool:
     if re.search(valid_email_format, value):
         return True
     return False
+
+
+@login_required
+@minimum_role_required("moderator")
+def moderator_dashboard(request):
+    context = {}
+    return render(request, "account/dashboard/dashboard.html", context)
+
+
+@login_required
+@minimum_role_required("moderator")
+def manage_users(request):
+    status = 200
+    users = User.objects.get_users_up_to_role(User.objects.get_max_role_name(request.user))
+    form = Form(request.POST or None)
+    context = {
+        "activated_user": None,
+        "users": users,
+        "form": form,
+    }
+    if request.method == "POST" and form.is_valid():
+        if request.POST.get("activate"):
+            user_id = request.POST["activate"]
+            u = User.objects.get(id=user_id)
+            status = _activate_user(user_id)
+            context['activated_user'] = u
+        elif request.POST.get("deactivate"):
+            user_id = request.POST["deactivate"]
+            u = User.objects.get(id=user_id)
+            status = 0
+        context['users'] = User.objects.get_users_up_to_role(User.objects.get_max_role_name(request.user))
+
+    return render(request, "account/dashboard/manage_users.html", context, status=status)
+
+
+# @login_required
+# @minimum_role_required("moderator")
+def _activate_user(user_id):
+    # todo use class views and make this a class method
+    user = User.objects.get(id=user_id)
+    if User.objects.activate_user(user):
+        try:
+            # send email
+            context = {"username": user.username}
+            html_message = render_to_string('account/email_templates/user_account_activated_email.html',
+                                            context=context)
+            plain_message = strip_tags(html_message)
+            subject = render_to_string("account/email_templates/user_account_activated_subject.txt", context=context)
+
+            send_mail(message=plain_message, recipient_list=[user.email], subject=subject, from_email=None,
+                      auth_password=None, html_message=html_message)
+        except SMTPException:
+            print("failed to notify user of account action")
+        return 201
+    else:
+        return 500
+
+
+# @login_required
+# @minimum_role_required("moderator")
+def _deactivate_user(user_id):
+    """
+    user = User.objects.get(id=user_id)
+    if User.objects.activate_user(user):
+        try:
+            # todo make deactivation email
+            # context = {"username": user.username}
+            # html_message = render_to_string('account/email_templates/user_account_activated_email.html',
+            #                                 context=context)
+            # plain_message = strip_tags(html_message)
+            # subject = render_to_string("account/email_templates/user_account_activated_subject.txt", context=context)
+            #
+            # send_mail(message=plain_message, recipient_list=[user.email], subject=subject, from_email=None,
+            #           auth_password=None, html_message=html_message)
+            return 201
+        except SMTPException:
+            print("failed to notify user of account action")
+    else:
+        return 500
+    """
+    return 500

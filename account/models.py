@@ -3,7 +3,7 @@ from django.db import models
 # from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, Group
 
-from smtplib import SMTPException
+
 from django.core import exceptions
 from . import role_validation
 
@@ -55,9 +55,9 @@ class UserManager(BaseUserManager):
             user.is_active = True
             user.save()
             return True
-        except SMTPException:
-            pass
-        return False
+        except Exception as e:
+            print(f"cannot activate user {user.username} because:{e}")
+            return False
 
     @staticmethod
     def get_role_users(role_name: str) -> list:
@@ -113,3 +113,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.username} {self.email}"
+
+    @property
+    def is_moderator_or_admin(self):
+        return role_validation.is_moderator_or_admin(self)
