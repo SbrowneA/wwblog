@@ -1,0 +1,53 @@
+{% extends 'wwapp/base.html' %}
+{% block title %} Dashboard {% endblock %}
+
+{% block content %}
+    {% if activated_user %}
+        <div class="alert alert-success mt-3">
+            <strong>{{ activated_user.username }} activated successfully</strong>
+        </div>
+    {% elif activated_user == False  %}
+        <div class="alert alert-danger mt-3">
+            <strong>There an updating issue a user, please contact support</strong>
+        </div>
+    {% endif %}
+    <h3>Inactive users</h3>
+    <p>
+        if a user is inactive they are locked out from logging in. <br/>If they have already made posts or projects, they will
+        remain there.
+    </p>
+    <form method="POST" action="">
+        {% csrf_token %}
+
+        <table>
+            {% for u in users %}
+                {% if not u.is_active %}
+                    <tr>
+                        <td>
+                            {{ u.username }}
+                        </td>
+                        <td>
+                            <button class="button save btn btn-success" type="submit" value="{{ u.id }}" name="activate">Activate
+                            </button>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+        <h3>Activate users</h3>
+        <table>
+            {% for u in users %}
+                {% if u.is_active %}
+                    <tr>
+                        <td>
+                            {{ u.username }}
+                        </td>
+                        <td>
+                            {#                            <button class="button save" type="submit" value="{{ u.id }}" name="deactivate">Deactivate</button>#}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    </form>
+{% endblock %}
