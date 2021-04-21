@@ -84,7 +84,6 @@ def open_article(request, article_id):
         values['has_editor_privilege'] = a_handler.has_editor_privilege(request.user)
         secret = a_handler.get_latest_version().secret_note
         values['secret_note'] = secret
-    print("date", str(article.creation_date))
     # article_url = a_handler.get_latest_version_url()
     # if article_url is not None:
     #     values['article_url'] = article_url
