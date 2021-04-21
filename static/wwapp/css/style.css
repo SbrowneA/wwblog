@@ -1,18 +1,74 @@
+:root {
+    --text: #eaeaea;
+    --accent: #5D61CB;
+    --secondary: #50a6ae;
+    /*--accent-secondary: #50a6ae;*/
+
+    --delete: #ba0025;
+    --save: #07a40a;
+    --edit: #006ea0;
+
+    --link-text: #9CDCFE;
+    --link-: #ba0025;
+
+    /*--body-bg:;*/
+    --m-grey: #343a40;
+    --d-grey: #222222;
+
+}
+
 .banner {
-    background: #5E5694;
     min-height: 10vh;
-    /*padding-bottom: 5em;*/
-    /*padding-left: 8em;*/
-    /*width: 99%;*/
-    /*z-index: 0;*/
-    /*overflow: hidden;*/
-    /*no scroll-bar in div */
-    /*margin-left: auto;*/
-    /*margin-right: auto;*/
+    background: linear-gradient(270deg, #5D61CB, #5D73CB);
+    background-size: 400% 400%;
+
+    -webkit-animation: AnimationName 10s ease infinite;
+    -moz-animation: AnimationName 10s ease infinite;
+    animation: AnimationName 5s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+    0% {
+        background-position: 0% 50%
+    }
+    50% {
+        background-position: 100% 50%
+    }
+    100% {
+        background-position: 0% 50%
+    }
+}
+
+@-moz-keyframes AnimationName {
+    0% {
+        background-position: 0% 50%
+    }
+    50% {
+        background-position: 100% 50%
+    }
+    100% {
+        background-position: 0% 50%
+    }
+}
+
+@keyframes AnimationName {
+    0% {
+        background-position: 0% 50%
+    }
+    50% {
+        background-position: 100% 50%
+    }
+    100% {
+        background-position: 0% 50%
+    }
 }
 
 .banner__title {
     /*#width: 100%;*/
+}
+
+.banner__title h1 {
+    display: inline-block;
 }
 
 
@@ -25,7 +81,7 @@
 /*}*/
 
 #login-btn, #logout-btn {
-    background: #59b59b;
+
 }
 
 body {
@@ -260,23 +316,32 @@ h3, h4 {
     color: #e70000;
 }
 
-/*dropzone customisation*/
-.dz-custom {
-    border: dashed !important;
-    border-color: #3c3c3c;
-    border-radius: 20px;
-    background-color: #757373;
+.dropdown-container {
+    background: var(--m-grey) !important;
+    /*background: var(--middle-grey) !important;*/
+    /*background: blue;*/
 }
 
-.dz-custom:hover {
-    background-color: #aea2d7;
-}
-.dz-custom img{
-    background-color: red !important;
-    border-radius: 50%;
+button {
+    font-family: 'WorkSans', serif;
+    background: blue;
+    color: var(--text);
+    border: none;
+    font-size: 1.1rem;
+    /*background: var(--secondary);*/
 }
 
+button .save {
+    background: var(--save);
+}
 
+button .edit {
+    background: var(--edit);
+}
+
+button .delete {
+    background: var(--delete);
+}
 
 /*
 !*Testing *!
@@ -291,3 +356,22 @@ h3, h4 {
 .left-nav{
     background: #00b300;
 }*/
+
+
+/*dropzone customisation*/
+.dz-custom {
+    border: dashed !important;
+    border-color: #3c3c3c;
+    border-radius: 20px;
+    background-color: #757373;
+}
+
+.dz-custom:hover {
+    background-color: #aea2d7;
+}
+
+.dz-custom img {
+    /*background-color: red !important;*/
+    border-radius: 50%;
+}
+
