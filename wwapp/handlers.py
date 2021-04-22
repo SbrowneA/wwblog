@@ -1,26 +1,28 @@
 import os
 import hashlib
 import traceback
-
-from django.db import (
-    # models, \
-    IntegrityError)
+import time
+from abc import ABC, abstractmethod
+from django.db import (IntegrityError)
 from django.core import exceptions
 
 from .context_processors import create_presigned_url
 from .models import (Article, ArticleEditor, ArticleVersion,
                      Category, CategoryEditor, CategoryItem,
-                     CategoryItemAssignation,
-                     # Image, ImageLocal
+                     CategoryItemAssignation, ImgurImage,
                      )
 from wwblog.settings import POSTS_ROOT, POSTS_LOCATION
+from .context_processors import create_presigned_url
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
 from wwblog.storages import MediaStorage
 from django.utils import timezone
 
-from account.role_validator import is_moderator_or_admin
+from account.role_validation import is_moderator_or_admin
 from .decorators import time_task
+
+from imgurpython import ImgurClient
+from imgurpython.helpers.error import ImgurClientError, ImgurClientRateLimitError
 
 User = get_user_model()
 
@@ -728,7 +730,7 @@ class ArticleHandler:
         for ver in all_ver:
             file_name = f"{self.article.article_id}-{ver.version}.html"
             # TODO check if people other than the author can make child articles of an article
-            file_dir = os.path.join(POSTS_ROOT, str(self.article.author_id), file_name)
+            file_dir = os.path.join(POSTS_LOCATION, str(self.article.author_id), file_name)
             storage = MediaStorage()
             if storage.exists(file_dir):
                 storage.delete(file_dir)
@@ -753,7 +755,7 @@ class ArticleHandler:
         # print(f"LOCATED AT: /media/posts/{file_name}")
         return f"/media/posts/{file_name}"
         # return self.__get_latest_version_dir_local().replace("\\", "/")
-        
+
     # must return T or F!!
     def save_article_content_local(self, new_content) -> bool:
         # TODO check for success and notify on front end
@@ -799,35 +801,144 @@ class ArticleHandler:
             if os.path.exists(file_dir):
                 os.remove(file_dir)
             else:
-                print(f"{self.__remove_all_article_files_local().__name__}This article version "
+                print(f"{self.__remove_all_article_files_local.__name__}This article version "
                       f"(file dir:{file_dir}) has no corresponding file, file was not deleted")
                 # raise FileNotFoundError("File for the latest version of this article could not be found")
 
 
 """
 
-"""
-class ImageHandler:
+
+class ImageHandler(ABC):
+    USER_SESSION_UPLOAD_LIMIT = 20
+    USER_SESSION_REQUEST_LIMIT = 100
+    USER_UPLOAD_TIMEOUT_DURATION = 86_400  # 24hrs
+
+    def __init__(self):
+        pass
+
     @staticmethod
-    def upload_local_image(image, image_name, user):
-        if not user.is_authenticated:
-            raise ValueError("User must be logged in to upload")
+    def _user_session_valid(request):
+        # Check user is allowed to upload
+        remaining = request.session.get('uploads_remaining') or ImageHandler.USER_SESSION_UPLOAD_LIMIT
+        timeout_start = request.session.get('upload_timeout_start') or None
 
-        if image_name is not None:
-            # image_name = f"img-{user.id}-" + _make_hash(f"{user.username}{time.time()}")
-            local_img = ImageLocal.objects.create(image_owner=user, location=image)
-            local_img.save()
-            img = Image.objects.create(local_image=local_img, description="testing")
-            img.save()
+        if timeout_start is not None and ImageHandler.USER_UPLOAD_TIMEOUT_DURATION < (time.time() - timeout_start):
+            print(f"Timeout has been removed for user")
+            request.session.pop("upload_timeout_start")
+            request.session.pop("uploads_remaining")
+            remaining = ImageHandler.USER_SESSION_UPLOAD_LIMIT
 
+        if remaining > 0 and timeout_start is None:
+            return True
+        elif remaining == 0 and timeout_start is None:
+            ImageHandler.__timeout_user(request)
+        elif ImageHandler.USER_UPLOAD_TIMEOUT_DURATION > (time.time() - timeout_start):
+            remaining = (timeout_start + ImageHandler.USER_UPLOAD_TIMEOUT_DURATION) - time.time()
+            print(f"user has timed out, {remaining / 60} minutes remain")
+
+        return False
+
+    @staticmethod
+    def __timeout_user(request):
+        """Sets a timeout start time for the user's session"""
+        request.session['upload_timeout_start'] = time.time()
+
+    @abstractmethod
+    def upload_image(self, image, request) -> int:
+        """ Uploads the image to the appropriate destination and
+         returns a status code of the result
+
+         Example:
+             - successfully uploaded to destination: return 201 (Created)
+             - __user_session_valid() returns false: return 429 (Too Many Requests)
+             - unexpected error encountered: return 500 (Internal Server Error)
+
+         """
+
+    @abstractmethod
+    def delete_image(self, image, request) -> int:
+        pass
+
+    @staticmethod
+    @abstractmethod
     def get_user_images(self, user):
-        images = []
-        # Image.objects.filter()
+        pass
+
+
+class ImgurHandler(ImageHandler):
+    IMGUR_CLIENT_ID = os.environ['IMGUR_CLIENT_ID']
+    IMGUR_CLIENT_SECRET = os.environ['IMGUR_CLIENT_SECRET']
+    IMGUR_REFRESH_TOKEN = os.environ['IMGUR_REFRESH_TOKEN']
+
+    def __init__(self):
+        super().__init__()
+        self.imgur_client = ImgurClient(client_id=ImgurHandler.IMGUR_CLIENT_ID,
+                                        client_secret=ImgurHandler.IMGUR_CLIENT_SECRET,
+                                        refresh_token=ImgurHandler.IMGUR_REFRESH_TOKEN)
+
+    @time_task
+    def upload_image(self, image, request) -> int:
+        print(image.__dict__)
+        print(request.user)
+        # config = {"album": f"user-{request.user.id}"}
+        try:
+            if not super()._user_session_valid(request):
+                raise ImgurClientRateLimitError
+
+            print("uploading image...")
+            image_name = f"img-{request.user.id}-" + _make_hash(f"{request.user.username}{time.time()}")
+            upload = self.imgur_client.upload_from_image(image=image)
+            if type(upload) is dict:
+                print(upload['link'])
+                img = ImgurImage.objects.create(imgur_image_id=upload['id'], delete_hash=upload['deletehash'],
+                                                url=upload['link'],
+                                                image_owner=request.user, image_name=image_name)
+                img.save()
+                remaining = request.session.get('uploads_remaining') or ImageHandler.USER_SESSION_UPLOAD_LIMIT
+                request.session['uploads_remaining'] = remaining - 1
+                print(f"uploads remaining {remaining - 1}")
+                return 202
+
+        except ImgurClientRateLimitError:
+            self.__timeout_user(request)
+            return 429
+        except ImgurClientError as e:
+            print(f"\n{e.status_code} {e.error_message}")
+            traceback.print_exc()
+            # logging.error(message=e.error_message)
+            return e.status_code
+
+    @time_task
+    def delete_image(self, image: ImgurImage, request) -> int:
+        try:
+            self.imgur_client.delete_image(image.delete_hash)
+            image.delete()
+            return 200
+        except ImgurClientRateLimitError:
+            return 429
+        except ImgurClientError as e:
+            print(f"\n{e.status_code} {e.error_message}")
+            traceback.print_exc()
+            # logging.error(message=e.error_message)
+            return e.status_code
+        pass
+
+    @staticmethod
+    @time_task
+    def get_user_images(user):
+        try:
+            images = ImgurImage.objects.filter(image_owner=user.id).order_by("upload_date")
+        except exceptions.EmptyResultSet:
+            images = []
         return images
-"""
+
+    @property
+    def credits(self):
+        return self.imgur_client.get_credits()
 
 
 def _make_hash(value: str) -> str:
     # encoded = value.encode('utf=8')
-    h = hashlib.sha224(value.encode('utf=8'), usedforsecurity=False)
+    h = hashlib.sha224(value.encode('utf=8'), usedforsecurity=False).hexdigest()[:6]
     return str(h)

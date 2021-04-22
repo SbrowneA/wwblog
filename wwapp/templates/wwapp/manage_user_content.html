@@ -12,7 +12,9 @@
         <h4><a href="{% url 'wwapp:index' %}">Home</a></h4>
         <h4><a href="{% url 'wwapp:new_article' %}">New post</a></h4>
         <h4><a href="{% url 'wwapp:new_project' %}">New Project</a></h4>
-
+        {% if request.user.is_moderator_or_admin %}
+            <h4><a href="{% url 'account:moderator_dashboard' %}">Moderator Dashboard</a></h4>
+        {% endif %}
         <h4>Account</h4>
         <h6><a href="{% url 'account:change_password' %}">Change Password</a></h6>
         {#        <h4><a href="{% url 'wwapp:manage_own_content' %}">Browse My Posts</a></h4>#}
@@ -23,8 +25,8 @@
 {% block content %}
     {% if request.user.is_authenticated %}
         <h3>My Posts</h3>
-{#    {% elif %}#}
-{#        <h3>{{ user.username }}'s posts</h3>#}
+        {#    {% elif %}#}
+        {#        <h3>{{ user.username }}'s posts</h3>#}
     {% endif %}
 
     <h4>Publications</h4>
@@ -33,12 +35,13 @@
             {% for article in published_articles %}
                 <li>
                     <a href="{% url 'wwapp:open_article' article.article_id %}">{{ article.article_title }}</a>
-                     - <a href="{% url 'wwapp:edit_article' article.article_id %}">edit</a>
+                    - <a href="{% url 'wwapp:edit_article' article.article_id %}">edit</a>
                 </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p><i>You have no published posts.<br>Publish one of your drafts or make new post <a href="{% url 'wwapp:new_article' %}">here</a></i></p>
+        <p><i>You have no published posts.<br>Publish one of your drafts or make new post <a
+                href="{% url 'wwapp:new_article' %}">here</a></i></p>
     {% endif %}
 
     <h4>Drafts</h4>
@@ -62,13 +65,18 @@
             {% for project in user_projects %}
                 <li>
                     <a href="{% url 'wwapp:open_category' project.category_id %}">{{ project.category_name }}</a>
-                     - <a href="{% url 'wwapp:edit_category' project.category_id %}">edit</a>
+                    - <a href="{% url 'wwapp:edit_category' project.category_id %}">edit</a>
                 </li>
             {% endfor %}
         </ul>
     {% else %}
         <p>You have no projects yet. Start a new project <a href="{% url 'wwapp:new_project' %}">here</a></p>
     {% endif %}
+
+    <h3>My Images</h3>
+    <a href="{% url "wwapp:browse_own_images" %}">Go to my images</a>
+
+
     {% comment %}TODO figure out data structure
         <ul>
             {% for proj in user_projects %}

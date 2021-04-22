@@ -58,7 +58,7 @@ pip install [package name]
 in command promt
 -m pip install --upgrade pip
 
-pip install --upgrade requests
+pip install --upgrade [package name]
 
 pip install -r requirements.txt
 OR

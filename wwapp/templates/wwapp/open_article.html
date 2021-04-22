@@ -21,8 +21,8 @@
             {{ article.pub_date }}
             </span>{% endcomment %}
 
-            <span class="article-date">
-                {{ article.pub_date }}
+            <span id="publish-date" class="article-date convert-to-local-date">
+                {{ article.pub_date|date:"F j Y, H:i" }}
             </span>
             <br/>
             {#            <a href="{% url "wwapp:view_profile" article.author_id %}"></a>#}
@@ -64,4 +64,10 @@
         {% endif %}
     {% endif %}
 
+{% endblock %}
+
+{% block footer %}
+    <script>
+        convert_date_to_user_timezone()
+    </script>
 {% endblock %}

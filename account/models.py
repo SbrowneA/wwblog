@@ -1,12 +1,15 @@
 from django.db import models
-from django.utils.timezone import timezone
-from django.utils.translation import gettext_lazy as _
+# from django.utils.timezone import timezone
+# from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, Group
+
+
+from django.core import exceptions
+from . import role_validation
 
 
 class UserManager(BaseUserManager):
     def create_user(self, email, username, password, **kwargs):
-        print(f"creating new user {username}")
         # not required because they are tested within the inherited class
         if not email:
             raise ValueError("You must provide an email address")
@@ -40,8 +43,52 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, username, password, **kwargs)
 
+    @staticmethod
+    def get_max_role_name(user) -> str:
+        if user.is_superuser:
+            return role_validation.role_hierarchy[0]
+        return role_validation.get_max_role_name(role_validation.get_user_groups(user))
+
+    @staticmethod
+    def activate_user(user) -> bool:
+        try:
+            user.is_active = True
+            user.save()
+            return True
+        except Exception as e:
+            print(f"cannot activate user {user.username} because:{e}")
+            return False
+
+    @staticmethod
+    def get_role_users(role_name: str) -> list:
+        """returns a list users that belong to a role"""
+        if role_name not in role_validation.role_hierarchy:
+            raise ValueError(f"This role \"{role_name}\" does not exist in the current roles")
+        try:
+            # g = Group.objects.get(name=role_name)
+            users = User.objects.filter(groups__name=role_name)
+        except exceptions.EmptyResultSet:
+            users = []
+        return users
+
+    @staticmethod
+    def get_users_up_to_role(role_name: str) -> list:
+        """gets users from lowest privilege (highest role index) up to the specified role (non inclusive)"""
+        if role_name not in role_validation.role_hierarchy:
+            raise ValueError(f"This role \"{role_name}\" does not exist in the current roles")
+
+        users = []
+        # get list or roles bellow
+        roles = role_validation.role_hierarchy
+        index = roles.index(role_name)
+        end = len(roles)
+        for i in range(index+1, end-1):
+            users += UserManager.get_role_users(roles[i])
+        return users
+
 
 class User(AbstractBaseUser, PermissionsMixin):
+    id = models.AutoField(primary_key=True, verbose_name='ID', serialize=False)
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
     username = models.CharField(max_length=30, unique=True)
     # password =
@@ -68,7 +115,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.username} {self.email}"
 
-    # def save(self, *args, **kwargs):
-    #     print("User.save()")
-        # super().save(self, *args, **kwargs)
-# class ModeratorGroup:
+    @property
+    def is_moderator_or_admin(self):
+        return role_validation.is_moderator_or_admin(self)
