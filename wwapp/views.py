@@ -496,10 +496,10 @@ def upload_test(request):
 
 @login_required
 def browse_own_images(request):
-    imgur_images = ImgurHandler.get_user_images(request.user)
-    i = imgur_images[0]
-    i = ImgurImage.objects.get(image_id=1)
-    # imgur_images = ImgurImage.objects.filter(image_owner_id=request.user.id)
+    try:
+        imgur_images = ImgurHandler.get_user_images(request.user)
+    except exceptions.EmptyResultSet:
+        imgur_images = None
     values = {'imgur_images': imgur_images}
     return render(request, "wwapp/browse_user_images.html", values)
 
