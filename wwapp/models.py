@@ -233,6 +233,10 @@ class CategoryItemAssignation(models.Model):
 
 
 class Image(models.Model):
+    """
+    Parent class do not use directly
+    """
+
     image_id = models.AutoField(primary_key=True)
     image_name = models.CharField(max_length=45, unique=True)
     description = models.CharField(max_length=100, null=True, blank=True)
@@ -246,12 +250,59 @@ class Image(models.Model):
 
 
 class ImgurImage(Image):
+    """stores the details of images that are uploaded to imgur
+    Attributes
+    ----------
+    @imgur_image_id : str
+        hash id given to the image by imgur on upload
+    @delete_hash : str
+        delete_hash is only given in the response when the image is uploaded anonymously
+    @url : str
+        the url of the image
+        e.g. https://i.imgur.com/{imgur_image_id}.{file_type}
     """
-    stores the details of images that are uploaded to imgur
-    *in future could include embedded images
-    """
-    imgur_image_id = models.AutoField(primary_key=True)
+
+    imgur_image_id = models.CharField(primary_key=True, max_length=7)
+    delete_hash = models.CharField(default=None, max_length=15)
     url = models.URLField(blank=False, null=False)
+
+    """ See 'Image thumbnails' https://api.imgur.com/models/image for details """
+
+    @property
+    def thumbnail_url_s(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 's')
+        return ''.join(li)
+
+    @property
+    def thumbnail_url_b(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 'b')
+        return ''.join(li)
+
+    @property
+    def thumbnail_url_t(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 't')
+        return ''.join(li)
+
+    @property
+    def thumbnail_url_m(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 'm')
+        return ''.join(li)
+
+    @property
+    def thumbnail_url_l(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 'l')
+        return ''.join(li)
+
+    @property
+    def thumbnail_url_h(self):
+        li = list(self.url)
+        li.insert(self.url.rindex('.'), 'h')
+        return ''.join(li)
 
     def __str__(self):
         output = f" {self.imgur_image_id} - {super().__str__()}"

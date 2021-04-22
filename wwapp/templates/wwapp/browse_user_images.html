@@ -1,0 +1,17 @@
+{% extends 'wwapp/base.html' %}
+{% block title %} test image upload {% endblock %}
+{% block head %}
+    {% load static %}
+{% endblock %}
+
+{% block content %}
+    <h3>{{ request.user.username }}'s uploads</h3>
+        {% for image in imgur_images %}
+            <div class="image-container">
+            <img src="{{ image.thumbnail_url_m }}" alt="user uploaded image: {{ image.image_name }}"/>
+            <a href="{{ image.url }}" target="_blank"> {{ image.image_name}}</a>
+
+
+            </div>
+        {% endfor %}
+{% endblock %}

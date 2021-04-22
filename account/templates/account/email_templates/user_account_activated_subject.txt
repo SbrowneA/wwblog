@@ -1,1 +1,1 @@
-Your wwblogs account has been activated
+Your wwblogs account has been activated, {{ username }}!
