@@ -1,4 +1,5 @@
 import os
+import json
 # import traceback
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -39,7 +40,10 @@ from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
 
 User = get_user_model()
+
+
 # import hashlib
+
 
 def index(request):
     latest_articles = ArticleHandler.get_latest_published_articles(count=5)
@@ -84,6 +88,7 @@ def open_article(request, article_id):
         values['has_editor_privilege'] = a_handler.has_editor_privilege(request.user)
         secret = a_handler.get_latest_version().secret_note
         values['secret_note'] = secret
+    print("date", str(article.creation_date))
     # article_url = a_handler.get_latest_version_url()
     # if article_url is not None:
     #     values['article_url'] = article_url
@@ -123,40 +128,39 @@ def edit_article(request, article_id):
         choices += CategoryHandler.get_publish_to_choices_for_user(request.user)
         form.fields['publish_to_select'].choices = choices
     values['form'] = form
-    if request.method == "POST":
-        if form.is_valid():
-            # save
-            article.article_title = form.cleaned_data.get("title")
-            ver = a_handler.get_latest_version()
-            secret_note = form.cleaned_data.get("secret_note")
-            # secret_note = ""
-            ver.secret_note = None if secret_note == "" else secret_note
-            # result = 'is  none' if secret_note == '' else 'has something'
-            # print(result)
-            ver.save()
-            article.save()
-            content = form.cleaned_data.get("content")
-            if not a_handler.save_article_content(content):
-                form.add_error(None, "There was an error saving!")
-                logging.error(f"{edit_article.__name__} - save "
-                              f"-> ArticleHandler.save_article_content() failed to return True")
+    if request.method == "POST" and form.is_valid():
+        # save
+        article.article_title = form.cleaned_data.get("title")
+        ver = a_handler.get_latest_version()
+        secret_note = form.cleaned_data.get("secret_note")
+        # secret_note = ""
+        ver.secret_note = None if secret_note == "" else secret_note
+        # result = 'is  none' if secret_note == '' else 'has something'
+        # print(result)
+        ver.save()
+        article.save()
+        content = form.cleaned_data.get("content")
+        if not a_handler.save_article_content(content):
+            form.add_error(None, "There was an error saving!")
+            logging.error(f"{edit_article.__name__} - save "
+                          f"-> ArticleHandler.save_article_content() failed to return True")
 
-            if request.POST.get("publish"):
-                value = str(request.POST["publish_to_select"])
-                if value == "" or None:
-                    form.add_error("publish_to_select", "Please select an option to publish to")
+        if request.POST.get("publish"):
+            value = str(request.POST["publish_to_select"])
+            if value == "" or None:
+                form.add_error("publish_to_select", "Please select an option to publish to")
+            else:
+                content_type, content_id = value.split("-")[0], value.split("-")[1]
+                if content_type == "article":
+                    article = get_object_or_404(Article, article_id=content_id)
+                    print(f"Publishing to {article}")
+                    a_handler.publish_as_child_article(article)
                 else:
-                    content_type, content_id = value.split("-")[0], value.split("-")[1]
-                    if content_type == "article":
-                        article = get_object_or_404(Article, article_id=content_id)
-                        print(f"Publishing to {article}")
-                        a_handler.publish_as_child_article(article)
-                    else:
-                        cat = get_object_or_404(Category, category_id=content_id)
-                        print(f"Publishing to {cat}")
-                        a_handler.publish_article(cat)
-                # redirect so that the html refreshes
-                return redirect("wwapp:edit_article", article_id)
+                    cat = get_object_or_404(Category, category_id=content_id)
+                    print(f"Publishing to {cat}")
+                    a_handler.publish_article(cat)
+            # redirect so that the html refreshes
+            return redirect("wwapp:edit_article", article_id)
             # save first
             # code to publish
         # elif request.POST.get("draft"):
@@ -307,7 +311,6 @@ def manage_own_content(request):
         "drafted_articles": drafted_articles,
         "published_articles": published_articles,
         # passing user manage_user_content to use the same template
-        "user": request.user,
         "user_projects": CategoryHandler.get_user_projects(request.user),
     }
     return render(request, 'wwapp/manage_user_content.html', values)
@@ -390,6 +393,7 @@ def open_category(request, category_id):
 #     }
 #
 #     return render(request, 'wwapp/edit_category.html', values)
+"""
 from wwblog.settings import EMAIL_HOST_USER
 
 
@@ -412,7 +416,7 @@ def send_email_test(request):
 
     values['form'] = form
     return render(request, 'wwapp/email_test.html', values)
-
+"""
 
 # def image_upload_test(request):
 #     items = imgur.start()
@@ -468,6 +472,8 @@ def upload_test(request):
 
     return render(request, 'wwapp/upload_test.html', values)
 """
+
+
 # def upload_test2(request):
 #     values = {}
 #     if request.method == "POST":
@@ -482,17 +488,6 @@ def upload_test(request):
 #     return render(request, 'wwapp/upload_test.html', values)
 
 
-
-
-# def activate_users(request):
-#     # make user
-#     u = User.objects.get(email="giwar97105@0pppp.com")
-#     # activate
-#     User.objects.activate_user(u)
-#     return HttpResponse(request, "active")
-
-
-
 # from django.views.generic import TemplateView
 
 # @login_required()
@@ -501,10 +496,10 @@ def upload_test(request):
 
 @login_required
 def browse_own_images(request):
-    try:
-        imgur_images = ImgurHandler.get_user_images(request.user)
-    except exceptions.EmptyResultSet:
-        imgur_images = None
+    imgur_images = ImgurHandler.get_user_images(request.user)
+    i = imgur_images[0]
+    i = ImgurImage.objects.get(image_id=1)
+    # imgur_images = ImgurImage.objects.filter(image_owner_id=request.user.id)
     values = {'imgur_images': imgur_images}
     return render(request, "wwapp/browse_user_images.html", values)
 
@@ -513,8 +508,10 @@ def view_user_public_images(request, user_id: int):
     pass
     # if mode go to view all user images
 
+
 def view_all_user_images(request, user_id: int):
     pass
+
 
 @login_required
 def upload_image(request):
@@ -531,9 +528,14 @@ def upload_imgur_image(request):
 
         # if image_handler is None:
         imgur_handler = ImgurHandler()
-        status_code = imgur_handler.upload_image(image, request)
+        result = imgur_handler.upload_image(image, request)
         request.session['imgur_image_handler'] = image_handler
-        return HttpResponse(status=status_code)
+        content = {
+            "width": result.get('width'),
+            "height": result.get('height'),
+            "url": result.get('url')
+        }
+        return HttpResponse(content=json.dumps(content, indent=4), status=result.get('status'))
 
     elif request.method == "GET":
         # todo redirect user to upload page
