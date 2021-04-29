@@ -1,6 +1,7 @@
 .banner {
     background: #5E5694;
     min-height: 10vh;
+    box-shadow: .5rem .5rem 1rem .1rem #1a1a1a;
     /*padding-bottom: 5em;*/
     /*padding-left: 8em;*/
     /*width: 99%;*/
@@ -38,6 +39,11 @@ body {
     /*height: 100%;*/
 }
 
+
+.content-row {
+    min-height: 80vh;
+}
+
 footer {
     background: #333333;
     color: #888888;
@@ -46,23 +52,18 @@ footer {
     text-align: center;
 }
 
-.content-row {
-    min-height: 80vh;
-}
-
-.content {
+.content{
+    box-shadow: .5rem .5rem 1rem .1rem #1a1a1a;
     /*min-height: 85vh;*/
     background-color: #343A40;
     /*height: auto;*/
     font-family: 'WorkSans', serif;
 }
 
-
 .content .article-heading {
     margin-left: 8%;
     margin-top: 0.2em;
 }
-
 
 .content .article-container {
     width: 84%;
@@ -71,6 +72,10 @@ footer {
     margin-bottom: 1.5em;
     min-height: fit-content;
     word-wrap: break-word;
+}
+.article-container img {
+    max-width: 100%;
+    height: auto;
 }
 
 .content .article-content {
@@ -260,23 +265,9 @@ h3, h4 {
     color: #e70000;
 }
 
-/*dropzone customisation*/
-.dz-custom {
-    border: dashed !important;
-    border-color: #3c3c3c;
-    border-radius: 20px;
-    background-color: #757373;
+textarea{
+    font-family: 'WorkSans', serif;
 }
-
-.dz-custom:hover {
-    background-color: #aea2d7;
-}
-.dz-custom img{
-    background-color: red !important;
-    border-radius: 50%;
-}
-
-
 
 /*
 !*Testing *!
