@@ -1,21 +1,59 @@
+/*  ====================
+      Contents
+        1. Global variables
+        2. layout
+        3. Typography
+        4. Components
+        5. Miscellaneous
+    ==================== */
+
+
+/*  ====================
+    1. Global Variables
+    ==================== */
 :root {
-    --text: #eaeaea;
-    --accent: #5D61CB;
-    --secondary: #50a6ae;
+    /* colours */
+    /* - rgb colours are used for opacity control in the rgba() method */
+    --c-text: #eaeaea;
+    --c-text-secondary-d: #888888;
+    --c-text-secondary-l: #bababa;
+    --c-accent: #5D61CB;
+    --c-accent-l: #aeaeea;
+    --c-secondary: #50a6ae;
+
     /*--accent-secondary: #50a6ae;*/
 
-    --delete: #ba0025;
-    --save: #07a40a;
-    --edit: #006ea0;
+    --c-delete-l: #ff7878;
+    --c-delete: darkred;
+    --c-delete-d: rgba(128, 0, 0, 0.65);
+    --c-save: #07a40a;
+    --c-edit: #006ea0;
 
-    --link-text: #9CDCFE;
-    --link-: #ba0025;
+    --c-link-text: #9CDCFE;
+    --c-link: #ba0025;
 
-    /*--body-bg:;*/
-    --m-grey: #343a40;
-    --d-grey: #222222;
+    --c-grey-l: #343a40;
+    --c-grey-m: #343a40;
+    --c-grey-d: #222222;
+    --c-grey-vd: #333333;
 
+    /*shadows*/
+    /*--c-shadow-rgb: rgb(40, 40, 40);*/
+    --c-shadow: #1a1a1a;
+    /*--c-vdgrey: #222222;*/
+    /* Fonts */
+    --ff-accent: 'RobotoSlab', sans-serif;
+    --ff-body: 'WorkSans', sans-serif;
+    /* Sizes */
+    --radius-sm: 0.8rem;
+    --radius-md: 1rem;
+    --radius-lg: 2rem;
 }
+
+
+/*  ====================
+    2. Layout
+    ==================== */
 
 .banner {
     min-height: 10vh;
@@ -24,7 +62,7 @@
 
     -webkit-animation: AnimationName 10s ease infinite;
     -moz-animation: AnimationName 10s ease infinite;
-    animation: AnimationName 5s ease infinite;
+    animation: AnimationName 10s ease infinite;
 }
 
 @-webkit-keyframes AnimationName {
@@ -86,34 +124,36 @@
 
 body {
     min-height: 100vh;
-    background: #222222;
-    color: white;
-    /*font-family: "Times New Roman", serif;*/
-    /*font-family: Alta, serif;*/
+    background: var(--c-grey-d);
+    color: var(--c-text);
     font-style: normal;
-    /*height: 100%;*/
 }
-
 
 .content-row {
     min-height: 80vh;
 }
 
 footer {
-    background: #333333;
-    color: #888888;
+    background: var(--c-grey-vd);
+    color: var(--c-text-secondary-d);
     margin-top: 1vh;
     min-height: 8vh;
     text-align: center;
 }
 
-.content{
-    box-shadow: .5rem .5rem 1rem .1rem #1a1a1a;
-    /*min-height: 85vh;*/
-    background-color: #343A40;
-    /*height: auto;*/
+.content {
+    background-color: var(--c-grey-m);
     font-family: 'WorkSans', serif;
+    box-shadow: .5rem .5rem 1rem .1rem var(--c-shadow);
 }
+
+div.accountContentContainer > div.content {
+    box-shadow: none;
+}
+
+/*#loginContent.content{*/
+/*    box-shadow: none;*/
+/*}*/
 
 .content .article-heading {
     margin-left: 8%;
@@ -128,51 +168,50 @@ footer {
     min-height: fit-content;
     word-wrap: break-word;
 }
+
 .article-container img {
     max-width: 100%;
     height: auto;
 }
 
 .content .article-content {
-    /*width: 100%;*/
     min-height: fit-content;
     font-family: 'WorkSans', serif;
-
-    /*color: white;*/
-    /*background-color: #569456;*/
 }
 
 .content .article-details {
-    /*font-size: 0.7em;*/
-    color: #bababa;
-    /*line-height: 5px;*/
+    color: var(--c-text-secondary-l);
 }
 
 .content .article-date {
-    color: #bababa;
+    color: var(--c-text-secondary-l);
     font-size: .9em;
 }
 
 .content .article-author {
-    color: #bababa;
+    color: var(--c-text-secondary-l);
     line-height: 10%;
     font-size: .9em;
 }
 
 .content .article-category {
-    color: #bababa;
+    color: var(--c-text-secondary-l);
     line-height: 10%;
 }
 
 
 .content .article-secret {
-    color: #bababa;
+    color: var(--c-text-secondary-l);
     /*background-color: #5E5694;*/
     margin: 1em 0;
     /*font-size: 200px;*/
     /*font-style: italic;*/
 }
 
+
+/*  ====================
+    3. Typography
+    ==================== */
 #hidden-notes-label {
     font-weight: 500;
     font-size: 1.1em;
@@ -184,29 +223,19 @@ footer {
     /*font-size: smaller;*/
 }
 
-/*to remove asterisks from required fields on crispy forms */
-.asteriskField {
-    display: none;
-}
-
-/*remove bullets from ul elements*/
-.no-bullet {
-    list-style-type: none;
-}
-
 /*FONT CONFIGURATION*/
 html {
     /*root font size*/
+    font-family: var(--ff-body);
     font-size: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: RobotoSlab, sans-serif;
+    font-family: var(--ff-accent);
     /*font-family: RobotoSlab, serif;*/
 }
 
 h1 {
-    /*font-family: Alta, serif;*/
     font-size: 3rem;
 }
 
@@ -223,7 +252,6 @@ h4 {
 }
 
 p {
-    /*font-family: "Segoe UI", serif;*/
     font-size: 1em;
 }
 
@@ -239,13 +267,10 @@ h3, h4 {
 .banner a:link {
     color: #c4c2d4;
     padding: .1em .2em;
-    font-family: RobotoSlab, serif;
+    font-family: var(--ff-accent);
 }
 
 .banner a:visited {
-    /*color: #45426b;*/
-    /*color: #aea2d7;*/
-    /*color: #bdb6d7;*/
     color: #c4c2d4;
 }
 
@@ -263,19 +288,16 @@ h3, h4 {
     /*background-color: #67647a;*/
     /*padding-left: .3em;*/
     /*padding-right: .3em;*/
-    color: #9CDCFE;
+    color: var(--c-link-text);
 }
 
 .content a:visited {
-    color: #9CDCFE;
+    color: var(--c-link-text);
 }
 
 .content a:hover {
-    /*color: #9cdcfe;*/
-    color: white;
-    /*background-color: #3a5353;*/
+    color: var(--c-text);
     text-decoration: none;
-    /*background-color: lightgreen;*/
 }
 
 .content a:active {
@@ -287,11 +309,11 @@ h3, h4 {
     background-color: #67647a;
     padding-left: .3em;
     padding-right: .3em;
-    color: #9CDCFE;
+    color: var(--c-link-text);
 }
 
 .right-nav a:visited {
-    color: #9CDCFE;
+    color: var(--c-link-text);
 }
 
 .right-nav a:hover {
@@ -308,51 +330,56 @@ h3, h4 {
 }
 
 .delete-link {
-    color: #9CDCFE;
+    color: var(--c-link-text);
     font-weight: 500;
 }
 
 .delete-link:hover {
-    color: #ff7878;
+    color: var(--c-delete-l);
 }
 
 .delete-link:active {
-    color: #e70000;
+    color: var(--c-delete);
 }
 
-textarea{
-    font-family: 'WorkSans', serif;
+/*  ====================
+    1. Components
+    ==================== */
+
+textarea {
+    font-family: var(--ff-body);
 }
 
-textarea{
-    font-family: 'WorkSans', serif;
-}
 .dropdown-container {
-    background: var(--m-grey) !important;
-    /*background: var(--middle-grey) !important;*/
-    /*background: blue;*/
+    background: var(--c-grey-m) !important;
 }
 
 button {
     font-family: 'WorkSans', serif;
     background: blue;
-    color: var(--text);
+    color: var(--c-text);
     border: none;
     font-size: 1.1rem;
     /*background: var(--secondary);*/
 }
 
 button .save {
-    background: var(--save);
+    background: var(--c-save);
 }
 
 button .edit {
-    background: var(--edit);
+    background: var(--c-edit);
 }
 
 button .delete {
-    background: var(--delete);
+    background: var(--c-delete);
 }
+
+
+/*  ====================
+    3. Miscellaneous
+    ==================== */
+
 
 /*
 !*Testing *!
@@ -367,3 +394,13 @@ button .delete {
 .left-nav{
     background: #00b300;
 }*/
+
+/*to remove asterisks from required fields on crispy forms */
+.asteriskField {
+    display: none;
+}
+
+/*remove bullets from ul elements*/
+.no-bullet {
+    list-style-type: none;
+}
