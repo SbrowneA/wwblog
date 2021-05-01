@@ -1,0 +1,80 @@
+/*dropzone customisation*/
+.dz-custom {
+    /*border: dashed !important;*/
+    border-color: #3c3c3c;
+    border-radius: .8rem;
+    background-color: #505050;
+    height: 50vh;
+}
+
+.dz-custom:hover {
+    /*background-color: #7d72a8;*/
+    color: #aeaeea;
+    box-shadow: 0 0 .7rem .08rem #404040 inset;
+}
+
+/*.dz-custom img{
+    background-color: red !important;
+    border-radius: 50%;
+}*/
+
+.dz-message span {
+    font-size: .8em;
+    /*color: #9CDCFE;*/
+    /*position: absolute;*/
+    /*position: relative;*/
+}
+
+.popup-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    box-shadow: 0 0 1rem .3rem rgba(40, 40, 40, 0.22);
+    /*align-items: flex-start;*/
+    /*align-items: flex-start;*/
+    background: rgba(40, 40, 40, 0.22);
+}
+
+.popup {
+    position: relative;
+    background: darkred;
+    width: 30vw;
+    height: 55vh;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 3;
+    border-radius: 1rem;
+    box-shadow: 0 0 1rem .3rem #1a1a1a;
+}
+
+.hide-popup {
+    visibility: hidden;
+}
+
+.popup button {
+    background: darkred;
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 1rem;
+    border: none;
+    /*position: absolute;*/
+    /*bottom: 50vh;*/
+    /*left: -50vh;*/
+    height: 5vh;
+    width: 100%;
+}
+
+.popup button:hover {
+    background: rgba(128, 0, 0, 0.65);
+    color: rgba(255, 255, 255, 0.80);
+}

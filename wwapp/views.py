@@ -1,4 +1,5 @@
 import os
+import json
 # import traceback
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -527,9 +528,14 @@ def upload_imgur_image(request):
 
         # if image_handler is None:
         imgur_handler = ImgurHandler()
-        status_code = imgur_handler.upload_image(image, request)
+        result = imgur_handler.upload_image(image, request)
         request.session['imgur_image_handler'] = image_handler
-        return HttpResponse(status=status_code)
+        content = {
+            "width": result.get('width'),
+            "height": result.get('height'),
+            "url": result.get('url')
+        }
+        return HttpResponse(content=json.dumps(content, indent=4), status=result.get('status'))
 
     elif request.method == "GET":
         # todo redirect user to upload page
