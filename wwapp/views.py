@@ -545,16 +545,40 @@ def upload_imgur_image(request):
 # @image_creator_or_moderator #  TODO
 @login_required
 def delete_image(request, image_id):
-    if request.method == "DELETE":
+    # if request.method == "POST":
+    # try other image type instead (s3Image)
+    # return HttpResponse(status=status_code)
+    # if image_handler is None:
+    if request.method == "GET":
         try:
             image = ImgurImage.objects.get(image_id=image_id)
             status_code = ImgurHandler().delete_image(image, request)
+            if status_code == 202:
+                return redirect("wwapp:browse_own_images")
         except exceptions.ObjectDoesNotExist:
             status_code = 404
-        # try other image type instead (s3Image)
         return HttpResponse(status=status_code)
-        # if image_handler is None:
 
-    elif request.method == "GET":
-        # todo redirect user to image edit page
-        return HttpResponse(status=403)
+# @image_creator_or_moderator #  TODO
+@login_required
+def edit_image(request, image_id):
+    status = 200
+    image = get_object_or_404(ImgurImage, image_id=image_id)
+    form = forms.ImageEdit(request.POST or None, initial={
+        "image_name": image.image_name,
+        "description": image.description,
+        "public": image.public,
+    })
+    context = {
+        "form": form,
+        "image": image,
+    }
+
+    if request.method == "POST":
+        if form.is_valid():
+            image.image_name = form.cleaned_data.get('image_name')
+            image.description = form.cleaned_data.get('description')
+            image.public = form.cleaned_data.get('public')
+            image.save()
+            status = 202
+    return render(request, "wwapp/edit_image.html", context=context, status=status)

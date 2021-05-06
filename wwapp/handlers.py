@@ -905,9 +905,11 @@ class ImgurHandler(ImageHandler):
     @time_task
     def delete_image(self, image: ImgurImage, request) -> int:
         try:
-            self.imgur_client.delete_image(image.delete_hash)
-            image.delete()
-            return 200
+            if self.imgur_client.delete_image(image.delete_hash):
+                image.delete()
+                return 202
+            else:
+                return 500
         except ImgurClientRateLimitError:
             return 429
         except ImgurClientError as e:

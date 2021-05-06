@@ -28,9 +28,9 @@ urlpatterns = [
     # path('test', views.image_upload_test, name='upload_test'),
     # path('moderators/activate', views.activate_users, name="activate"),
     # path('moderators/dashboard', views.activate_users, name="activate"),
-    # path('test', views.send_email_test, name='email_test'),
-    path('image/imgur-upload', views.upload_image, name='upload_image'),
-    # path('image/<int:image_id>/delete', views.delete_image, name='delete_image'),
+    path('image/upload/', views.upload_image, name='upload_image'),
+    path('image/<int:image_id>/edit/', views.edit_image, name='edit_image'),
+    path('image/<int:image_id>/delete/', views.delete_image, name='delete_image'),
     path('upload-to-imgur', views.upload_imgur_image, name="upload_to_imgur"),
 ]
 if settings.DEBUG:
