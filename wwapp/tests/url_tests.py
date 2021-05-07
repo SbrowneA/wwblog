@@ -1,15 +1,15 @@
 from django.test import TestCase
 from wwapp.models import Article
-# from .model_tests import setup_authors,
+# from .model_tests import setup_members,
 from wwapp.urls import *
-from .setups import setup_authors, setup_superuser
+from .setups import setup_members, setup_superuser
 from unittest import skip
 
 
 class URLTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.authors = setup_authors()
+        cls.authors = setup_members()
         cls.superuser = setup_superuser()
 
     @skip

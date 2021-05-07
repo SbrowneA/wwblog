@@ -1,0 +1,30 @@
+{% extends 'wwapp/base.html' %}
+{% block title %} test image upload {% endblock %}
+{% block head %}
+    {% load static %}
+{% endblock %}
+
+{% block content %}
+    <h3>Your Uploads</h3>
+    <div class="images-container">
+        {% for image in imgur_images %}
+            <div class="image-container"
+                 style="background: url({{ image.thumbnail_url_b }}); background-repeat: no-repeat;
+                         background-size: cover;">
+                <div class="image-info-container">
+                    <a href="{{ image.url }}" target="_blank">View</a>
+                    <a href="{% url "wwapp:edit_image" image.image_id %}"> Edit</a>
+                    <span class="image-name">{{ image.image_name }}</span>
+                    {% if image.description %}
+                        <span class="image-description">{{ image.description }}</span>
+                        {#                    <span class="image-description"></span>#}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block right_nav %}
+    <h4><a href="{% url 'wwapp:manage_own_content' %}">My Posts & Projects</a></h4>
+{% endblock %}

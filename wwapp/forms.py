@@ -69,9 +69,12 @@ class ArticleEdit(forms.Form):
                               widget=TinyMCE(attrs={'cols': 80, 'rows': 30,
                                                     'class': 'tiny-mce-editor', 'id': 'tiny-mce'}))
 
-    # def clean:
-    #
-    #     if "publish_article" in form.data:
+
+class ImageEdit(forms.Form):
+    image_name = forms.CharField(required=True, label='Image Name', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Image Name'}))
+    description = forms.CharField(required=False, label='Description', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A short description of the image'}))
+    # upload_date = forms.CharField(label='UploadDate', widget=forms.SplitDateTimeWidget(attrs={'class': 'form-control'}))
+    public = forms.Field(required=False, label='Public', widget=forms.CheckboxInput(attrs={'class': ''}))
 
 
 class TestEmail(forms.Form):

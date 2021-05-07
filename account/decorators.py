@@ -4,8 +4,8 @@ from django.http import HttpResponseForbidden
 from wwapp.models import (Article, Category, )
 from wwapp.handlers import ArticleHandler, CategoryHandler
 # from django.core import exceptions
-from .role_validator import (is_moderator_or_admin, _get_user_groups,
-                             _get_max_role_name, role_hierarchy)
+from .role_validation import (is_moderator_or_admin, get_user_groups,
+                              get_max_role_name, role_hierarchy)
 
 """AUTHENTICATION DECORATORS"""
 
@@ -59,9 +59,9 @@ def active_user(view_func):
 def minimum_role_required(min_role_name):
     def decorator(view_func):
         def wrapper_func(request, *args, **kwargs):
-            groups = _get_user_groups(request.user)
-            if groups is not None:
-                max_role_name = _get_max_role_name(groups)
+            groups = get_user_groups(request.user)
+            if groups:
+                max_role_name = get_max_role_name(groups)
                 if role_hierarchy.index(max_role_name) <= role_hierarchy.index(min_role_name):
                     return view_func(request, *args, **kwargs)
             return HttpResponseForbidden()

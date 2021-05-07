@@ -14,6 +14,12 @@ urlpatterns = [
     path('register/success/', views.register_success, name='register_success'),
     path('unverified/', views.unverified_user, name='unverified_user'),
 
+    path('dashboard/', views.moderator_dashboard, name='moderator_dashboard'),
+    path('dashboard/user_roles', views.manage_users, name='manage_users'),
+    # path('dashboard/activate/<int:user_id>', views.activate_user, name='activate_user'),
+    path('user_roles/', views.unverified_user, name='verify_users'),
+
+
     path('change-password/', views.change_password, name='change_password'),
 
     path('password_reset/',

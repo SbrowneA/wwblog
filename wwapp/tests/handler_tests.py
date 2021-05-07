@@ -7,7 +7,7 @@ from wwapp.models import (Category, CategoryItem,
                           Article)
 from wwapp.handlers import (ArticleHandler, CategoryHandler, _CategoryItemHandler)
 from django.contrib.auth import get_user_model
-from .setups import setup_authors, setup_superuser, get_micro_time
+from .setups import setup_members, setup_superuser, get_micro_time
 
 User = get_user_model()
 
@@ -19,7 +19,7 @@ class CategoryHandlerTests(TestCase):
     def setUpTestData(cls):
         print(f"\n{cls.__name__}Setting up test data")
         # create users
-        cls.authors = setup_authors()
+        cls.authors = setup_members()
         # create project
         cls.prj_name = f"main_test_proj-{get_micro_time()}"
         cls.prj = Category(category_creator=cls.authors[0], category_name=cls.prj_name)
@@ -359,7 +359,7 @@ class ArticleHandlerTests(TestCase):
     def setUpTestData(cls):
         print(f"\n{cls.__name__}: Setup Test Data")
         # super().setUpTestData()
-        cls.authors = setup_authors()
+        cls.authors = setup_members()
 
         cls.main_article = Article.objects.create(author=cls.authors[0],
                                                   article_title="main-article")
