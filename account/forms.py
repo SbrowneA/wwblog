@@ -113,3 +113,4 @@ def clean_password2(cleaned_data):
     if password1 != password2:
         raise forms.ValidationError("Passwords do not match")
     return password2
+
