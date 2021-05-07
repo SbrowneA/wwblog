@@ -15,11 +15,13 @@
     /* colours */
     /* - rgb colours are used for opacity control in the rgba() method */
     --c-text: #eaeaea;
+    --c-text-rgb: 234, 234, 234;
     --c-text-secondary-d: #888888;
     --c-text-secondary-l: #bababa;
     --c-accent: #5D61CB;
+    --c-accent-rgb: 93, 97, 203;
     --c-accent-l: #aeaeea;
-    --c-secondary: #50a6ae;
+    /*--c-login-btn: #50a6ae;*/
 
     /*--accent-secondary: #50a6ae;*/
 
@@ -117,10 +119,6 @@
 /*#logout-btn {*/
 /*    background: #59b59b;*/
 /*}*/
-
-#login-btn, #logout-btn {
-
-}
 
 body {
     min-height: 100vh;
@@ -263,31 +261,68 @@ h3, h4 {
     font-weight: 600;
 }
 
+/*LINKS*/
+a {
+    transition: .2s;
+    position: relative;
+}
+
+a:link {
+    text-decoration: none;
+}
+
+a:focus {
+    outline: none;
+}
+
 /*BANNER LINKS*/
+
 .banner a:link {
-    color: #c4c2d4;
+    color: var(--c-text);
     padding: .1em .2em;
     font-family: var(--ff-accent);
 }
 
 .banner a:visited {
-    color: #c4c2d4;
+    color: var(--c-text);
 }
 
-.banner a:hover {
-    background-color: #aea2d7;
-    color: #2c264a;
-    font-style: normal;
-    text-decoration: none;
+.banner__nav-links a::after {
+    background: var(--c-accent);
+    height: .1em;
+    right: 0;
+    left: 0;
+    width: 0;
+    margin: auto;
+    transition: .2s
 }
 
+.banner__nav-links a:hover::after,
+.banner__nav-links a:focus::after {
+    background: var(--c-text);
+    width: 80%;
+}
+
+.dropdown-menu a::before {
+    position: absolute;
+    background: var(--c-text);
+    height: 0;
+    left: -.2em;
+    bottom: 0;
+    top: 0;
+    width: .1em;
+    margin: auto;
+    transition: .4s
+}
+
+.dropdown-menu a:hover::before,
+.dropdown-menu a:focus::before {
+    height: 90%;
+}
 
 /*CONTENT LINKS */
 .content a:link {
     font-weight: 500;
-    /*background-color: #67647a;*/
-    /*padding-left: .3em;*/
-    /*padding-right: .3em;*/
     color: var(--c-link-text);
 }
 
@@ -295,38 +330,8 @@ h3, h4 {
     color: var(--c-link-text);
 }
 
-.content a:hover {
+.content a:focus, .content a:hover {
     color: var(--c-text);
-    text-decoration: none;
-}
-
-.content a:active {
-}
-
-
-/*RIGHT NAV LINKS*/
-.right-nav a:link {
-    background-color: #67647a;
-    padding-left: .3em;
-    padding-right: .3em;
-    color: var(--c-link-text);
-}
-
-.right-nav a:visited {
-    color: var(--c-link-text);
-}
-
-.right-nav a:hover {
-    /*color: #9cdcfe;*/
-    background-color: #42404f;
-    /*background-color: #5d8181;*/
-    text-underline: none;
-    text-decoration: none;
-    /*background-color: lightgreen;*/
-}
-
-.right-nav a:active {
-    background-color: #927c83;
 }
 
 .delete-link {
@@ -340,6 +345,50 @@ h3, h4 {
 
 .delete-link:active {
     color: var(--c-delete);
+}
+
+/*RIGHT NAV LINKS*/
+.sticky-nav {
+    position: sticky;
+    top: 1em;
+    height: fit-content;
+}
+
+a::after, a::before {
+    position: absolute;
+    display: block;
+    content: "";
+}
+
+.right-nav a {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--c-link-text);
+    margin-bottom: .5em;
+}
+
+.right-nav a:visited {
+    color: var(--c-link-text);
+}
+
+.right-nav a:active {
+    /*background-color: #927c83;*/
+}
+
+.right-nav a::after {
+    content: "";
+    position: absolute;
+    background: var(--c-link-text);
+    height: .15em;
+    left: 0;
+    bottom: -0.2em;
+    width: 0;
+    margin: auto;
+    transition: .4s;
+}
+
+.right-nav a:hover::after, .right-nav a:focus::after {
+    width: 90%;
 }
 
 /*  ====================
@@ -356,11 +405,30 @@ textarea {
 
 button {
     font-family: 'WorkSans', serif;
-    background: blue;
+    background: var(--c-accent);
+    padding: .4em .6em;
+    border-radius: .6em;
     color: var(--c-text);
     border: none;
     font-size: 1.1rem;
+    font-weight: 500;
+    box-shadow: 0 0 .5em .2em rgba(47, 47, 47, 0.18);
     /*background: var(--secondary);*/
+}
+
+button:hover {
+    background: rgba(var(--c-accent-rgb), .9);
+    color: rgba(var(--c-text-rgb), 1);
+}
+
+button:active {
+    box-shadow: inset 0 0 .5em .2em rgba(47, 47, 47, 0.18);
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 .2em var(--c-accent);
+    text-decoration: underline;
 }
 
 button .save {
@@ -373,6 +441,17 @@ button .edit {
 
 button .delete {
     background: var(--c-delete);
+}
+
+#login-btn, #logout-btn {
+    font-weight: 600;
+    background: var(--c-text);
+    color: var(--c-accent);
+}
+
+#login-btn:hover, #logout-btn:hover {
+    background: rgba(var(--c-text-rgb), .9);
+    color: rgba(var(--c-accent-rgb), 1);
 }
 
 
