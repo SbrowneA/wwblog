@@ -9,7 +9,7 @@
 
 {% block right_nav %}
     {% if request.user.is_authenticated %}
-        <h2>Hello, {{ request.user.username }}</h2>
+        <h3>Hello, {{ request.user.username }}</h3>
         <h4><a href="{% url 'wwapp:manage_own_content' %}">My Posts & Projects</a></h4>
         <h4><a href="{% url 'wwapp:new_article' %}">New Post</a></h4>
         <h4><a href="{% url 'wwapp:new_project' %}">New Project</a></h4>
@@ -17,27 +17,51 @@
 {% endblock %}
 
 {% block content %}
-    <h3>Latest Posts</h3>
+    <h2>Latest Posts</h2>
+    {#    - <a href="">browse all</a>#}
     {% if latest_articles_list %}
-        <ul id="latest-articles-list">
+        <div class="card-grid">
             {% for article in latest_articles_list %}
-                <li>
-                    <a href="{% url 'wwapp:open_article' article.article_id %}">{{ article.article_title }}</a>
-                </li>
+                <div class="card" style="--order={{ forloop.counter0 }}">
+                    <div class="card__bg"></div>
+                    <div class="card__fg">
+                        <a class="card__fg__filler" href="{% url 'wwapp:open_article' article.article_id %}">
+                        </a>
+                        <div class="card__fg__info">
+                            <a href="{% url 'wwapp:open_article' article.article_id %}">
+                                <span class="card__date">{{ article.pub_date | date:"d b" }}</span>
+                                <span class="card__title"><h5>{{ article.article_title }}</h5></span>
+                                <span class="card__author">{{ article.author.username }}</span>
+                            </a>
+                            <span class="card__topic"> - <a class="card__topic"
+                                                            href="{% url 'wwapp:open_category' article.category.category_id %}">
+                            {{ article.category.category_name }}</a>
+                            </span>
+
+                        </div>
+                    </div>
+                </div>
+
             {% endfor %}
-        </ul>
+        </div>
     {% else %}
-        <p>There are no published articles.</p>
+        <p>There are no published articles yet.</p>
     {% endif %}
-    <h3>Browse Projects</h3>
+    <br/>
+    <h2>Browse Projects</h2>
     {% if active_projects %}
-        <ul id="active-projects-list">
-            {% for cat in active_projects %}
-                <li>
-                    <a href="{% url 'wwapp:open_category' cat.category_id %}">{{ cat.category_name }}</a> - {{ cat.category_creator.username     }}
-                </li>
-            {% endfor %}
-        </ul>
+        {% for cat in active_projects %}
+            <h5><a href="{% url 'wwapp:open_category' cat.category_id %}">{{ cat.category_name }}</a>
+                - {{ cat.category_creator.username }}</h5>
+            {% if cat.category_description %}
+                <p>&nbsp;{{ cat.category_description }}</p>
+            {% endif %}
+            {#                {% if cat.child_categories %}#}
+            {#                    {% for child_cat in cat.child_categories %}#}
+            {#                        >&nbsp;<a href="{% url 'wwapp:open_category' child_cat.category_id %}">{{ child_cat.category_name }}</a>- {{ child_cat.category_creator.username }}<br/>#}
+            {#                    {% endfor %}#}
+            {#                {%  endif%}#}
+        {% endfor %}
     {% else %}
         <p>There are no projects.</p>
     {% endif %}

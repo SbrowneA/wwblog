@@ -21,6 +21,9 @@
     --c-accent: #5D61CB;
     --c-accent-rgb: 93, 97, 203;
     --c-accent-l: #aeaeea;
+
+    --c-banner-gradient1: #5D61CB;
+    --c-banner-gradient2: #5D73CB;
     /*--c-login-btn: #50a6ae;*/
 
     /*--accent-secondary: #50a6ae;*/
@@ -52,14 +55,13 @@
     --radius-lg: 2rem;
 }
 
-
 /*  ====================
     2. Layout
     ==================== */
 
 .banner {
     min-height: 10vh;
-    background: linear-gradient(270deg, #5D61CB, #5D73CB);
+    background: linear-gradient(270deg, var(--c-banner-gradient1), var(--c-banner-gradient2));
     background-size: 400% 400%;
 
     -webkit-animation: AnimationName 10s ease infinite;
@@ -453,10 +455,113 @@ button .delete {
     color: rgba(var(--c-accent-rgb), 1);
 }
 
+/* ARTICLE/POST CARD */
+.card, .card__bg, .card__fg {
+    /*border-radius: .5rem;*/
+    /*border-radius: 1rem;*/
+    --corner-size: 1rem;
+}
 
-/*  ====================
-    3. Miscellaneous
-    ==================== */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 32%);
+    grid-template-rows: 1fr;
+    grid-row-gap: 1rem;
+    grid-column-gap: 2%;
+    width: 100%;
+}
+
+.card {
+    --card-height: 15rem;
+    border-radius: var(--corner-size);
+    width: 100%;
+    height: var(--card-height);
+    /*box-shadow: 0 0 #1a1a1a;*/
+    border: none;
+}
+
+
+.card__bg {
+    border-radius: var(--corner-size);
+    /*background-image: url("https://i.imgur.com/Gct8vXT.jpeg");*/
+    background: linear-gradient(45deg, var(--c-banner-gradient1), #7799fd);
+    position: absolute;
+    inset: 0;
+    background-size: 150%;
+    border: none;
+}
+
+.card__fg {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 1fr max-content;
+    height: inherit;
+    --fg-bg: var(--c-grey-d);
+
+}
+
+.card__fg__info {
+    border-radius: 0 0 var(--corner-size) var(--corner-size);
+    /*width: 100%;*/
+    /*background: rgba(255, 255, 255, 0.09);*/
+    background: var(--fg-bg);
+    z-index: 1;
+    padding: .8em;
+}
+
+.card__fg__filler {
+}
+
+.card:hover .card__fg {
+    --fg-bg: #1a1a1a;
+    border: none;
+}
+
+.card span {
+    color: rgba(var(--c-text-rgb), 1);
+    border: none;
+}
+
+.card:hover span {
+    /*color: rgba(var(--c-text-rgb), 0.8);*/
+    border: none;
+}
+
+.card__title {
+    display: block;
+    font-weight: bold;
+}
+
+.card__date {
+    display: block;
+}
+
+.card__fg__info a:link.card__topic {
+    display: inline-block;
+    color: var(--c-link-text);
+}
+.card__fg__info a:hover.card__topic {
+    display: inline-block;
+    color: var(--c-accent-l);
+}
+
+@media (max-width: 1400px) {
+    .card-grid {
+        grid-template-columns: repeat(2, 49%);
+        grid-row-gap: 1rem;
+        grid-column-gap: 2%;
+        grid-template-rows: 1fr;
+    }
+}
+
+@media (max-width: 600px ) {
+    .card-grid {
+        grid-template-columns: 100%;
+        grid-row-gap: 1rem;
+        grid-column-gap: 0;
+        grid-template-rows: 1fr;
+    }
+}
 
 
 /*browse own image page*/
@@ -514,6 +619,10 @@ button .delete {
     margin-left: auto;
     padding-bottom: 1rem;
 }
+
+/*  ====================
+    3. Miscellaneous
+    ==================== */
 
 
 /*
