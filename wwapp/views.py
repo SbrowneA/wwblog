@@ -43,7 +43,7 @@ User = get_user_model()
 
 
 def index(request):
-    latest_articles = ArticleHandler.get_latest_published_articles(count=5)
+    latest_articles = ArticleHandler.get_latest_published_articles(count=6)
     projects = CategoryHandler.get_all_projects()
     values = {
         "latest_articles_list": latest_articles,

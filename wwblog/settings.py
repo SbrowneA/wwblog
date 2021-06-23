@@ -24,8 +24,8 @@ SECRET_KEY = os.environ['WWBLOG_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["wwblogs.herokuapp.com", "wwblog-test.herokuapp.com", "127.0.0.1"]
-ADMINS = [("Admin", "wwblog.manage@gmail.com"), ]
+ALLOWED_HOSTS = ["127.0.0.1", os.environ.get("ALLOWED_HOST")]
+ADMINS = [("Admin", os.environ.get("ADMIN_EMAIL")), ]
 # Application definition
 
 INSTALLED_APPS = [
@@ -93,6 +93,7 @@ WSGI_APPLICATION = 'wwblog.wsgi.application'
 #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
+
 
 DATABASES = {
     'default': {
@@ -188,7 +189,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = os.environ['EMAIL_HOST_USER']
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_KEY']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 TINYMCE_DEFAULT_CONFIG = {
     "min-height": "1000px",
