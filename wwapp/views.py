@@ -46,7 +46,7 @@ User = get_user_model()
 
 
 def index(request):
-    latest_articles = ArticleHandler.get_latest_published_articles(count=5)
+    latest_articles = ArticleHandler.get_latest_published_articles(count=6)
     projects = CategoryHandler.get_all_projects()
     # site = get_current_site(request)
     # print(f"SITE DATA - Site:{site} - site.domain{site.domain}")

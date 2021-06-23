@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db import models, IntegrityError
 # from django.contrib.auth import get_user_model
 from django.conf import settings
+from typing import Optional
 
 # get the auth user_model and assign it
 User = settings.AUTH_USER_MODEL
@@ -16,6 +17,7 @@ class Category(models.Model):
     category_name = models.CharField(unique=True, max_length=45)
     category_creator = models.ForeignKey(User, on_delete=models.PROTECT)
     category_description = models.CharField(null=True, max_length=300)
+
     # creation_date = models.DateTimeField(auto_now_add=True)
 
     class CategoryType(models.TextChoices):
@@ -32,6 +34,54 @@ class Category(models.Model):
             models.Index(fields=['category_type', 'category_name']),
             models.Index(fields=['category_name']),
         ]
+
+    @property
+    def __child_assignations(self) -> []:
+        try:
+            """gets all the child assignations ordered by position"""
+            # todo test if > 0 check is required,
+            #  it shouldn't be but models have a mind of their own
+            li = CategoryItemAssignation.objects.filter(
+                parent_category_id=self.category_id).order_by('position')
+            if len(li) > 0:
+                return li
+            raise exceptions.EmptyResultSet()
+        except exceptions.EmptyResultSet:
+            raise exceptions.EmptyResultSet()
+
+    @property
+    def _child_items(self) -> []:
+        try:
+            assignations = self.__child_assignations
+            items = []
+            for a in assignations:
+                item = CategoryItem.objects.get(item_id=a.item_id)
+                items.append(item)
+            return items
+        except (exceptions.ObjectDoesNotExist, exceptions.EmptyResultSet):
+            return None
+
+    @property
+    def child_articles(self):
+        items = self._child_items
+        sub_cats = []
+        if items is not None:
+            for i in items:
+                if i.item_category_id is not None:
+                    sub_cat = Category.objects.get(category_id=i.item_category_id)
+                    sub_cats.append(sub_cat)
+        return sub_cats
+
+    @property
+    def child_categories(self):
+        items = self._child_items
+        sub_cats = []
+        if items is not None:
+            for i in items:
+                if i.item_category_id is not None:
+                    sub_cat = Category.objects.get(category_id=i.item_category_id)
+                    sub_cats.append(sub_cat)
+        return sub_cats
 
     # def is_project(self):
     #     return self.category_type == self.CategoryType.PROJECT
@@ -103,6 +153,22 @@ class Article(models.Model):
     # can be used instead auto_now_add = True,
     """
 
+    @property
+    def category(self) -> Optional[Category]:
+        try:
+            item = CategoryItem.objects.get(item_article_id=self.category_item.item_article_id)
+            return item.assignation.parent_category
+        except exceptions.ObjectDoesNotExist:
+            pass
+        return None
+
+    @property
+    def category_item(self):
+        try:
+            return CategoryItem.objects.get(item_article_id=self.article_id)
+        except exceptions.ObjectDoesNotExist:
+            return None
+
     class Meta:
         indexes = [
             models.Index(fields=['article_title']),
@@ -156,6 +222,7 @@ class ArticleVersion(models.Model):
     version = models.IntegerField(default=1, null=False)
     article = models.ForeignKey(Article, null=False, blank=False, on_delete=models.CASCADE)
     secret_note = models.TextField(null=True, blank=True)
+
     # secret_notes = models.BaseEncryptedField(null=True, blank=True)
 
     class Meta:
@@ -190,6 +257,24 @@ class CategoryItem(models.Model):
     item_id = models.AutoField(primary_key=True)
     item_article = models.OneToOneField(Article, on_delete=models.CASCADE, null=True, blank=True)
     item_category = models.OneToOneField(Category, on_delete=models.CASCADE, null=True, blank=True)
+
+    @property
+    def assignation(self):
+        try:
+            return CategoryItemAssignation.objects.get(item_id=self.item_id)
+        except exceptions.ObjectDoesNotExist:
+            raise exceptions.ObjectDoesNotExist
+        # TODO change to return none instead and test
+        # return None
+
+    @property
+    def parent_category(self):
+        # def parent_category(self) -> Optional[Category]:
+        try:
+            Category.objects.get(category_id=self.assignation.parent_category_id)
+        except exceptions.ObjectDoesNotExist:
+            raise exceptions.ObjectDoesNotExist
+        # return None
 
     def __str__(self):
         if self.item_article_id is not None:
