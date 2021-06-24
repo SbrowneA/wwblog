@@ -3,7 +3,7 @@ boto3== 1.17.54
 certifi==2020.12.5
 chardet==4.0.0
 coverage==5.5
-Django==3.2
+Django>=3.2.4
 django-crispy-forms==1.11.2
 git+https://github.com/SbrowneA/django-tinymce.git@master#egg=django-tinymce
 django-storages==1.11.1
