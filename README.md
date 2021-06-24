@@ -3,7 +3,7 @@
 wwblog is a blog web-app built on Django. It implements a number of open-source libraries/apps and free services to
 operate.
 
-### [Check out the live site](https://wwblsogs.herokuapp.com/)
+#### [Check out the live site](https://wwblsogs.herokuapp.com/)
 
 <br/>
 
@@ -24,7 +24,7 @@ This app includes essential account management functionality including:
 - password reset - *via email if have forgotten their password*
 - password change - *if they are able to login*
 
-  ##### *When a new user registers, their account will need to be activated by a moderator via the moderator dashboard or a superuser via the admin dashboard.
+*When a new user registers, their account will need to be activated by a moderator via the moderator dashboard or a superuser via the admin dashboard.
 
 ## Applications & Third Party Implementations
 
@@ -61,45 +61,44 @@ e.g. `SETTINGS_NAME = os.environ['ENV_VARIABLE_NAME']`)
 
 see: [How To Set Environment Variables](https://www.twilio.com/blog/2017/01/how-to-set-environment-variables.html)
 
-#### REQUIRED
-
-- django
+### Required
+- django:
     - `WWBLOG_SECRET_KEY`
 
-- AWS:
+- AWS *(not required for local deployment of **development** branch)*:
     - `AWS_STORAGE_BUCKET_NAME`
     - `AWS_ACCESS_KEY_ID`
-    - `AWS_SECRET_ACCESS_KEY`
-- postgreSQL DB
+    - `AWS_SECRET_ACCESS_KEY` 
+- postgreSQL DB *(not required for local deployment of **development** branch)*:
     - `DATABASE_HOST`
     - `DATABASE_NAME`
     - `DATABASE_PORT`
     - `DATABASE_USER`
     - `DATABASE_PASSWORD`
-- imgur
+- imgur:
     - `IMGUR_CLIENT_ID`
     - `IMGUR_REFRESH_TOKEN`
-- Gmail
+- Gmail:
     - `EMAIL_HOST_USER`
     - `EMAIL_HOST_PASSWORD`
 
 ### Optional
-- `ALLOWED_HOST` - domain of your host site (e.g. "`my-site.com`")
-- `ADMIN_EMAIL`
-    ##### used for the `ADMINS` setting. The app will email this account using the `EMAIL_HOST_USER` with a stack trace similar to debug if the site crashes.
+- `ALLOWED_HOST` - domain of the host site, not required locally (e.g., "`my-site.com`")
+- `ADMIN_EMAIL` - used for the `ADMINS` setting. The app will email this account using the `EMAIL_HOST_USER` with a stack trace similar to debug if the site crashes.
+  [see more](https://docs.djangoproject.com/en/3.2/ref/settings/#admins)
+  
+  Currently, it is only configured for one email address to receive emails, but feel free to fork this repo to add however many you want.
 
 # Getting Credentials
 
 ## Gmail
-
-##### - you will need an Gmail account to complete these steps
+*you will need a Gmail account to complete these steps*
 
 wwblog uses gmail as its email service. Follow the steps in this article to get
 your `EMAIL_HOST_PASSWORD`: [Create App-Specific Passwords in Gmail](https://www.lifewire.com/get-a-password-to-access-gmail-by-pop-imap-2-1171882)
 
 ## Imgur API Client App
-
-##### - you will need an Imgur account to complete these steps
+*you will need an Imgur account to complete these steps*
 
 1. login to Imgur and [Register An Imgur client app](https://api.imgur.com/oauth2/addclient)
 2. Enter the required details select *"OAuth 2 authorization **without callback** URL"*
@@ -109,14 +108,14 @@ your `EMAIL_HOST_PASSWORD`: [Create App-Specific Passwords in Gmail](https://www
 4. You will now need a refresh token for you account. Visit the following link and log in to authorize your imgur client
    app:
 
-   `https://api.imgur.com/oauth2/authorize?client_id={YOUR_CLIENT_ID}&response_type=token`
+   `https://api.imgur.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&response_type=token`
 
 5. Wait to be redirected and copy the `refresh_token` value from the redirect url.
 
 ## AWS Bucket
-
+*you will need an AWS account to complete these steps*
 1. Create an AWS account and create a new S3 bucket
-    - make sure the public is public - since the static files will need to be readable by all users; the user posts will
+    - make sure the bucket is public - since the static files will need to be readable by all users; the user posts will
       be static, however.
 2. Use [this config](https://gist.github.com/SbrowneA/c55ca9e6b52a7358f7cce62be195ce29) to set the bucket's CORS
    configuration
@@ -125,13 +124,12 @@ your `EMAIL_HOST_PASSWORD`: [Create App-Specific Passwords in Gmail](https://www
 4. Create and new IAM user:
     1. Enable **programmatic access**
     2. Add this user to the IAM group previously created.
-    3. In a secure place, save the new Access Key ID - `AWS_ACCESS_KEY_ID`, and Secret Access Key
-       - `AWS_SECRET_ACCESS_KEY`.
+    3. In a secure place, save the new Access Key ID - `AWS_ACCESS_KEY_ID`, and Secret Access Key - `AWS_SECRET_ACCESS_KEY`.
 
 # Local Setup Steps
 
+   *The development branch is configured to run locally without needing to setup an external host server or database.*
 1. using your preferred git tool checkout the `development` branch.
-   ##### - the development branch is configured to run locally without needing to setup an external host server or database.
 
 2. make sure you have add the **Required Credentials** to your environment variables:
 
@@ -156,23 +154,18 @@ your `EMAIL_HOST_PASSWORD`: [Create App-Specific Passwords in Gmail](https://www
 7. Run `coverage run --omit='*/venv/*' manage.py test` and make sure all tests pass
 8. Create a superuser with the `manage.py createsuperuser` command
 
-9. in `settings.py` make sure the following settings are configured correctly:
-    - `ADMINS`: The name and email of who will receive crash report emails containing traceback details, once
-      deployed. [see more](https://docs.djangoproject.com/en/3.2/ref/settings/#admins)
-      ##### currently, it is only configured for one email address to receive emails, but feel free to frok this repo to add however many you want
-    - `ALLOWED_HOSTS`: To run locally, only `127.0.0.1` is required
+9. run the `manage.py runserver` command to start up the server
 
-10. run the `manage.py runserver` command to start up the server
-
-11. login to the admin dashboard (`/admin` subdirectory), create the following groups:
+10. login to the admin dashboard (`/admin` subdirectory), create the following groups:
     - admin - *required*
     - moderator - *required*
     - member - *required*
     - suspended - *not yet implemented*
     - banned - *not yet implemented*
-      This is required because when a user registers they are added to the *member* group automatically.
+    
+    This step is required because when a user registers they are added to the *member* group automatically.
 
-    You're all set to go!
+You're all set to go!
 
 # Heroku Deployment
 
@@ -191,7 +184,7 @@ Alternatively, Localy setup Heroku CLI and run `heroku config:set DISABLE_COLLEC
 6. Deploy the app to Heroku from the `main` branch in the repository.
 7. Once deployed, a new PostgreSQL DB should attached be in the resources tab. Copy the credentials in to the heroku application's configuration in settings.
 8. From a local instance, copy the DB credentials into environment variables and setup the database by first running `makemigrations` followed by `migrate` 
-9. go through steps 8 and 11 of ***Local Setup Steps*** to complete deployment
+9. go through steps 8 *and* 10 of ***Local Setup Steps*** to complete deployment
 
 
 # Troubleshooting
@@ -199,8 +192,13 @@ Alternatively, Localy setup Heroku CLI and run `heroku config:set DISABLE_COLLEC
 - make sure `DEBUG = false` on the main branch
 - make sure `ALLOWED_HOSTS` includes the applications domain
 - make sure the domain has been added to to TinyMCE allowed domains
+  
+## Live Site: Bad Request (400)
+- in `settings.py`, make sure the `ALLOWED_HOSTS` setting is correct. 
+  To run locally, only `127.0.0.1` is required; but to run on the  Heroku server, the domain needs to be specified. See
+  ***Required Credentials***.
 
-## Static files not loading
+## Live Site: Static Files Not Loading/Forbidden (403)
 - make sure the `static/` object in your s3 bucket is public
 
 ## Access Denied
