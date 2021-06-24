@@ -861,13 +861,12 @@ class ImageHandler(ABC):
 
 class ImgurHandler(ImageHandler):
     IMGUR_CLIENT_ID = os.environ['IMGUR_CLIENT_ID']
-    IMGUR_CLIENT_SECRET = os.environ['IMGUR_CLIENT_SECRET']
     IMGUR_REFRESH_TOKEN = os.environ['IMGUR_REFRESH_TOKEN']
 
     def __init__(self):
         super().__init__()
         self.imgur_client = ImgurClient(client_id=ImgurHandler.IMGUR_CLIENT_ID,
-                                        client_secret=ImgurHandler.IMGUR_CLIENT_SECRET,
+                                        client_secret=None,
                                         refresh_token=ImgurHandler.IMGUR_REFRESH_TOKEN)
 
     @time_task
