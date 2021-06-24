@@ -201,7 +201,7 @@ Alternatively, Localy setup Heroku CLI and run `heroku config:set DISABLE_COLLEC
 ## Live Site: Static Files Not Loading/Forbidden (403)
 - make sure the `static/` object in your s3 bucket is public
 
-## Access Denied
+## Boto3: Access Denied
 if you encounter this error:
 `(AccessDenied)` when running `manage.py collectstatic`
 - make sure bucket is public but the `media/` object is private.
