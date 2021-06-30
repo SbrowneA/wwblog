@@ -39,7 +39,7 @@
             </div>
 
         </div>
-{#        TODO enable when search functionality is enabled #}
+        {#        TODO enable when search functionality is enabled #}
         {% comment %}        <div class="banner__search input-group- mb3">
             <div class="input-group-prepend pb-50">
                 <input type="text" name="search" placeholder="Search..">
@@ -61,7 +61,7 @@
                         <i class="bi bi-list"></i>
                     </button>
                     <div class="dropdown-menu bg-dark">
-{#                    <div class="dropdown-container dropdown-menu">#}
+                        {#                    <div class="dropdown-container dropdown-menu">#}
                         <a href="{% url 'wwapp:index' %}" class="ml-3 d-block">Home</a><br/>
                         <a href="{% url 'wwapp:manage_own_content' %}" class="ml-3 d-block">My Posts & Projects</a><br/>
                         {% if request.user.is_authenticated %}
@@ -94,10 +94,10 @@
     </div>
 
     <div class="right-nav col-lg-3 col-md-3 d-none d-md-inline">
-    <div class="sticky-nav">
-        {% block right_nav %}
-        {% endblock %}
-    </div>
+        <div class="sticky-nav">
+            {% block right_nav %}
+            {% endblock %}
+        </div>
     </div>
 
 </div>
@@ -113,8 +113,18 @@
     {#    <div class="col-lg-4 d-none"></div>#}
 
 </footer>
+<div class="popup-container hide-popup" id="popupContainer">
+        {#    <h2>Upload Image</h2>#}
+<!-- GENERIC DIV AND FORM TO BE USED AS POPUP -->
+    <div id="genericPopup">
+        <form id="genericPopupForm" action="" method="POST">
+            {% csrf_token %}
+        </form>
+    </div>
+</div>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+{#TODO MAKE LOCAL#}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>

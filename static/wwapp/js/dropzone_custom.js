@@ -2,7 +2,32 @@ Dropzone.autoDiscover = false;
 
 let imgDz;
 
-function initDz() {
+function initImageDz() {
+    // create and append elements to popupContainer programmatically
+    //parent div
+    // let popup = document.createElement("div" );
+    let popup = document.getElementById('genericPopup');
+    popup.id = 'imageDzPopup';
+
+    // dz form within parent div
+    // let form = document.createElement("form");
+    let form = document.getElementById("genericPopupForm");
+    form.id = 'image-dz';
+    form.method = 'POST';
+    // form.action = '';
+    form.classList.add('dropzone');
+    form.classList.add('dz-custom');
+    //fallback div within form
+    // let fallback = document.createElement("div");
+    // input within fallback
+
+    //close button within parent div
+    let closeBtn = document.createElement("button");
+    closeBtn.id = 'dzCloseBtn';
+    closeBtn.innerHTML = 'close';
+    popup.appendChild(closeBtn)
+
+    // initialise dropzone form
     if (document.getElementById('image-dz')) {
         imgDz = new Dropzone("#image-dz",
             {
@@ -18,7 +43,7 @@ function initDz() {
                 // dictRemoveFileConfirmation: "Are you sure you want to delete this image?",
             });
 
-        imgDz.on("success", function (file, response) {
+        imgDz.on("success", (file, response) => {
             response = JSON.parse(response)
             let ratio = response['height'] / response['width'];
             let newWidth = 400;
@@ -44,7 +69,19 @@ function initDz() {
 
 async function openDzPopup() {
     toggleDzPopup();
-    initDz();
+    if (imgDz === undefined) {
+        initImageDz();
+        console.log("initDz() called");
+        let popupContainer = document.getElementById("popupContainer");
+        popupContainer.addEventListener("click", (e) => {
+            console.log("e: " + e.target.id);
+            if ('popupContainer' === e.target.id) {
+                closeDzPopup();
+            }
+        });
+        let closeBtn = document.getElementById('dzCloseBtn');
+        closeBtn.addEventListener("click", closeDzPopup);
+    }
 }
 
 function closeDzPopup() {
@@ -52,7 +89,6 @@ function closeDzPopup() {
 }
 
 function toggleDzPopup() {
-    // let popupSection = document.getElementById("dzPopup");
-    let popupSection = document.getElementById("popupContainer");
-    popupSection.classList.toggle("hide-popup");
+    let popupContainer = document.getElementById("popupContainer");
+    popupContainer.classList.toggle("hide-popup");
 }

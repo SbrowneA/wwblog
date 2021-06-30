@@ -131,23 +131,4 @@
         </ul>
     {% endif %}
 
-    <div class="popup-container hide-popup" id="popupContainer">
-        <div id="dzPopup" class="popup">
-            {#    <h2>Upload Image</h2>#}
-            <form action="" id="image-dz" class="dropzone dz-custom" method="POST">
-                {% csrf_token %}
-                <div class="fallback" id="div-image-dz">
-                    <input name="file" type="file" multiple/>
-                    {% comment %}            <script>
-                function callInitDz() {
-                    initDz();
-                }
-                callInitDz()
-            </script>{% endcomment %}
-                </div>
-            </form>
-            <button onclick="closeDzPopup()">close</button>
-        </div>
-    </div>
-
 {% endblock %}
