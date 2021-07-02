@@ -127,7 +127,7 @@ def edit_article(request, article_id):
             values['parent_category'] = parent_c.category_name
     else:
         choices = [("", "-----------")]
-        choices += CategoryHandler.get_publish_to_choices_for_user(request.user)
+        choices += CategoryHandler.get_publish_to_choices_for_user_as_tuples(request.user)
         form.fields['publish_to_select'].choices = choices
     values['form'] = form
     if request.method == "POST" and form.is_valid():
@@ -196,6 +196,29 @@ def delete_article(request, article_id):
 def create_project(request):
     proj = CategoryHandler.create_project(request.user)
     return redirect('wwapp:edit_category', proj.category_id)
+
+
+@csrf_protect
+@login_required
+@minimum_role_required("member")
+def ajax_create_category(request):
+    """used to create a category from UI with AJAX"""
+    if request.is_ajax() and request.method == "POST":
+        print(request)
+    else:
+        return HttpResponse(status=404)
+
+
+@csrf_protect
+@login_required
+@minimum_role_required("member")
+def ajax_get_available_publish_categories(request):
+    """used to get with available categories to publish to from UI with AJAX"""
+    if request.is_ajax() and request.method == "GET":
+        options = CategoryHandler.get_publish_to_choices_for_user_as_json(request.user)
+        return HttpResponse(status=200, content={"options": options}, content_type="application/json")
+    else:
+        return HttpResponse(status=404)
 
 
 @login_required

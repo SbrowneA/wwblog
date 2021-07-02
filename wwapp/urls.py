@@ -25,6 +25,8 @@ urlpatterns = [
     path('category/<int:category_id>/delete', views.delete_category, name='delete_category'),
     path('category/<int:category_id>/delete/<int:child_id>', views.delete_child_category, name='add_sub_category'),
     path('category/createproject', views.create_project, name='new_project'),
+    # path('post/ajax/create-category', views.create_project, name='ajax_create_project'),
+    # path('get/ajax/available-publish-categories', views.create_project, name='ajax_get_publish_options'),
     # path('test', views.image_upload_test, name='upload_test'),
     # path('moderators/activate', views.activate_users, name="activate"),
     # path('moderators/dashboard', views.activate_users, name="activate"),
@@ -32,6 +34,7 @@ urlpatterns = [
     path('image/<int:image_id>/edit/', views.edit_image, name='edit_image'),
     path('image/<int:image_id>/delete/', views.delete_image, name='delete_image'),
     path('upload-to-imgur', views.upload_imgur_image, name="upload_to_imgur"),
+    # path('test', views.test_get_cats, name="test_get_cats"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
