@@ -36,21 +36,8 @@
 }
 
 #imageDzPopup {
-    position: fixed;
     background: var(--c-delete);
-    width: clamp(400px, 30vw, 90vw);
-    height: 55vh;
-    bottom: 15em;
-    margin: 0 auto;
     text-align: center;
-    z-index: 3;
-    border-radius: var(--radius-md);
-    box-shadow: 0 0 1rem .3rem var(--c-shadow);
-}
-
-.hide-popup {
-    /*visibility: hidden;*/
-    display: none;
 }
 
 #imageDzPopup > #dzCloseBtn {
@@ -78,4 +65,23 @@
 #imageDzPopup button:focus {
     box-shadow: none;
     outline: none;
+}
+
+
+/*GENERIC POPUP CLASSES*/
+.popup{
+    position: fixed;
+    width: clamp(400px, 30vw, 90vw);
+    height: 55vh;
+    bottom: 15em;
+    margin: 0 auto;
+    box-shadow: 0 0 1rem .3rem var(--c-shadow);
+    background: var(--c-grey-m);
+    z-index: 3;
+    border-radius: var(--radius-md);
+}
+/*Can't be ".hide" because it collides with bootstrap's .hide class*/
+.hide-popup {
+    /*visibility: hidden;*/
+    display: none;
 }
