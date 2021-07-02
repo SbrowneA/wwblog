@@ -2,6 +2,7 @@ import os
 import json
 # import traceback
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import get_user_model
 # from django.contrib.auth.decorators import user_passes_test
 from django.core import exceptions
@@ -96,6 +97,7 @@ def open_article(request, article_id):
     return render(request, "wwapp/open_article.html", values)
 
 
+@csrf_protect
 @login_required
 @article_edit_privilege
 def edit_article(request, article_id):
@@ -198,6 +200,7 @@ def create_project(request):
 
 @login_required
 @category_edit_privilege
+@csrf_protect
 # @category_creator_or_moderator
 def edit_category(request, category_id):
     c = get_object_or_404(Category, category_id=category_id)
@@ -513,10 +516,10 @@ def view_all_user_images(request, user_id: int):
     pass
 
 
-@login_required
-def upload_image(request):
-    print(ImgurHandler().credits)
-    return render(request, 'wwapp/drag_and_drop_images.html')
+# @login_required
+# def upload_image(request):
+#     print(ImgurHandler().credits)
+#     return render(request, 'wwapp/drag_and_drop_images.html')
 
 
 @login_required
@@ -559,7 +562,9 @@ def delete_image(request, image_id):
             status_code = 404
         return HttpResponse(status=status_code)
 
+
 # @image_creator_or_moderator #  TODO
+@csrf_protect
 @login_required
 def edit_image(request, image_id):
     status = 200
