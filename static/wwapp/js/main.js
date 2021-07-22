@@ -1,5 +1,13 @@
+function setDatesToUserTimezone() {
+    // gets date elements and sets them on the user's timezone
+    let elements = document.querySelectorAll(".convert-to-local-date");
+    for (let i = 0; i < elements.length; i++) {
+        console.log("I"+i)
+        elements[i].innerText = convertDateToUserTimezone(elements[i].innerText);
+    }
+}
 
-function convert_date_to_user_timezone() {
+function convertDateToUserTimezone(dateStr) {
     const month = {
         0: 'January',
         1: 'February',
@@ -14,8 +22,6 @@ function convert_date_to_user_timezone() {
         10: 'November',
         11: 'December'
     }
-    let dateTxt = document.getElementById("publish-date");
-    let dateStr = dateTxt.innerText
     let date = new Date(dateStr.toString());
     let localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
     // alert(`${month[localDate.getMonth()]} ${localDate.getDate()}, ${localDate.getFullYear()}, ${localDate.getHours()}:${localDate.getMinutes()}`)
@@ -27,8 +33,10 @@ function convert_date_to_user_timezone() {
     }
     hr = (hr === 0) ? 12 : hr;
     min = (min < 10) ? "0" + min : min;
-    dateTxt.innerText = `${month[localDate.getMonth()]} ${localDate.getDate()}, ${localDate.getFullYear()}, ${hr}:${min} ${ampm}`;
+    return `${month[localDate.getMonth()]} ${localDate.getDate()}, ${localDate.getFullYear()}, ${hr}:${min} ${ampm}`;
 }
+
+setDatesToUserTimezone();
 
 /**
  * searches the document.cookie object to get the value of the cookie name specified if it exists
