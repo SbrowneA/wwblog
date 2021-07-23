@@ -396,6 +396,39 @@ a::after, a::before {
 /*  ====================
     1. Components
     ==================== */
+/*SCROLLBAR*/
+::-webkit-scrollbar {
+    width: 0.6rem;
+}
+
+::-webkit-scrollbar-track {
+    /*background: rgb(34, 34, 34);*/
+}
+
+::-webkit-scrollbar-track-piece:hover {
+    /*background: rgba(234, 234, 234, 0.08);*/
+}
+
+::-webkit-scrollbar-track-piece {
+    /*background: rgba(234, 234, 234, 0.02);*/
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(95, 95, 95);
+    border-radius: 0.2rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(234, 234, 234, 0.3);
+}
+
+@media (max-width: 600px) {
+    ::-webkit-scrollbar {
+        width: 0.4rem;
+    }
+}
+/*SCROLLBAR END*/
+
 
 textarea {
     font-family: var(--ff-body);
