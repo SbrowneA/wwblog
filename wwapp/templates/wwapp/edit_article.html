@@ -20,7 +20,9 @@
         <li class="mt-5">
             {#    TODO check too if moderator#}
             {% if article.author_id == request.user.id %}
-                <button id="deleteArticleBtn" class="btn btn-danger" value="{% url "wwapp:delete_article" article.article_id %}">Delete</button>
+                <button id="deleteArticleBtn" class="btn btn-danger"
+                        value="{% url "wwapp:delete_article" article.article_id %}">Delete
+                </button>
             {% endif %}
         </li>
     </ul>
@@ -93,7 +95,6 @@
                 {#                    <p>Currently public in: {{ parent_category }}</p>#}
             {% endif %}
         {% endif %}
-        <button id="uploadImageBtn" class="btn btn-primary">Upload Images</button>
     </div>
 
     <br/>
@@ -107,5 +108,4 @@
             {% endfor %}
         </ul>
     {% endif %}
-
 {% endblock %}

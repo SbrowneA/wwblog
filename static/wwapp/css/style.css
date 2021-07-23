@@ -37,10 +37,11 @@
     --c-link-text: #9CDCFE;
     --c-link: #ba0025;
 
-    --c-grey-l: #343a40;
+    --c-grey-l: #888888;
+    --c-grey-ml: #696c6f;
     --c-grey-m: #343a40;
-    --c-grey-d: #222222;
-    --c-grey-vd: #333333;
+    --c-grey-d: #333333;
+    --c-grey-vd: #222222;
 
     /*shadows*/
     /*--c-shadow-rgb: rgb(40, 40, 40);*/
@@ -64,12 +65,12 @@
     background: linear-gradient(270deg, var(--c-banner-gradient1), var(--c-banner-gradient2));
     background-size: 400% 400%;
 
-    -webkit-animation: AnimationName 10s ease infinite;
-    -moz-animation: AnimationName 10s ease infinite;
-    animation: AnimationName 10s ease infinite;
+    -webkit-animation: bannerAnimation 10s ease infinite;
+    -moz-animation: bannerAnimation 10s ease infinite;
+    animation: bannerAnimation 10s ease infinite;
 }
 
-@-webkit-keyframes AnimationName {
+@-webkit-keyframes bannerAnimation {
     0% {
         background-position: 0% 50%
     }
@@ -81,7 +82,7 @@
     }
 }
 
-@-moz-keyframes AnimationName {
+@-moz-keyframes bannerAnimation {
     0% {
         background-position: 0% 50%
     }
@@ -93,7 +94,7 @@
     }
 }
 
-@keyframes AnimationName {
+@keyframes bannerAnimation {
     0% {
         background-position: 0% 50%
     }
@@ -124,7 +125,7 @@
 
 body {
     min-height: 100vh;
-    background: var(--c-grey-d);
+    background: var(--c-grey-vd);
     color: var(--c-text);
     font-style: normal;
 }
@@ -134,7 +135,7 @@ body {
 }
 
 footer {
-    background: var(--c-grey-vd);
+    background: var(--c-grey-d);
     color: var(--c-text-secondary-d);
     margin-top: 1vh;
     min-height: 8vh;
@@ -429,7 +430,6 @@ button:active {
 button:focus {
     outline: none;
     box-shadow: 0 0 0 .2em var(--c-accent);
-    text-decoration: underline;
 }
 
 button .save {
@@ -496,7 +496,7 @@ button .delete {
     grid-template-columns: 100%;
     grid-template-rows: 1fr max-content;
     height: inherit;
-    --fg-bg: var(--c-grey-d);
+    --fg-bg: var(--c-grey-vd);
 
 }
 

@@ -16,15 +16,12 @@ function getCSRFToken() {
     return token;
 }
 
-
 function initImageDz() {
-    console.log("init called");
     // create and append elements to popupContainer programmatically
     //container div
     let container = document.createElement("div");
-    container.classList.add("popup-container");
-    container.classList.add("hide-popup");
     container.id = imageDZPopupContainerId;
+    container.classList.add("popup-container", "hide-popup");
 
     //parent div
     let popup = document.createElement("div");
@@ -37,8 +34,7 @@ function initImageDz() {
     form.id = 'image-dz';
     form.method = 'POST';
     // form.action = '';
-    form.classList.add('dropzone');
-    form.classList.add('dz-custom');
+    form.classList.add('dz-custom', 'dropzone');
     form.appendChild(getCSRFToken());
     //fallback div within form
     // let fallback = document.createElement("div");
@@ -74,13 +70,10 @@ function initImageDz() {
             let ratio = response['height'] / response['width'];
             let newWidth = 400;
             let newHeight = Math.floor(newWidth * ratio);
-            console.log(`response: ${response} \n new dimensions:${newWidth} x ${newHeight}`);
             tinyMCE.activeEditor.setContent(`${tinyMCE.activeEditor.getContent()}<p><img src="${response['url']}" alt="image upload ${file.name}" width="${newWidth}" height="${newHeight}" /></p>`);
         });
     }
-    console.log("init end");
 }
-
 
 /**
  * Keeps track of the container elements that have had an onclick set via the togglePopupContainer() function
@@ -94,31 +87,24 @@ let containerOnClickSet = {};
  * @param closeFunc the function that should be called when the container is clicked to hide the popup again
  */
 function togglePopupContainer(elementID, closeFunc) {
-    console.log("togglePopupContainer");
     let popupContainer = document.getElementById(elementID);
     popupContainer.classList.toggle("hide-popup");
     if (!containerOnClickSet[elementID]) {
-        console.log("togglePopupContainer - onclick");
         popupContainer.addEventListener("click", (e) => {
-            console.log("container clicked: " + e.target.id);
             if (elementID === e.target.id) {
                 closeFunc();
             }
         });
         containerOnClickSet[elementID] = true;
-        console.log("Container Onclick Set");
     }
-    console.log("togglePopupContainer - end");
-    console.log(containerOnClickSet);
 }
 
 // upload image DZ functions
 /**
  * Toggles the imageDzPopup and the popupContainer
  */
-function toggleDzPopup() {
+function toggleImageDzPopup() {
     togglePopupContainer(imageDZPopupContainerId, closeDzPopup);
-    console.log("toggleDzPopup");
 }
 
 /**
@@ -128,16 +114,14 @@ function toggleDzPopup() {
 async function openImageDzPopup() {
     if (imgDz === undefined) {
         initImageDz();
-        console.log("initDz() called");
         let closeBtn = document.getElementById('dzCloseBtn');
         closeBtn.addEventListener("click", closeDzPopup);
     }
-    toggleDzPopup();
+    toggleImageDzPopup();
 }
 
 function closeDzPopup() {
-    toggleDzPopup();
-    console.log("closeDzPopup()");
+    toggleImageDzPopup();
 }
 
 let uploadImageBtn = document.getElementById('uploadImageBtn');
@@ -227,33 +211,41 @@ async function getPublishOptions(){}
 function viewArticle(url) {
     console.log(url);
     if (confirm("All unsaved changes will be lost.\nwould yo like to continue?")) {
-        //TODO do ajax
         window.location.replace(url);
     } else {
         return false;
     }
 }
-
-/**
- * gets the url from the value of the click event (i.e. the button.value) and forwards it to {@link viewArticle()}
- */
-document.getElementById("viewArticleBtn").addEventListener("click", (e) => {
-    viewArticle(e.target.value);
-});
 
 function deleteArticle(url) {
     if (confirm("Are you sure you want to delete this post (" + '{{ article.article_title }}'
         + ")?\nLinked posts will not be deleted, only unliked")) {
-        //TODO do ajax
         window.location.replace(url);
     } else {
         return false;
     }
 }
 
-/**
- * gets the url from the value of the click event (i.e. the button.value) and forwards it to {@link deleteArticle()}
- */
-document.getElementById("deleteArticleBtn").addEventListener("click", (e) => {
-    deleteArticle(e.target.value);
-});
+function setupButtons() {
+    /**
+     * gets the url from the value of the click event (i.e. the button.value) and forwards it to {@link viewArticle()}
+     */
+    let viewArticleBtn = document.getElementById("viewArticleBtn");
+    if (viewArticleBtn) {
+        viewArticleBtn.addEventListener("click", (e) => {
+            viewArticle(e.target.value);
+        });
+    }
+
+    /**
+     * gets the url from the value of the click event (i.e. the button.value) and forwards it to {@link deleteArticle()}
+     */
+    let deleteArticleBtn = document.getElementById("deleteArticleBtn");
+    if (deleteArticleBtn) {
+        deleteArticleBtn.addEventListener("click", (e) => {
+            deleteArticle(e.target.value);
+        });
+    }
+}
+
+setupButtons();
