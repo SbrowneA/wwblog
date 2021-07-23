@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'dropzone/dropzone.css' %}">
     <script defer src="{% static 'wwapp/js/edit_article.js' %}"></script>
     {#  required to override the dropzone #}
-    <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/dropzone_custom.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/edit_article.css' %}">
     {{ form.media }}
 {% endblock %}
 
@@ -63,42 +63,40 @@
                 {% endfor %}
             </div>
             <button type="submit" class="btn btn-success">Save</button>
-
-            {% if article.author_id == request.user.id %}
-                {% if article.published %}
-                    {#                    <button class="btn btn-primary" onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft</button>#}
-                    <p>Currently public in: {{ parent_category }}</p>
-
-                {% else %}
-                    <div>
-                        Publish to:&nbsp{{ form.publish_to_select }}
-                        <button type="submit" value="publish" name="publish" class="btn btn-primary">Publish</button>
-                        <div>
-                            {% for error in form.publish_to_select.errors %}
-                                <div class="alert alert-danger">
-                                    <strong>{{ error|escape }}</strong>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-            {% endif %}
-
         </form>
+        <br>
         {% if article.author_id == request.user.id %}
-            {% if article.published %}
-                <button class="btn btn-primary"
-                        onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft
-                </button>
-                <button id="viewArticleBtn" class="btn btn-primary" value="{% url "wwapp:open_article" article.article_id %}"> View
-                </button>
-                {#                    <p>Currently public in: {{ parent_category }}</p>#}
-            {% endif %}
+            <div id="editControlsContainer"{% if article.published %} class="edit-controls published" {% else %}
+                 class="edit-controls"{% endif %}>
+                {# TODO remove when hydration works #}
+                <div class="publish-status">
+                    {% if article.published %}
+                        <span id="txtPublishStatus">Currently public in: {{ parent_category }}</span>
+                    {% else %}
+                        <p id="txtPublishStatus">This post is private</p>
+                    {% endif %}
+                    <button class="btn btn-primary"
+                            id="draftArticleBtn"
+                            onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft
+                    </button>
+                    <button id="viewArticleBtn" class="btn btn-primary"
+                            value="{% url "wwapp:open_article" article.article_id %}"> View
+                    </button>
+                </div>
+                <button id="openPublishPopupBtn" class="btn btn-primary">select publish</button>
+                <br>
+                <button id="uploadImageBtn" class="btn btn-primary">Upload Images</button>
+            </div>
         {% endif %}
     </div>
-
+    <input id="ajax_get_publish_options_url" type="hidden" value="{% url "wwapp:ajax_get_publish_options" %}">
+    <input id="ajax_publish_article_url" type="hidden" value="{% url "wwapp:ajax_publish_article" %}">
+    <input id="ajax_get_article_details_url" type="hidden"
+           value="{% url "wwapp:ajax_get_article_details" article.article_id %}">
+    <input id="ajax_get_article_content_url" type="hidden"
+           value="{% url "wwapp:ajax_get_article_content" article.article_id %}">
     <br/>
-    <button id="publishPopupBtn" class="btn btn-primary">select publish</button>
+    {#    <button id="testBtn" class="btn btn-primary">test</button>#}
     {% if editors_count == 0 %}
         <p>no editors</p>
     {% else %}

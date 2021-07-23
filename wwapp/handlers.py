@@ -6,6 +6,7 @@ import time
 from abc import ABC, abstractmethod
 from typing import Optional
 from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import (IntegrityError)
 from django.core import exceptions
 
@@ -424,7 +425,11 @@ class CategoryHandler:
             option: dict - a dictionary that hierarchically contains itself serialized as "category" and its "children"
             which is a list of options.
         """
-        option = {"category": serializers.serialize('json', [cat, ]), "children": []}
+        # create dict to be parsed into json string
+        cat_as_dict = vars(cat)
+        # must occur separately
+        cat_as_dict.pop("_state")
+        option = {"category": cat_as_dict, "children": []}
         # get child categories of cat
         child_categories = CategoryHandler(cat).get_child_categories()  # returns [] if not
         # if p has children filter for the children by the user
@@ -439,6 +444,7 @@ class CategoryHandler:
         return option
 
     @staticmethod
+    @time_task
     def get_publish_to_choices_for_user_as_json(user: User) -> str:
         user_projects = CategoryHandler.get_user_projects(user)
         project_options = []
@@ -567,8 +573,17 @@ class ArticleHandler:
         self.article.save()
 
     def publish_article(self, category: Category):
+        """ publishes the self.article to the category specified. if it is already published,
+         the article will be drafted first and then published again
+
+        Keyword arguments:
+            category -- the category to assign the article to when publishing
+         """
         # check if already published
         if self.article.published:
+            if self.get_parent_category().category_id == category.category_id:
+                # do nothing if already in the same category
+                return
             self.draft_article()
         # publish to new category
         cat_handler = CategoryHandler(category)

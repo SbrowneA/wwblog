@@ -1,6 +1,8 @@
 import os
 import json
 # import traceback
+import traceback
+
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import get_user_model
@@ -213,10 +215,92 @@ def ajax_create_category(request):
 @login_required
 @minimum_role_required("member")
 def ajax_get_available_publish_categories(request):
-    """used to get with available categories to publish to from UI with AJAX"""
-    if request.is_ajax() and request.method == "GET":
+    """used to get the available categories to publish to from UI with AJAX"""
+    # if request.is_ajax() and request.method == "GET":
+    if request.method == "GET":
         options = CategoryHandler.get_publish_to_choices_for_user_as_json(request.user)
-        return HttpResponse(status=200, content={"options": options}, content_type="application/json")
+        return HttpResponse(status=200, content=options, content_type="application/json")
+        # return HttpResponse(content=options)
+    else:
+        return HttpResponse(status=404)
+
+
+@csrf_protect
+@login_required
+@minimum_role_required("member")
+def ajax_publish_article_to_category(request):
+    """publishes an article to the category specified from the UI with AJAX"""
+    # if request.is_ajax() and request.method == "GET":
+    if request.method == "POST":
+        try:
+            print(f"POST REQUEST: ArticleID: {request.POST['article_id']} CategoryID: {request.POST['parent_category_id']}")
+            a = Article.objects.get(article_id=request.POST['article_id'])
+            cat = Category.objects.get(category_id=request.POST['parent_category_id'])
+            # publish article
+            a_handler = ArticleHandler(a)
+            a_handler.publish_article(cat)
+            # return updated article details
+            a_dict = a.as_dict
+            if a.published:
+                a_dict["parent_category"] = a_handler.get_parent_category().as_dict
+            a_json = json.dumps(a_dict, indent=4)
+            return HttpResponse(status=200, content=a_json, content_type="application/json")
+        except exceptions.ObjectDoesNotExist:
+            return HttpResponse(status=400, content={
+                "error": "Items for one or more of the IDs specified could not be found"},
+                                content_type="application/json")
+        except Exception as e:
+            print(f"{ajax_publish_article_to_category.__name__} -> unexpected error\n{traceback.print_exc()}")
+            return HttpResponse(status=400, content={
+                "error": "Unexpected Error"},
+                                content_type="application/json")
+    else:
+        return HttpResponse(status=404)
+
+
+@csrf_protect
+@login_required
+@minimum_role_required("member")
+def ajax_get_article_details(request, article_id: int):
+    """returns the Article object as a dict specified specified from in the url param"""
+    # if request.is_ajax() and request.method == "GET":
+    if request.method == "GET":
+        try:
+            a = Article.objects.get(article_id=article_id)
+            a_dict = a.as_dict
+            if a.published:
+                a_dict["parent_category"] = ArticleHandler(a).get_parent_category().as_dict
+            a_json = json.dumps(a_dict, indent=4)
+            return HttpResponse(status=200, content=a_json, content_type="application/json")
+        except exceptions.ObjectDoesNotExist:
+            error = {'error': f'An article with the specified id ({article_id}) could not be found'}
+            return HttpResponse(status=400, content=error, content_type="application/json")
+    else:
+        return HttpResponse(status=404)
+
+
+@csrf_protect
+@login_required
+@minimum_role_required("member")
+def ajax_get_article_content(request, article_id: int):
+    """returns the latest content and details for the article specified in the url param"""
+    # if request.is_ajax() and request.method == "GET":
+    if request.method == "GET":
+        print("request.POST", request.GET)
+        try:
+            a = Article.objects.get(article_id=article_id)
+            content = ArticleHandler(a).get_article_content()
+            as_dict = a.as_dict
+            as_dict['content'] = content
+            if a.published:
+                as_dict["parent_category"] = ArticleHandler(a).get_parent_category().as_dict
+                # parent_category = ArticleHandler(a).get_parent_category().as_dict
+            print(as_dict)
+            as_json = json.dumps(as_dict, indent=4)
+            return HttpResponse(status=200, content=as_json, content_type="application/json")
+        except exceptions.ObjectDoesNotExist:
+            error = {'error': f'An article with the specified id ({article_id}) could not be found'}
+            return HttpResponse(status=404, content=error, content_type="application/json")
     else:
         return HttpResponse(status=404)
 
@@ -224,7 +308,6 @@ def ajax_get_available_publish_categories(request):
 @login_required
 @category_edit_privilege
 @csrf_protect
-# @category_creator_or_moderator
 def edit_category(request, category_id):
     c = get_object_or_404(Category, category_id=category_id)
     c_handler = CategoryHandler(c)

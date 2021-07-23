@@ -83,15 +83,12 @@ class Category(models.Model):
                     sub_cats.append(sub_cat)
         return sub_cats
 
-    # def is_project(self):
-    #     return self.category_type == self.CategoryType.PROJECT
+    @property
+    def as_dict(self) -> dict:
+        _dict = vars(self)
+        _dict.pop("_state")
+        return _dict
 
-    #
-    #     # TODO use manager class instead
-    #     @staticmethod
-    #     def get_root_categories():
-    #         return Category.objects.filter(category_type=Category.CategoryType.PROJECT)
-    #
     def save(self, *args, **kwargs):
         # save to create id
         super().save(*args, **kwargs)
@@ -169,6 +166,15 @@ class Article(models.Model):
         except exceptions.ObjectDoesNotExist:
             return None
 
+    @property
+    def as_dict(self) -> dict:
+        _dict = vars(self)
+        _dict.pop("_state")
+        # convert creation_date to epoch in ms (datetime cannot be serialized)
+        _dict['creation_date'] = _dict['creation_date'].timestamp()
+        _dict['pub_date'] = _dict['pub_date'].timestamp() if self.published else None
+        return _dict
+
     class Meta:
         indexes = [
             models.Index(fields=['article_title']),
@@ -184,6 +190,7 @@ class Article(models.Model):
         # check if CategoryItem already exists
         try:
             if self.article_id is None:
+                # Article has not been saved yet so skip to create the ArticleVersion and CategoryItem in the except
                 raise exceptions.ObjectDoesNotExist
             i = CategoryItem.objects.get(item_article_id=self.article_id)
             if self.published:
@@ -199,10 +206,8 @@ class Article(models.Model):
             if not self.published:
                 super().save()
                 a = self.article_id
-                # v =
                 ArticleVersion(article_id=self.article_id).save()
                 # ArticleVersion.objects.create(article_id=self.article_id)
-                # i =
                 CategoryItem.objects.create(item_article_id=self.article_id)
             else:
                 raise exceptions.ValidationError("The Article cannot be published without CategoryItem")
