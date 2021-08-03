@@ -14,7 +14,7 @@ User = settings.AUTH_USER_MODEL
 
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
-    category_name = models.CharField(unique=True, max_length=45)
+    category_name = models.CharField(unique=False, max_length=45)
     category_creator = models.ForeignKey(User, on_delete=models.PROTECT)
     category_description = models.CharField(null=True, max_length=300)
 
@@ -129,10 +129,8 @@ class Category(models.Model):
         except exceptions.ObjectDoesNotExist:
             parent_cat_name = "Null"
 
-        output = f" - Category Name:{self.category_name} " \
-                 f"\n - Type:{self.category_type} " \
-                 f"\n - Parent: {parent_cat_name} " \
-                 f"\n - By: {self.category_creator}"
+        output = f"Category{{ Category Name:{self.category_name}, Type:{self.category_type}, " \
+                 f"ParentCat: {parent_cat_name}, By: {self.category_creator}}}"
         return output
 
 
@@ -210,9 +208,7 @@ class Article(models.Model):
             raise IntegrityError("The Article cannot be published without a parent Category")
 
     def __str__(self):
-        output = f"\n - ID: {self.article_id}" \
-                 f"\n - Title: {self.article_title}" \
-                 f"\n - By: {self.author.username}"
+        output = f"Article{{ ID: {self.article_id}, Title: {self.article_title}, By: {self.author.username}}}"
         return output
 
 
@@ -279,17 +275,17 @@ class CategoryItem(models.Model):
     def __str__(self):
         if self.item_article_id is not None:
             a = Article.objects.get(article_id=self.item_article_id)
-            return f"Item Article {a.__str__()}"
+            return f"CategoryItem{{ {a.__str__()}}}"
         else:
             c = Category.objects.get(category_id=self.item_category_id)
-            return f"Item Category {c.__str__()}"
+            return f"CategoryItem{{ {c.__str__()}}}"
 
     def save(self, *args, **kwargs):
         if (self.item_article_id is None and self.item_category_id is not None) or \
                 (self.item_category_id is None and self.item_article_id is not None):
             print(f"saved new CategoryItem:"
-                  f"\n - article id:{self.item_article_id}"
-                  f"\n - category id:{self.item_category_id}")
+                  f"| article id:{self.item_article_id} name: {self.item_article.article_title if self.item_article else None}"
+                  f"| category id:{self.item_category_id} name: {self.item_category.category_name if self.item_category else None}")
             super().save(*args, **kwargs)
         else:
             # print("an article or category must be selected")
@@ -312,9 +308,7 @@ class CategoryItemAssignation(models.Model):
         ]
 
     def __str__(self):
-        return f"- Position: {self.position} " \
-               f"- Parent Category: {self.parent_category.category_name} || " \
-               f"- Item: {self.item.__str__()}"
+        return f"CategoryItemAssignation{{ Position: {self.position}, Parent Category: {self.parent_category.category_name}, \nItem: {self.item.__str__()} }}"
 
 
 class Image(models.Model):
@@ -330,8 +324,8 @@ class Image(models.Model):
     public = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.image_id} - {self.upload_date} - {self.image_name}  " \
-               f"Uploaded by {self.image_owner.username} - {self.description}"
+        return f"Image{{ ID: {self.image_id}, Date: {self.upload_date}, Name: {self.image_name}, " \
+               f"By: {self.image_owner.username}, Description: {self.description}}}"
 
 
 class ImgurImage(Image):
@@ -390,7 +384,7 @@ class ImgurImage(Image):
         return ''.join(li)
 
     def __str__(self):
-        output = f" {self.imgur_image_id} - {super().__str__()}"
+        output = f"ImgurImage{{ ID: {self.imgur_image_id}, {super().__str__()}}}"
         return output
 
 
@@ -407,7 +401,7 @@ class S3Image(Image):
     location = models.ImageField(upload_to=get_upload_path)
 
     def __str__(self):
-        output = f" {self.s3_image_id} - {super().__str__()}"
+        output = f"S3Image{{ ID: {self.s3_image_id}, {super().__str__()}}}"
         return output
 
 
