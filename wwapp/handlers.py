@@ -146,7 +146,7 @@ class CategoryHandler:
             last_pos = len(self.get_child_assignations())
         except exceptions.EmptyResultSet:
             last_pos = 0
-
+        print(f"_add_child_item -> last_pos{last_pos}\n parent: {self.category}\n child:{new_child_item}")
         try:
             # TODO **BUG TO FIX HERE **
             #  get parent cat handler remove child item and add to self
@@ -160,11 +160,12 @@ class CategoryHandler:
                 a.save()
 
         except exceptions.ObjectDoesNotExist:
-            pass
+            print(f"_add_child_item -> ObjectDoesNotExist - will create new CategoryItemAssignation ")
             # make new assignation with parent as self
         assignation = CategoryItemAssignation(parent_category_id=self.category.category_id, item=new_child_item,
                                               position=last_pos)
         assignation.save()
+        print(assignation)
 
     def add_child_article(self, article: Article):
         if self.category.category_type == Category.CategoryType.TOPIC or \
@@ -187,7 +188,16 @@ class CategoryHandler:
                 child_cat.save()  # save child_cat to make its category item
                 i = CategoryItem.objects.get(item_category_id=child_cat.category_id)
                 # child_cat.save()
+                print(f"add_child_category -> item created for category {i}")
                 self._add_child_item(i)
+                print(f"_add_child_item -> result:{i}")
+                try:
+                    a = CategoryItemAssignation.objects.get(item_id=i.item_id)
+                    print(f"success: CategoryItemAssignation:{a}")
+                except exceptions.ObjectDoesNotExist:
+                    print(f"failed: CategoryItemAssignation not created")
+
+
         else:
             raise ValueError("This Category is invalid: cannot assign self as child category.")
 

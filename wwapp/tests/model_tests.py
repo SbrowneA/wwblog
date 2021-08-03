@@ -1,5 +1,5 @@
 from django.test import TestCase
-# from django.db import models, IntegrityError
+from django.db import IntegrityError
 # from django.test import TransactionTestCase
 # from django.test import SimpleTestCase
 # from django.test import client
@@ -195,7 +195,7 @@ class ArticleModelTests(TestCase):
     def test_save_article_raises_validation_error_if_published_to_no_category(self):
         print(f"\nTEST START:{self._testMethodName}")
         self.main_article.published = True
-        self.assertRaises(exceptions.ValidationError, self.main_article.save)
+        self.assertRaises(IntegrityError, self.main_article.save)
 
     def test_delete_article_deletes_item_and_assignation(self):
         print(f"\nTEST START:{self._testMethodName}")

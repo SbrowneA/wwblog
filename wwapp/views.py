@@ -209,18 +209,24 @@ def edit_category(request, category_id):
         form = forms.CategoryEdit(request.POST)
         if form.is_valid():
             if request.POST.get("add"):
+                new_cat_name = form.cleaned_data.get("new_category_name")
                 try:
-                    new_cat_name = form.cleaned_data.get("new_category_name")
-                    # print(f"Name: {new_cat_name}")
                     if new_cat_name != "":
                         new_cat = Category.objects.create(category_name=new_cat_name, category_creator=request.user)
+                        print(f"created new category:{new_cat}")
                         c_handler.add_child_category(new_cat)
+
                         values["child_categories"] = c_handler.get_child_categories()
+                        # TODO clear the new topic text input if successfully created
                     else:
                         form.add_error("new_category_name",
                                        f"This {c_handler.get_child_category_type().lower().capitalize()}"
                                        f" name is invalid")
                 except IntegrityError:
+                    print(f"edit_category View -> IntegrityError new_category_name({new_cat_name}) is not unique"
+                          f"\n- Category that exists by that name:{Category.objects.get(category_name=new_cat_name)}")
+                    # print(f"edit_category View ->{traceback.print_exc()}")
+
                     form.add_error("new_category_name",
                                    f"The {c_handler.get_child_category_type().lower().capitalize()}"
                                    f" name must be unique globally")
