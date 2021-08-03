@@ -1,4 +1,5 @@
 import os
+import json
 # import traceback
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -36,8 +37,12 @@ from django.core.mail import send_mail
 
 User = get_user_model()
 
+
+# import hashlib
+
+
 def index(request):
-    latest_articles = ArticleHandler.get_latest_published_articles(count=5)
+    latest_articles = ArticleHandler.get_latest_published_articles(count=6)
     projects = CategoryHandler.get_all_projects()
     values = {
         "latest_articles_list": latest_articles,
@@ -74,6 +79,7 @@ def open_article(request, article_id):
         values['has_editor_privilege'] = a_handler.has_editor_privilege(request.user)
         secret = a_handler.get_latest_version().secret_note
         values['secret_note'] = secret
+    print("date", str(article.creation_date))
     # article_url = a_handler.get_latest_version_url()
     # if article_url is not None:
     #     values['article_url'] = article_url
@@ -113,40 +119,39 @@ def edit_article(request, article_id):
         choices += CategoryHandler.get_publish_to_choices_for_user(request.user)
         form.fields['publish_to_select'].choices = choices
     values['form'] = form
-    if request.method == "POST":
-        if form.is_valid():
-            # save
-            article.article_title = form.cleaned_data.get("title")
-            ver = a_handler.get_latest_version()
-            secret_note = form.cleaned_data.get("secret_note")
-            # secret_note = ""
-            ver.secret_note = None if secret_note == "" else secret_note
-            # result = 'is  none' if secret_note == '' else 'has something'
-            # print(result)
-            ver.save()
-            article.save()
-            content = form.cleaned_data.get("content")
-            if not a_handler.save_article_content(content):
-                form.add_error(None, "There was an error saving!")
-                logging.error(f"{edit_article.__name__} - save "
-                              f"-> ArticleHandler.save_article_content() failed to return True")
+    if request.method == "POST" and form.is_valid():
+        # save
+        article.article_title = form.cleaned_data.get("title")
+        ver = a_handler.get_latest_version()
+        secret_note = form.cleaned_data.get("secret_note")
+        # secret_note = ""
+        ver.secret_note = None if secret_note == "" else secret_note
+        # result = 'is  none' if secret_note == '' else 'has something'
+        # print(result)
+        ver.save()
+        article.save()
+        content = form.cleaned_data.get("content")
+        if not a_handler.save_article_content(content):
+            form.add_error(None, "There was an error saving!")
+            logging.error(f"{edit_article.__name__} - save "
+                          f"-> ArticleHandler.save_article_content() failed to return True")
 
-            if request.POST.get("publish"):
-                value = str(request.POST["publish_to_select"])
-                if value == "" or None:
-                    form.add_error("publish_to_select", "Please select an option to publish to")
+        if request.POST.get("publish"):
+            value = str(request.POST["publish_to_select"])
+            if value == "" or None:
+                form.add_error("publish_to_select", "Please select an option to publish to")
+            else:
+                content_type, content_id = value.split("-")[0], value.split("-")[1]
+                if content_type == "article":
+                    article = get_object_or_404(Article, article_id=content_id)
+                    print(f"Publishing to {article}")
+                    a_handler.publish_as_child_article(article)
                 else:
-                    content_type, content_id = value.split("-")[0], value.split("-")[1]
-                    if content_type == "article":
-                        article = get_object_or_404(Article, article_id=content_id)
-                        print(f"Publishing to {article}")
-                        a_handler.publish_as_child_article(article)
-                    else:
-                        cat = get_object_or_404(Category, category_id=content_id)
-                        print(f"Publishing to {cat}")
-                        a_handler.publish_article(cat)
-                # redirect so that the html refreshes
-                return redirect("wwapp:edit_article", article_id)
+                    cat = get_object_or_404(Category, category_id=content_id)
+                    print(f"Publishing to {cat}")
+                    a_handler.publish_article(cat)
+            # redirect so that the html refreshes
+            return redirect("wwapp:edit_article", article_id)
             # save first
             # code to publish
         # elif request.POST.get("draft"):
@@ -203,18 +208,24 @@ def edit_category(request, category_id):
         form = forms.CategoryEdit(request.POST)
         if form.is_valid():
             if request.POST.get("add"):
+                new_cat_name = form.cleaned_data.get("new_category_name")
                 try:
-                    new_cat_name = form.cleaned_data.get("new_category_name")
-                    # print(f"Name: {new_cat_name}")
                     if new_cat_name != "":
                         new_cat = Category.objects.create(category_name=new_cat_name, category_creator=request.user)
+                        print(f"created new category:{new_cat}")
                         c_handler.add_child_category(new_cat)
+
                         values["child_categories"] = c_handler.get_child_categories()
+                        # TODO clear the new topic text input if successfully created
                     else:
                         form.add_error("new_category_name",
                                        f"This {c_handler.get_child_category_type().lower().capitalize()}"
                                        f" name is invalid")
                 except IntegrityError:
+                    print(f"edit_category View -> IntegrityError new_category_name({new_cat_name}) is not unique"
+                          f"\n- Category that exists by that name:{Category.objects.get(category_name=new_cat_name)}")
+                    # print(f"edit_category View ->{traceback.print_exc()}")
+
                     form.add_error("new_category_name",
                                    f"The {c_handler.get_child_category_type().lower().capitalize()}"
                                    f" name must be unique globally")
@@ -297,7 +308,6 @@ def manage_own_content(request):
         "drafted_articles": drafted_articles,
         "published_articles": published_articles,
         # passing user manage_user_content to use the same template
-        "user": request.user,
         "user_projects": CategoryHandler.get_user_projects(request.user),
     }
     return render(request, 'wwapp/manage_user_content.html', values)
@@ -380,6 +390,7 @@ def open_category(request, category_id):
 #     }
 #
 #     return render(request, 'wwapp/edit_category.html', values)
+"""
 from wwblog.settings import EMAIL_HOST_USER
 
 
@@ -402,7 +413,7 @@ def send_email_test(request):
 
     values['form'] = form
     return render(request, 'wwapp/email_test.html', values)
-
+"""
 
 # def image_upload_test(request):
 #     items = imgur.start()
@@ -458,6 +469,8 @@ def upload_test(request):
 
     return render(request, 'wwapp/upload_test.html', values)
 """
+
+
 # def upload_test2(request):
 #     values = {}
 #     if request.method == "POST":
@@ -470,17 +483,6 @@ def upload_test(request):
 #         print(f"File name: {new_file.name}")
 #         print(f"File size: {new_file.size}")
 #     return render(request, 'wwapp/upload_test.html', values)
-
-
-
-
-# def activate_users(request):
-#     # make user
-#     u = User.objects.get(email="giwar97105@0pppp.com")
-#     # activate
-#     User.objects.activate_user(u)
-#     return HttpResponse(request, "active")
-
 
 
 # from django.views.generic import TemplateView
@@ -503,8 +505,10 @@ def view_user_public_images(request, user_id: int):
     pass
     # if mode go to view all user images
 
+
 def view_all_user_images(request, user_id: int):
     pass
+
 
 @login_required
 def upload_image(request):
@@ -521,9 +525,14 @@ def upload_imgur_image(request):
 
         # if image_handler is None:
         imgur_handler = ImgurHandler()
-        status_code = imgur_handler.upload_image(image, request)
+        result = imgur_handler.upload_image(image, request)
         request.session['imgur_image_handler'] = image_handler
-        return HttpResponse(status=status_code)
+        content = {
+            "width": result.get('width'),
+            "height": result.get('height'),
+            "url": result.get('url')
+        }
+        return HttpResponse(content=json.dumps(content, indent=4), status=result.get('status'))
 
     elif request.method == "GET":
         # todo redirect user to upload page
@@ -533,17 +542,40 @@ def upload_imgur_image(request):
 # @image_creator_or_moderator #  TODO
 @login_required
 def delete_image(request, image_id):
-    if request.method == "DELETE":
+    # if request.method == "POST":
+    # try other image type instead (s3Image)
+    # return HttpResponse(status=status_code)
+    # if image_handler is None:
+    if request.method == "GET":
         try:
             image = ImgurImage.objects.get(image_id=image_id)
             status_code = ImgurHandler().delete_image(image, request)
+            if status_code == 202:
+                return redirect("wwapp:browse_own_images")
         except exceptions.ObjectDoesNotExist:
             status_code = 404
-        # try other image type instead (s3Image)
         return HttpResponse(status=status_code)
-        # if image_handler is None:
 
-    elif request.method == "GET":
-        # todo redirect user to image edit page
-        return HttpResponse(status=403)
+# @image_creator_or_moderator #  TODO
+@login_required
+def edit_image(request, image_id):
+    status = 200
+    image = get_object_or_404(ImgurImage, image_id=image_id)
+    form = forms.ImageEdit(request.POST or None, initial={
+        "image_name": image.image_name,
+        "description": image.description,
+        "public": image.public,
+    })
+    context = {
+        "form": form,
+        "image": image,
+    }
 
+    if request.method == "POST":
+        if form.is_valid():
+            image.image_name = form.cleaned_data.get('image_name')
+            image.description = form.cleaned_data.get('description')
+            image.public = form.cleaned_data.get('public')
+            image.save()
+            status = 202
+    return render(request, "wwapp/edit_image.html", context=context, status=status)

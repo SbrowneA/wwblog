@@ -26,13 +26,13 @@
         <div class="row">
             {#            <div class="banner__title float-right col-lg-9 col-6-md col-6-md">#}
             <div class="banner__title col-12">
-                <h1 class="d-inline">w&amp;wblogs</h1>
+                <h1>w&amp;wblogs</h1>
                 {% if request.user.is_authenticated %}
-                    <button class="btn btn-primary mt-2 float-right d-none d-md-inline" id="logout-btn"
+                    <button class="mt-2 float-right d-none d-md-inline" id="logout-btn"
                             onclick="location.href = '{% url 'account:logout' %}'">Logout
                     </button>
                 {% else %}
-                    <button class="btn btn-primary mt-2 float-right d-none d-md-inline" id="login-btn"
+                    <button class="mt-2 float-right d-none d-md-inline" id="login-btn"
                             onclick="location.href = '{% url 'account:login' %}'">Login
                     </button>
                 {% endif %}
@@ -61,6 +61,7 @@
                         <i class="bi bi-list"></i>
                     </button>
                     <div class="dropdown-menu bg-dark">
+{#                    <div class="dropdown-container dropdown-menu">#}
                         <a href="{% url 'wwapp:index' %}" class="ml-3 d-block">Home</a><br/>
                         <a href="{% url 'wwapp:manage_own_content' %}" class="ml-3 d-block">My Posts & Projects</a><br/>
                         {% if request.user.is_authenticated %}
@@ -93,8 +94,10 @@
     </div>
 
     <div class="right-nav col-lg-3 col-md-3 d-none d-md-inline">
+    <div class="sticky-nav">
         {% block right_nav %}
         {% endblock %}
+    </div>
     </div>
 
 </div>

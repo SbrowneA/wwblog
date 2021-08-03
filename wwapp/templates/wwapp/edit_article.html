@@ -1,10 +1,6 @@
 {% extends 'wwapp/base.html' %}
 {% load static %}
 
-{% block title %}
-    edit {{ article.article_title }}
-{% endblock %}
-
 {% block head %}
     {#    <script type="text/javascript" src="{% static 'wwapp/js/main.js' %}"></script>#}
     <script type="text/javascript">
@@ -27,11 +23,19 @@
             }
         }
 
-
     </script>
+    <script src="{% static 'dropzone/dropzone.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'dropzone/dropzone.css' %}">
+    <script src="{% static 'wwapp/js/dropzone_custom.js' %}"></script>
+    {#  required to override the dropzone #}
+    <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/dropzone_custom.css' %}">
     {{ form.media }}
 {% endblock %}
 
+
+{% block title %}
+    edit {{ article.article_title }}
+{% endblock %}
 {% block left_nav %}
     <ul class="no-bullet">
         <li class="mt-5">
@@ -44,8 +48,6 @@
         </li>
     </ul>
 
-
-
 {% endblock %}
 
 {% block right_nav %}
@@ -54,13 +56,13 @@
 
 {% block content %}
     {% load static %}
-    {# <script src="{% static 'tiny_mce/tinymce.min.js' %}" referrerpolicy="origin"></script>#}
-    <script src="https://cdn.tiny.cloud/1/9kc0jaf7jhmllq281dt33c7bosywayiwi04amdwlkm192lzt/tinymce/5/tinymce.min.js"
-            referrerpolicy="origin"></script>
+    {#     <script src="{% static 'tiny_mce/tinymce.min.js' %}" referrerpolicy="origin"></script>#}
+    {#    <script src="{% static 'tiny_mce/tinymce.min.js' %}"#}
+    {#    <script src="https://cdn.tiny.cloud/1/9kc0jaf7jhmllq281dt33c7bosywayiwi04amdwlkm192lzt/tinymce/5/tinymce.min.js"#}
+    {#            referrerpolicy="origin"></script>#}
     {% if request.user == article.autor or request.user in editors %}
         <p>Hidden header</p>
     {% endif %}
-
 
 
     <div id="editorContainer">
@@ -115,6 +117,7 @@
                 {#                    <p>Currently public in: {{ parent_category }}</p>#}
             {% endif %}
         {% endif %}
+                <button class="btn btn-primary" onclick="openDzPopup()">Upload Images</button>
     </div>
 
 
@@ -127,4 +130,24 @@
             {% endfor %}
         </ul>
     {% endif %}
+
+    <div class="popup-container hide-popup" id="popupContainer">
+        <div id="dzPopup" class="popup">
+            {#    <h2>Upload Image</h2>#}
+            <form action="" id="image-dz" class="dropzone dz-custom" method="POST">
+                {% csrf_token %}
+                <div class="fallback" id="div-image-dz">
+                    <input name="file" type="file" multiple/>
+                    {% comment %}            <script>
+                function callInitDz() {
+                    initDz();
+                }
+                callInitDz()
+            </script>{% endcomment %}
+                </div>
+            </form>
+            <button onclick="closeDzPopup()">close</button>
+        </div>
+    </div>
+
 {% endblock %}

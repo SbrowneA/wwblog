@@ -147,7 +147,7 @@ class CategoryHandler:
             last_pos = len(self.get_child_assignations())
         except exceptions.EmptyResultSet:
             last_pos = 0
-
+        print(f"_add_child_item -> last_pos{last_pos}\n parent: {self.category}\n child:{new_child_item}")
         try:
             # TODO **BUG TO FIX HERE **
             #  get parent cat handler remove child item and add to self
@@ -161,11 +161,12 @@ class CategoryHandler:
                 a.save()
 
         except exceptions.ObjectDoesNotExist:
-            pass
+            print(f"_add_child_item -> ObjectDoesNotExist - will create new CategoryItemAssignation ")
             # make new assignation with parent as self
         assignation = CategoryItemAssignation(parent_category_id=self.category.category_id, item=new_child_item,
                                               position=last_pos)
         assignation.save()
+        print(assignation)
 
     def add_child_article(self, article: Article):
         if self.category.category_type == Category.CategoryType.TOPIC or \
@@ -188,7 +189,16 @@ class CategoryHandler:
                 child_cat.save()  # save child_cat to make its category item
                 i = CategoryItem.objects.get(item_category_id=child_cat.category_id)
                 # child_cat.save()
+                print(f"add_child_category -> item created for category {i}")
                 self._add_child_item(i)
+                print(f"_add_child_item -> result:{i}")
+                try:
+                    a = CategoryItemAssignation.objects.get(item_id=i.item_id)
+                    print(f"success: CategoryItemAssignation:{a}")
+                except exceptions.ObjectDoesNotExist:
+                    print(f"failed: CategoryItemAssignation not created")
+
+
         else:
             raise ValueError("This Category is invalid: cannot assign self as child category.")
 
@@ -432,7 +442,7 @@ class CategoryHandler:
             Category.objects.get(category_name=proj_name)
             unique = False
             while not unique:
-                proj_name = f"Project {_make_hash(proj_name)}"
+                proj_name = f"Project {_make_hash_short(proj_name)}"
                 Category.objects.get(category_name=proj_name)
         except exceptions.ObjectDoesNotExist:
             # pass because the title is unique
@@ -878,7 +888,7 @@ class ImgurHandler(ImageHandler):
                                         refresh_token=ImgurHandler.IMGUR_REFRESH_TOKEN)
 
     @time_task
-    def upload_image(self, image, request) -> int:
+    def upload_image(self, image, request) -> dict:
         print(image.__dict__)
         print(request.user)
         # config = {"album": f"user-{request.user.id}"}
@@ -887,7 +897,7 @@ class ImgurHandler(ImageHandler):
                 raise ImgurClientRateLimitError
 
             print("uploading image...")
-            image_name = f"img-{request.user.id}-" + _make_hash(f"{request.user.username}{time.time()}")
+            image_name = f"img-{request.user.id}-" + _make_hash_short(f"{request.user.username}{time.time()}")
             upload = self.imgur_client.upload_from_image(image=image)
             if type(upload) is dict:
                 print(upload['link'])
@@ -898,23 +908,25 @@ class ImgurHandler(ImageHandler):
                 remaining = request.session.get('uploads_remaining') or ImageHandler.USER_SESSION_UPLOAD_LIMIT
                 request.session['uploads_remaining'] = remaining - 1
                 print(f"uploads remaining {remaining - 1}")
-                return 202
+                return {"status": 202, "url": upload['link'], "width": upload['width'], "height": upload['height']}
 
         except ImgurClientRateLimitError:
             self.__timeout_user(request)
-            return 429
+            return {"status": 429}
         except ImgurClientError as e:
             print(f"\n{e.status_code} {e.error_message}")
             traceback.print_exc()
             # logging.error(message=e.error_message)
-            return e.status_code
+            return {"status": e.status_code}
 
     @time_task
     def delete_image(self, image: ImgurImage, request) -> int:
         try:
-            self.imgur_client.delete_image(image.delete_hash)
-            image.delete()
-            return 200
+            if self.imgur_client.delete_image(image.delete_hash):
+                image.delete()
+                return 202
+            else:
+                return 500
         except ImgurClientRateLimitError:
             return 429
         except ImgurClientError as e:
@@ -938,7 +950,12 @@ class ImgurHandler(ImageHandler):
         return self.imgur_client.get_credits()
 
 
-def _make_hash(value: str) -> str:
+def _make_hash_short(value: str) -> str:
     # encoded = value.encode('utf=8')
-    h = hashlib.sha224(value.encode('utf=8'), usedforsecurity=False).hexdigest()[:6]
+    return _make_hash_long(value)[:6]
+
+
+def _make_hash_long(value: str) -> str:
+    # encoded = value.encode('utf=8')
+    h = hashlib.sha224(value.encode('utf=8'), usedforsecurity=False).hexdigest()
     return str(h)
