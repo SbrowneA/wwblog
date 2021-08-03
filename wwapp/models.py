@@ -14,7 +14,7 @@ User = settings.AUTH_USER_MODEL
 
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
-    category_name = models.CharField(unique=True, max_length=45)
+    category_name = models.CharField(unique=False, max_length=45)
     category_creator = models.ForeignKey(User, on_delete=models.PROTECT)
     category_description = models.CharField(null=True, max_length=300)
 
