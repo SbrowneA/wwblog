@@ -77,6 +77,7 @@ see: [How To Set Environment Variables](https://www.twilio.com/blog/2017/01/how-
     - `DATABASE_PASSWORD`
 - imgur:
     - `IMGUR_CLIENT_ID`
+    - `IMGUR_CLIENT_SECRET`
     - `IMGUR_REFRESH_TOKEN`
 - Gmail:
     - `EMAIL_HOST_USER`
