@@ -3,7 +3,7 @@
 wwblog is a blog web-app built on Django. It implements a number of open-source libraries/apps and free services to
 operate.
 
-#### [Check out the live site](https://wwblsogs.herokuapp.com/)
+#### [Check out the live site](https://wwblogs.herokuapp.com/)
 
 <br/>
 
