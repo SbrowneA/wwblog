@@ -7,8 +7,8 @@ async function updateArticleDetails() {
     console.log("updating article ");
     await getArticleDetailsPromise().then((data) => {
         article = data
-        console.log("updateArticleDetails  ->");
-        console.log(data);
+        // console.log("updateArticleDetails  ->");
+        // console.log(data);
     }).catch((err) => {
             console.error(`Error: ${err.error}`);
         }
@@ -110,8 +110,8 @@ function getArticleDetailsPromise() {
     return new Promise((resolve, reject) => {
         fetch(fetchUrl)
             .then(response => {
-                console.log("\ngetArticlePromise ->");
-                console.log(response);
+                // console.log("\ngetArticlePromise ->");
+                // console.log(response);
                 if (response.status === 200) {
                     resolve(response.json());
                 } else reject(response);
@@ -128,8 +128,8 @@ function getArticleContentPromise() {
     return new Promise((resolve, reject) => {
         fetch(fetchUrl)
             .then(response => {
-                console.log("\ngetArticlePromise ->");
-                console.log(response);
+                // console.log("\ngetArticlePromise ->");
+                // console.log(response);
                 if (response.status === 200) {
                     resolve(response.json());
                 } else reject(response);
@@ -284,7 +284,11 @@ let optionsRow;
 let categoryOptions = [];
 // id naming pattern used for elements ("idPre-" + modelIdValue)
 const categoryGroupIdPre = "categoryGroup-";
+const categoryGroupBodyIdPre = "categoryGroupBody-";
 const createCategoryGroupIdPre = "createCategoryGroup-";
+const createCategoryTxtIdPre = "createCategoryTxt-";
+const createCategoryBtnPre = "submitCategoryBtn-";
+const categoryNameBtnIdPre = "categoryName-";
 
 function initPublishPopupLayout() {
     //add container
@@ -335,9 +339,6 @@ function initPublishPopupLayout() {
 
     popup.append(headingRow, optionsRow, buttonsRow);
 
-    //add csrf token
-    // getCSRFToken();
-
     //append elements
     document.body.appendChild(container);
     container.appendChild(popup);
@@ -351,22 +352,20 @@ function initPublishPopupLayout() {
     });
 }
 
-function initPublishOptions() {
+async function initPublishOptions() {
     //load the options from the server
-    getPublishOptionsPromise().then((options) => {
+    await getPublishOptionsPromise().then((options) => {
         categoryOptions = options;
         for (let i = 0; i < categoryOptions.length; i++) {
             initOptionElement(categoryOptions[i], null);
         }
-        console.log("initPublishOptions ->");
-        console.log(options);
+        // console.log("initPublishOptions -> options:");
+        // console.log(options);
     }).finally(() => {
         // stop loading animation
         // toggleOffElementClass(optionsRow, "loading");
         optionsRow.classList.remove("loading")
-    })
-    return new Promise(resolve => {
-        resolve(1)
+        let btns = document.querySelectorAll(`.category-name`);
     })
 }
 
@@ -375,7 +374,7 @@ function initPublishOptions() {
  * Initialises the publish popup when it gets opened in the following order:
  * 1. generate the layout of the popup
  * 2. load the available options from the server
- * 3. generate the html for the options and append them to the DOM
+ * 3. generate the html for the options and append them to the popup in the DOM
  * 4. turn off loading animation
  * @return {Promise<void>}
  */
@@ -385,20 +384,18 @@ async function initPublishPopup() {
     if (article === undefined) {
         await updateArticleDetails();
     }
+    // if the article is published, the category name button is clicked to be selected in the UI
     if (article.published) {
-        let btnId = `categoryName-${article.parent_category.category_id}`;
+        let btnId = categoryNameBtnIdPre + article.parent_category.category_id;
         let btn = document.querySelector(`#${btnId}`);
-        console.log(`expected id ${btnId}`);
-        console.log(`id ${btn.id}`);
-        console.log(btn);
         btn.click();
     }
 }
 
-function openPublishPopup() {
+async function openPublishPopup() {
     if (publishPopup === undefined) {
         //initialise all the html elements and data
-        initPublishPopup();
+        await initPublishPopup();
     }
     //make the popup visible
     togglePublishPopup();
@@ -425,7 +422,7 @@ openPublishPopupBtn.addEventListener("click", () => {
  * @param catId - id of category being created
  * @param catName - name of category being created
  * @param type - category type to be crated, can be PROJECT, TOPIC or SUBTOPIC
- * @return {HTMLDivElement} - Element that contains all the
+ * @return {HTMLDivElement} - Element that contains all the components to select it and create sub-categories
  */
 function createCategoryGroupHTMLElement(catId, catName, type) {
     let group = document.createElement("div");
@@ -453,7 +450,7 @@ function createCategoryGroupHTMLElement(catId, catName, type) {
     // > header > category name title button
     let titleBtn = document.createElement("button");
     titleBtn.innerText = catName;
-    titleBtn.id = `categoryName-${catId}`;
+    titleBtn.id = categoryNameBtnIdPre + catId;
     titleBtn.value = catId;
     titleBtn.classList.add((type === "PROJECT") ? "project-name" : "category-name");
     if (!(type === "PROJECT")) {
@@ -467,7 +464,7 @@ function createCategoryGroupHTMLElement(catId, catName, type) {
     catHeader.append(titleBtn);
     // > body
     let catBody = document.createElement("div");
-    catBody.id = `categoryGroupBody-${catId}`
+    catBody.id = categoryGroupBodyIdPre + catId;
     catBody.classList.add("category-group__body");
     // > body > create-category-group
     let createCatGroup = document.createElement("div");
@@ -479,20 +476,20 @@ function createCategoryGroupHTMLElement(catId, catName, type) {
         let createCatInputGroup = document.createElement("div");
         createCatInputGroup.classList.add("create-category-input-group");
         let txt = document.createElement("input");
-        txt.id = `createCategoryTxt-${catId}`
+        txt.id = createCategoryTxtIdPre + catId
         txt.type = "text";
         // txt.autocomplete = "false";
         let lbl = document.createElement("label");
-        lbl.htmlFor = `createCategoryTxt-${catId}`
+        lbl.htmlFor = txt.id
         lbl.innerText = "Name";
         let submitBtn = document.createElement("button");
-        submitBtn.id = `submitCategoryBtn-${catId}`;
+        submitBtn.id = createCategoryBtnPre + catId;
         submitBtn.classList.add("submit-category-btn");
         submitBtn.value = catId;
         submitBtn.innerText = "Create";
         submitBtn.addEventListener("click", (e) => {
-            console.log("onclick - " + submitBtn.classList);
-            submitNewCategory(submitBtn.value);
+            // console.log("onclick - " + submitBtn.classList);
+            createCategory(submitBtn.value);
         });
         // > body > create-category-group > create button to toggle input group
         let createBtn = document.createElement("button");
@@ -500,12 +497,11 @@ function createCategoryGroupHTMLElement(catId, catName, type) {
         createBtn.value = catId;
         createBtn.innerText = "+ create new";
         createBtn.addEventListener("click", () => {
-            console.log("onclick - " + createBtn.classList);
-            showCreateCategoryInputGroup(createBtn.value);
+            // console.log("onclick - " + createBtn.classList);
+            document.getElementById(createCategoryGroupIdPre + createBtn.value).classList.toggle("expand")
         });
         createCatInputGroup.append(lbl, txt, submitBtn);
-        //TODO enable once create functionality is ready
-        // createCatGroup.append(createCatInputGroup, createBtn);
+        createCatGroup.append(createCatInputGroup, createBtn);
         catBody.append(createCatGroup)
     }
     group.append(catHeader, catBody);
@@ -595,8 +591,6 @@ function getPublishOptionsPromise() {
     return new Promise((resolve, reject) => {
         fetch(fetchUrl)
             .then(response => {
-                console.log("\ngetPublishOptions ->");
-                console.log(response);
                 if (response.status === 200) {
                     resolve(response.json());
                 } else reject(response);
@@ -616,9 +610,9 @@ function publishArticlePromise(articleId, catId) {
             body: formData,
             credentials: "same-origin"
         }).then(response => {
-                console.log("publishArticlePromise -> in then")
-                console.log(response)
-                console.log(response.status)
+                // console.log("publishArticlePromise -> in then")
+                // console.log(response)
+                // console.log(response.status)
                 if (response.status === 200) {
                     resolve(response.json())
                 } else if (response.status !== 500) {
@@ -641,22 +635,21 @@ async function publishArticle() {
     if (!article) {
         await updateArticleDetails();
     }
-    console.log("publishArticle -> " + article);
+    // console.log("publishArticle -> " + article);
     publishArticlePromise(article.article_id, selectedCategory.value).then(data => {
-            console.log("publishArticlePromise Then")
-            console.log(data);
+            // console.log("publishArticlePromise Then")
+            // console.log(data);
             // update variables
             let temp = article.content ? article.content : null;
             article = data;
             article.conent = temp;
             // update publish status lbl and selected label
-            if (article.published){
+            if (article.published) {
                 pubStatusLbl.innerText = `Currently public in: ${article.parent_category.category_name}`
                 editControls.classList.add("published");
-            }
-            else{
-            editControls.classList.remove("published");
-            pubStatusLbl.innerText = `This post is private`
+            } else {
+                editControls.classList.remove("published");
+                pubStatusLbl.innerText = `This post is private`
             }
         }
     ).finally(() => {
@@ -675,14 +668,72 @@ async function publishArticle() {
 
 }
 
-async function createCategory(categoryName) {
-//    TODO
+function toggleCreateBtnLoading(btn) {
+    if (btn.innerText){
+        btn.classList.add("loading");
+        btn.innerText = "";
+        btn.enabled = true;
+    }
+    else{
+        btn.classList.remove("loading");
+        btn.innerText = "Create";
+        btn.enabled = false;
+    }
+}
+
+function createCategory(parentID) {
+    let newCatName = document.getElementById(createCategoryTxtIdPre + parentID).value;
+    if (newCatName) {
+        let btn = document.getElementById(createCategoryBtnPre + parentID);
+        toggleCreateBtnLoading(btn);
+        createCategoryPromise(newCatName, parentID).then(newOption => {
+                // console.log("data:")
+                let newCat = newOption.category;
+                let newElem = createCategoryGroupHTMLElement(newCat.category_id, newCat.category_name, newCat.category_type);
+                document.getElementById(categoryGroupIdPre + parentID);
+                let parentElem = document.getElementById(categoryGroupIdPre+parentID)
+                appendChildCategoryGroup(newElem, parentElem);
+            }
+        ).finally(() => {
+                toggleCreateBtnLoading(btn);
+                document.getElementById(createCategoryGroupIdPre + parentID).classList.remove("expand")
+                document.getElementById(createCategoryTxtIdPre + parentID).value = "";
+            }
+        );
+    }
+}
+
+function createCategoryPromise(childCatName, parentID) {
+    let createUrl = document.getElementById("ajax_create_child_category_url").value;
+    let formData = new FormData();
+    formData.append('parent_category_id', parentID);
+    formData.append('child_category_name', childCatName);
+    formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+    return new Promise((resolve, reject) => {
+        fetch(createUrl, {
+            method: 'POST',
+            body: formData,
+            credentials: "same-origin"
+        }).then(response => {
+                console.log("createCategoryPromise -> in then")
+                console.log(response.status)
+                console.log(response)
+                if (response.status === 202) {
+                    resolve(response.json())
+                } else if (response.status !== 500) {
+                    let j = response.json()
+                    reject(j.error);
+                } else {
+                    reject(`Error:${response.status} Internal server error`);
+                }
+            }
+        );
+    })
 }
 
 
 //NAVIGATION BUTTONS
 function viewArticle(url) {
-    console.log(url);
     if (confirm("All unsaved changes will be lost.\nwould yo like to continue?")) {
         window.location.replace(url);
     } else {
