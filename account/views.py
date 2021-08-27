@@ -7,6 +7,7 @@ from django.contrib.auth import (authenticate,
                                  logout as auth_logout,
                                  get_user_model)
 from django.core import exceptions
+from django.views.decorators.csrf import csrf_protect
 from . import forms
 from django.forms import Form
 from django.db import IntegrityError
@@ -24,6 +25,7 @@ from smtplib import SMTPException
 User = get_user_model()
 
 
+@csrf_protect
 @unauthenticated_user
 @sensitive_post_parameters()
 @never_cache
@@ -63,6 +65,7 @@ def logout_user(request):
     return redirect("wwapp:index")
 
 
+@csrf_protect
 @unauthenticated_user
 @sensitive_post_parameters()
 @never_cache
@@ -115,6 +118,7 @@ def unverified_user(request):
     return render(request, "account/unactivated_account.html")
 
 
+@csrf_protect
 @login_required
 @sensitive_post_parameters()
 @never_cache
@@ -154,6 +158,7 @@ def moderator_dashboard(request):
     return render(request, "account/dashboard/dashboard.html", context)
 
 
+@csrf_protect
 @login_required
 @minimum_role_required("moderator")
 def manage_users(request):
@@ -180,8 +185,6 @@ def manage_users(request):
     return render(request, "account/dashboard/manage_users.html", context, status=status)
 
 
-# @login_required
-# @minimum_role_required("moderator")
 def _activate_user(user_id):
     # todo use class views and make this a class method
     user = User.objects.get(id=user_id)
@@ -203,8 +206,6 @@ def _activate_user(user_id):
         return 500
 
 
-# @login_required
-# @minimum_role_required("moderator")
 def _deactivate_user(user_id):
     """
     user = User.objects.get(id=user_id)

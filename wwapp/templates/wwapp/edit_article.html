@@ -3,32 +3,11 @@
 
 {% block head %}
     {#    <script type="text/javascript" src="{% static 'wwapp/js/main.js' %}"></script>#}
-    <script type="text/javascript">
-        function deleteArticle(the_id) {
-            if (confirm("Are you sure you want to delete this post (" + '{{ article.article_title }}'
-                + ")?\nLinked posts will not be deleted, only unliked")) {
-                var url = "/post/" + the_id.toString() + "/delete";
-                window.location.replace(url);
-            } else {
-                return false;
-            }
-        }
-
-        function viewArticle(the_id) {
-            if (confirm("All unsaved changes will be lost.\nwould yo like to continue?")) {
-                var url = "/post/" + the_id.toString() + "/view";
-                window.location.replace(url);
-            } else {
-                return false;
-            }
-        }
-
-    </script>
     <script src="{% static 'dropzone/dropzone.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'dropzone/dropzone.css' %}">
-    <script src="{% static 'wwapp/js/dropzone_custom.js' %}"></script>
+    <script defer src="{% static 'wwapp/js/edit_article.js' %}"></script>
     {#  required to override the dropzone #}
-    <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/dropzone_custom.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'wwapp/css/edit_article.css' %}">
     {{ form.media }}
 {% endblock %}
 
@@ -41,9 +20,9 @@
         <li class="mt-5">
             {#    TODO check too if moderator#}
             {% if article.author_id == request.user.id %}
-                {#            <button onclick="location.href='{% url "wwapp:delete_article" article.article_id %}'" class="btn btn-danger">Delete</button>#}
-                {#                <button onclick="deleteArticle('{{ article.article_id }}')" class="btn btn-danger">Delete</button>#}
-                <button onclick="deleteArticle({{ article.article_id }})" class="btn btn-danger">Delete</button>
+                <button id="deleteArticleBtn" class="btn btn-danger"
+                        value="{% url "wwapp:delete_article" article.article_id %}">Delete
+                </button>
             {% endif %}
         </li>
     </ul>
@@ -84,43 +63,41 @@
                 {% endfor %}
             </div>
             <button type="submit" class="btn btn-success">Save</button>
-
-            {% if article.author_id == request.user.id %}
-                {% if article.published %}
-                    {#                    <button class="btn btn-primary" onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft</button>#}
-                    <p>Currently public in: {{ parent_category }}</p>
-
-                {% else %}
-                    <div>
-                        Publish to:&nbsp{{ form.publish_to_select }}
-                        <button type="submit" value="publish" name="publish" class="btn btn-primary">Publish</button>
-                        <div>
-                            {% for error in form.publish_to_select.errors %}
-                                <div class="alert alert-danger">
-                                    <strong>{{ error|escape }}</strong>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-            {% endif %}
-
         </form>
+        <br>
         {% if article.author_id == request.user.id %}
-            {% if article.published %}
-                <button class="btn btn-primary"
-                        onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft
-                </button>
-                <button class="btn btn-primary"
-                        onclick="viewArticle({{ article.article_id }})"> View
-                </button>
-                {#                    <p>Currently public in: {{ parent_category }}</p>#}
-            {% endif %}
+            <div id="editControlsContainer"{% if article.published %} class="edit-controls published" {% else %}
+                 class="edit-controls"{% endif %}>
+                {# TODO remove when hydration works #}
+                <div class="publish-status">
+                    {% if article.published %}
+                        <span id="txtPublishStatus">Currently public in: {{ parent_category }}</span>
+                    {% else %}
+                        <p id="txtPublishStatus">This post is private</p>
+                    {% endif %}
+                    <button class="btn btn-primary"
+                            id="draftArticleBtn"
+                            onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft
+                    </button>
+                    <button id="viewArticleBtn" class="btn btn-primary"
+                            value="{% url "wwapp:open_article" article.article_id %}"> View
+                    </button>
+                </div>
+                <button id="openPublishPopupBtn" class="btn btn-primary">Publish</button>
+                <br>
+                <button id="uploadImageBtn" class="btn btn-primary">Upload Images</button>
+            </div>
         {% endif %}
-                <button class="btn btn-primary" onclick="openDzPopup()">Upload Images</button>
     </div>
-
-
+    <input id="ajax_get_publish_options_url" type="hidden" value="{% url "wwapp:ajax_get_publish_options" %}">
+    <input id="ajax_publish_article_url" type="hidden" value="{% url "wwapp:ajax_publish_article" %}">
+    <input id="ajax_create_child_category_url" type="hidden" value="{% url "wwapp:ajax_create_child_category" %}">
+    <input id="ajax_get_article_details_url" type="hidden"
+           value="{% url "wwapp:ajax_get_article_details" article.article_id %}">
+    <input id="ajax_get_article_content_url" type="hidden"
+           value="{% url "wwapp:ajax_get_article_content" article.article_id %}">
+    <br/>
+    {#    <button id="testBtn" class="btn btn-primary">test</button>#}
     {% if editors_count == 0 %}
         <p>no editors</p>
     {% else %}
@@ -130,24 +107,7 @@
             {% endfor %}
         </ul>
     {% endif %}
-
-    <div class="popup-container hide-popup" id="popupContainer">
-        <div id="dzPopup" class="popup">
-            {#    <h2>Upload Image</h2>#}
-            <form action="" id="image-dz" class="dropzone dz-custom" method="POST">
-                {% csrf_token %}
-                <div class="fallback" id="div-image-dz">
-                    <input name="file" type="file" multiple/>
-                    {% comment %}            <script>
-                function callInitDz() {
-                    initDz();
-                }
-                callInitDz()
-            </script>{% endcomment %}
-                </div>
-            </form>
-            <button onclick="closeDzPopup()">close</button>
-        </div>
-    </div>
-
 {% endblock %}
+<script src="{% static 'wwapp/js/jquery-3.6.0.min.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -1,8 +1,12 @@
+import json
 import os
 import hashlib
 import traceback
 import time
 from abc import ABC, abstractmethod
+from typing import Optional
+from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import (IntegrityError)
 from django.core import exceptions
 
@@ -45,19 +49,20 @@ class _CategoryItemHandler:
                 f"{self.__class__.__name__} => This CategoryItem has no parent assigned")
 
 
-class CategoryGroup:
-    def __init__(self, category: Category):
-        self.category = category
-        self.handler = CategoryHandler(category)
-        self.articles = self.handler.get_child_articles()
-
-        # list of child category groups
-        self.sub_cat_groups = []
-        child_cats = self.handler.get_child_categories()
-        if child_cats is not None:
-            for cat in child_cats:
-                group = CategoryGroup(cat)
-                self.sub_cat_groups.append(group)
+#
+# class CategoryGroup:
+#     def __init__(self, category: Category):
+#         self.category = category
+#         self.handler = CategoryHandler(category)
+#         self.articles = self.handler.get_child_articles()
+#
+#         # list of child category groups
+#         self.sub_cat_groups = []
+#         child_cats = self.handler.get_child_categories()
+#         if child_cats is not None:
+#             for cat in child_cats:
+#                 group = CategoryGroup(cat)
+#                 self.sub_cat_groups.append(group)
 
 
 class CategoryHandler:
@@ -393,8 +398,9 @@ class CategoryHandler:
         return choices
 
     @staticmethod
-    def get_publish_to_choices_for_user(user: User):
-        choices = []
+    def get_publish_to_choices_for_user_as_tuples(user: User):
+        """gets a list of available categories to publish,
+        in a list of tuples in string format to instantiate a HTML dropdown list"""
         # if is_moderator_or_admin(user):
         # get all topics and sub topics
         # get all articles
@@ -413,6 +419,50 @@ class CategoryHandler:
         # choices += CategoryHandler.convert_articles_to_choice(articles)
 
         return choices
+
+    @staticmethod
+    def get_user_child_category_option_from_category_serialized(user: User, cat: Category) -> dict:
+        """
+        Gets a publish option from the category passed and its children recursively.
+        Only the children created by the user are listed as options.
+
+        Parameters:
+            user: User - the user who the category options must belong to
+            cat: Category - the parent category to get its children and return an option dictionary for
+
+
+        Returns:
+            option: dict - a dictionary that hierarchically contains itself serialized as "category" and its "children"
+            which is a list of options.
+        """
+        # create dict to be parsed into json string
+        cat_as_dict = vars(cat)
+        # must occur separately
+        cat_as_dict.pop("_state")
+        option = {"category": cat_as_dict, "children": []}
+        # get child categories of cat
+        child_categories = CategoryHandler(cat).get_child_categories()  # returns [] if not
+        # if p has children filter for the children by the user
+        if child_categories:
+            # if child_categories has categories by the user sort by name and check if each child child has children
+            user_child_categories = [c for c in child_categories if c.category_creator_id == user.id]
+            if user_child_categories:
+                user_child_categories = sorted(user_child_categories, key=lambda category: category.category_name)
+                for child_cat in user_child_categories:
+                    option["children"].append(CategoryHandler.
+                                              get_user_child_category_option_from_category_serialized(user, child_cat))
+        return option
+
+    @staticmethod
+    @time_task
+    def get_publish_to_choices_for_user_as_json(user: User) -> str:
+        user_projects = CategoryHandler.get_user_projects(user)
+        project_options = []
+        for p in user_projects:
+            # recursive loop to get all children within project
+            option = CategoryHandler.get_user_child_category_option_from_category_serialized(user, p)
+            project_options.append(option)
+        return json.dumps(project_options, indent=4)
 
     @staticmethod
     def get_all_projects() -> [Category]:
@@ -452,8 +502,8 @@ class CategoryHandler:
         proj.save()
         return proj
 
-    def get_category_group(self) -> CategoryGroup:
-        return CategoryGroup(self.category)
+    # def get_category_group(self) -> CategoryGroup:
+    #     return CategoryGroup(self.category)
 
 
 class ArticleHandler:
@@ -533,8 +583,17 @@ class ArticleHandler:
         self.article.save()
 
     def publish_article(self, category: Category):
+        """ publishes the self.article to the category specified. if it is already published,
+         the article will be drafted first and then published again
+
+        Keyword arguments:
+            category -- the category to assign the article to when publishing
+         """
         # check if already published
         if self.article.published:
+            if self.get_parent_category().category_id == category.category_id:
+                # do nothing if already in the same category
+                return
             self.draft_article()
         # publish to new category
         cat_handler = CategoryHandler(category)
