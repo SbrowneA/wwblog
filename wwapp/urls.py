@@ -26,6 +26,7 @@ urlpatterns = [
     path('category/<int:category_id>/delete/<int:child_id>/', views.delete_child_category, name='add_sub_category'),
     path('category/createproject/', views.create_project, name='new_project'),
     path('post/ajax/create-category/', views.create_project, name='ajax_create_project'),
+    path('post/ajax/create-child-category/', views.ajax_create_category, name='ajax_create_child_category'),
     path('post/ajax/publish-post/', views.ajax_publish_article_to_category, name='ajax_publish_article'),
     path('get/ajax/available-publish-categories/', views.ajax_get_available_publish_categories, name='ajax_get_publish_options'),
     path('get/ajax/article-details/<int:article_id>/', views.ajax_get_article_details, name='ajax_get_article_details'),

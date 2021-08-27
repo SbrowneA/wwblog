@@ -83,7 +83,7 @@
                             value="{% url "wwapp:open_article" article.article_id %}"> View
                     </button>
                 </div>
-                <button id="openPublishPopupBtn" class="btn btn-primary">select publish</button>
+                <button id="openPublishPopupBtn" class="btn btn-primary">Publish</button>
                 <br>
                 <button id="uploadImageBtn" class="btn btn-primary">Upload Images</button>
             </div>
@@ -91,6 +91,7 @@
     </div>
     <input id="ajax_get_publish_options_url" type="hidden" value="{% url "wwapp:ajax_get_publish_options" %}">
     <input id="ajax_publish_article_url" type="hidden" value="{% url "wwapp:ajax_publish_article" %}">
+    <input id="ajax_create_child_category_url" type="hidden" value="{% url "wwapp:ajax_create_child_category" %}">
     <input id="ajax_get_article_details_url" type="hidden"
            value="{% url "wwapp:ajax_get_article_details" article.article_id %}">
     <input id="ajax_get_article_content_url" type="hidden"

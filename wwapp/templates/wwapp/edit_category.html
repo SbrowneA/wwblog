@@ -67,7 +67,7 @@
                         <li>
                             <a href="{% url 'wwapp:open_category' cat.category_id %}">{{ cat.category_name }}</a>
                              - <a href="{% url 'wwapp:edit_category' cat.category_id %}">edit</a>
-                             - <span onclick="deleteChildCategory({{ cat.category_id }}, {{ cat.category_name }})" class="delete-link">delete</span>
+{#TODO                             - <span onclick="deleteChildCategory({{ cat.category_id }}, {{ cat.category_name }})" class="delete-link">delete</span>#}
 {#                             - <a onclick="deleteChildCategory({{ cat.category_id }}, {{ cat.category_name }})" class="delete-link">delete</a>#}
 {#                            <button type="button" class="btn btn-primary h-100 edit-btn"#}
 {#                                    onclick="location.href = '{% url 'wwapp:edit_category' cat.category_id %}'"><i#}

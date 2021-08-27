@@ -83,7 +83,7 @@ def open_article(request, article_id):
         values['has_editor_privilege'] = a_handler.has_editor_privilege(request.user)
         secret = a_handler.get_latest_version().secret_note
         values['secret_note'] = secret
-    print("date", str(article.creation_date))
+    # print("date", str(article.creation_date))
     # article_url = a_handler.get_latest_version_url()
     # if article_url is not None:
     #     values['article_url'] = article_url
@@ -197,9 +197,29 @@ def create_project(request):
 @minimum_role_required("member")
 def ajax_create_category(request):
     """used to create a category from UI with AJAX"""
-    if request.is_ajax() and request.method == "POST":
-        print(request)
+    # if request.is_ajax() and request.method == "POST":
+    if request.method == "POST":
+        try:
+            # get parent cat
+            parent_id = request.POST['parent_category_id']
+            parent_cat = Category.objects.get(category_id=parent_id)
+            # create category
+            cat_name = request.POST['child_category_name']
+            new_cat = Category(category_name=cat_name, category_creator=request.user)
+            new_cat.save()
+            # add as child
+            CategoryHandler(parent_cat).add_child_category(new_cat)
+            as_option = {"category": new_cat.as_dict, "children": []}
+            print("new option", as_option)
+            return HttpResponse(content={json.dumps(as_option, indent=4)}, status=202)
+        except KeyError:
+            print("invalid input")
+            return HttpResponse(status=400)
+        except exceptions.ObjectDoesNotExist:
+            print("Parent cat does not exist")
+            return HttpResponse(status=400)
     else:
+        print(f"request was not POST\n{request}")
         return HttpResponse(status=404)
 
 
@@ -225,7 +245,8 @@ def ajax_publish_article_to_category(request):
     # if request.is_ajax() and request.method == "GET":
     if request.method == "POST":
         try:
-            print(f"POST REQUEST: ArticleID: {request.POST['article_id']} CategoryID: {request.POST['parent_category_id']}")
+            print(
+                f"POST REQUEST: ArticleID: {request.POST['article_id']} CategoryID: {request.POST['parent_category_id']}")
             a = Article.objects.get(article_id=request.POST['article_id'])
             cat = Category.objects.get(category_id=request.POST['parent_category_id'])
             # publish article
