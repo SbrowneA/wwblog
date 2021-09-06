@@ -41,5 +41,6 @@ jobs:
         IMGUR_CLIENT_ID: "a"
         IMGUR_REFRESH_TOKEN: "a"
         WWBLOG_SECRET_KEY: "a"
+        SENTRY_DSN: "a"
       run: |
         python manage.py test
