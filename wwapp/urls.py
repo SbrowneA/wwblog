@@ -4,6 +4,9 @@ from . import views
 from django.conf.urls.static import static
 from django.conf import settings
 
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
 app_name = 'wwapp'
 
 urlpatterns = [
@@ -39,6 +42,7 @@ urlpatterns = [
     path('image/<int:image_id>/delete/', views.delete_image, name='delete_image'),
     path('upload-to-imgur', views.upload_imgur_image, name="upload_to_imgur"),
     # path('test', views.test_get_cats, name="test_get_cats"),
+    path('test/', trigger_error),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

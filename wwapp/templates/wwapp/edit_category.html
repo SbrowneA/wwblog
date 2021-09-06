@@ -82,7 +82,7 @@
                 <p><i>No {{ child_category_type }}s in this {{ category_type }}</i></p>
             {% endif %}
         {% endif %}
-        {% if child_category_type %}
+        {% comment %}{% if child_category_type %}
             Add new {{ child_category_type }}
             {{ form.new_category_name }}
             <p>
@@ -100,7 +100,7 @@
                     </div>
                 {% endfor %}
             </p>
-        {% endif %}
+        {% endif %}{% endcomment %}
 
         <h3>Articles</h3>
         {% if child_articles %}
