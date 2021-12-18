@@ -5,6 +5,13 @@
     {% load static %}
     {% block head %}
     {% endblock %}
+    <meta http-equiv="Content-Security-Policy"
+      content="
+      default-src 'self';
+      img-src 'self' https://i.imgur.com https://wikimedia.org data:;
+      child-src 'none';
+      style-src 'self' 'unsafe-inline';">
+
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}">
@@ -34,13 +41,12 @@
             <div class="banner__title col-12">
                 <h1>w&amp;wblogs</h1>
                 {% if request.user.is_authenticated %}
-                    <button class="mt-2 float-right d-none d-md-inline" id="logout-btn"
-                            onclick="location.href = '{% url 'account:logout' %}'">Logout
-                    </button>
+                    asdasd
+                    <button class="mt-2 float-right d-none d-md-inline navigation-button" id="logout-btn"
+                            value="{% url 'account:logout' %}">Logout</button>
                 {% else %}
-                    <button class="mt-2 float-right d-none d-md-inline" id="login-btn"
-                            onclick="location.href = '{% url 'account:login' %}'">Login
-                    </button>
+                    <button class="mt-2 float-right d-none d-md-inline navigation-button" id="login-btn"
+                            value="{% url 'account:login' %}">Login</button>
                 {% endif %}
             </div>
 

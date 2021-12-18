@@ -22,7 +22,7 @@
     {% if latest_articles_list %}
         <div class="card-grid">
             {% for article in latest_articles_list %}
-                <div class="card" style="--order={{ forloop.counter0 }}">
+                <div class="card">
                     <div class="card__bg"></div>
                     <div class="card__fg">
                         <a class="card__fg__filler" href="{% url 'wwapp:open_article' article.article_id %}">

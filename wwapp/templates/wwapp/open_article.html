@@ -38,7 +38,8 @@
         <h4><a href="{% url 'wwapp:new_article' %}">New Post</a></h4>
         <h4><a href="{% url 'wwapp:new_project' %}">New Project</a></h4>
         {% if has_editor_privilege %}
-            <button class="btn btn-primary" onclick="location.href='{% url "wwapp:edit_article" article.article_id %}'">
+            <button id="goToEditBtn" class="btn btn-primary navigation-button"
+                    value="{% url "wwapp:edit_article" article.article_id %}">
                 Edit
             </button>
         {% endif %}
