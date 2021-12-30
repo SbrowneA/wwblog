@@ -35,10 +35,6 @@
 
 {% block content %}
     {% load static %}
-    {#     <script src="{% static 'tiny_mce/tinymce.min.js' %}" referrerpolicy="origin"></script>#}
-    {#    <script src="{% static 'tiny_mce/tinymce.min.js' %}"#}
-    {#    <script src="https://cdn.tiny.cloud/1/9kc0jaf7jhmllq281dt33c7bosywayiwi04amdwlkm192lzt/tinymce/5/tinymce.min.js"#}
-    {#            referrerpolicy="origin"></script>#}
     {% if request.user == article.autor or request.user in editors %}
         <p>Hidden header</p>
     {% endif %}
@@ -77,8 +73,8 @@
                     {% endif %}
                     <button class="btn btn-primary"
                             id="draftArticleBtn"
-                            onclick="location.href='{% url 'wwapp:draft_article' article.article_id %}'"> Draft
-                    </button>
+                            value="{% url 'wwapp:draft_article' article.article_id %}"
+                    >Draft</button>
                     <button id="viewArticleBtn" class="btn btn-primary"
                             value="{% url "wwapp:open_article" article.article_id %}"> View
                     </button>
@@ -108,6 +104,3 @@
         </ul>
     {% endif %}
 {% endblock %}
-<script src="{% static 'wwapp/js/jquery-3.6.0.min.js' %}"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

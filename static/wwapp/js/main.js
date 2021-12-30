@@ -1,8 +1,10 @@
+"use strict";
+
+//TODO make IIFE
 function setDatesToUserTimezone() {
     // gets date elements and sets them on the user's timezone
     let elements = document.querySelectorAll(".convert-to-local-date");
     for (let i = 0; i < elements.length; i++) {
-        console.log("I"+i)
         elements[i].innerText = convertDateToUserTimezone(elements[i].innerText);
     }
 }
@@ -58,3 +60,14 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+
+(function initButtons() {
+    let navBtns = document.getElementsByClassName('navigation-button');
+    for (let btn of navBtns) {
+        btn.addEventListener("click", () => {
+            console.log("click");
+            window.location = btn.value;
+        });
+    }
+})();
