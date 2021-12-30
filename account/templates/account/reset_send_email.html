@@ -1,27 +1,9 @@
 {% extends 'account/base.html' %}
 {% block title %} Login {% endblock %}
+{% load static %}
 
 {% block head %}
-    <script type="text/javascript">
-        function backToLogin() {
-            var url = "/login/";
-            window.location.replace(url);
-        }
-
-        window.onload = function () {
-            styleFields()
-        }
-
-        function styleFields() {
-            var fields = document.forms['set-password-form'].getElementsByTagName('input');
-            console.log(fields)
-            for (var i = 0; i < fields.length; i++) {
-                fields[i].classList.add('form-control');
-            }
-            fields.forEach(setClass(field));
-        }
-
-    </script>
+    <script defer type="text/javascript" src="{% static 'account/js/reset_password.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -49,7 +31,7 @@
             <br/>
             <div>
                 {#                <button onclick="href.location='{% url 'account:login' %}'" type="button" class="btn btn-primary">Back#}
-                <button onclick="backToLogin()" type="button" class="btn btn-primary">Back
+                <button id="backToLoginBtn" type="button" class="btn btn-primary">Back
                 </button>
                 <button type="submit" class="btn btn-success float-right">Send Email</button>
             </div>
