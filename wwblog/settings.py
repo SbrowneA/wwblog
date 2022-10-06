@@ -24,7 +24,13 @@ SECRET_KEY = os.environ['WWBLOG_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1", os.environ.get("ALLOWED_HOST")]
+ALLOWED_HOSTS = ["127.0.0.1"]
+
+# Multiple host domains can be defined seperated by a space e.g. 'myhost.com myotherhost.com'
+hosts = os.environ.get("ALLOWED_HOSTS")
+if type(hosts) == str:
+    ALLOWED_HOSTS = [*ALLOWED_HOSTS, *hosts.split(' ')]
+
 ADMINS = [("Admin", os.environ.get("ADMIN_EMAIL")), ]
 # Application definition
 
